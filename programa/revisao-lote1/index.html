@@ -1,0 +1,175 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>[hidden]{display:none!important}</style></head><body><title>Revisão Legal do Lote 1</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: coluna de leitura em grade de 8px; uma faixa por solução; fios em vez de sombras (design Modernist do front) */
+:root{
+  --page:#eef2f5; --surface:#ffffff; --surface2:#f5f8fa; --header:#172d3e; --on-header:#ffffff;
+  --ink:#182d3d; --ink2:#203345; --muted:#587080; --line:#dce4e8; --strong:#172f43;
+  --teal:#00767c; --soft:#eaf3f2; --red:#ad393b; --red-soft:#f8e9e9; --amber:#966518; --amber-soft:#f6efe2;
+  --display:"Archivo","Bahnschrift","Segoe UI",system-ui,sans-serif; --sans:"Inter","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#0f1a23; --surface:#16232e; --surface2:#1b2a36; --header:#0b141b; --on-header:#e8eef2;
+  --ink:#e8eef2; --ink2:#d4dee5; --muted:#9db0bd; --line:#2a3a47; --strong:#c9d6df;
+  --teal:#3fb3b6; --soft:#15302f; --red:#e0787a; --red-soft:#3a1f20; --amber:#d8a24a; --amber-soft:#33280f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#0f1a23; --surface:#16232e; --surface2:#1b2a36; --header:#0b141b; --on-header:#e8eef2;
+  --ink:#e8eef2; --ink2:#d4dee5; --muted:#9db0bd; --line:#2a3a47; --strong:#c9d6df;
+  --teal:#3fb3b6; --soft:#15302f; --red:#e0787a; --red-soft:#3a1f20; --amber:#d8a24a; --amber-soft:#33280f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font:400 15px/23px var(--sans);margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{background:var(--header);color:var(--on-header);border-bottom:5px solid var(--teal)}
+header.top .wrap{padding-block:32px 26px;display:grid;gap:10px}
+.eye{font:700 11px/16px var(--sans);letter-spacing:1.4px;text-transform:uppercase;color:var(--teal)}
+header.top .eye{color:#d8a24a}
+h1{font:800 clamp(28px,5vw,44px)/1.05 var(--display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.lede{margin:0;max-width:70ch;opacity:.9}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{padding-block:10px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.counts{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.counts b{font:700 18px/22px var(--display);color:var(--ink2);margin-right:3px;font-variant-numeric:tabular-nums}
+.counts .c-ok b{color:var(--teal)} .counts .c-adj b{color:var(--red)} .counts .c-pend b{color:var(--amber)}
+.filter{display:flex;margin-left:auto}
+.filter button{font:600 12px/16px var(--sans);padding:6px 10px;border:1px solid var(--strong);background:var(--surface);color:var(--ink);cursor:pointer}
+.filter button+button{border-left:0}
+.filter button[aria-pressed=true]{background:var(--ink2);color:var(--surface)}
+.state{font-size:12px;color:var(--muted);width:100%}
+.state.warn{color:var(--amber)}
+main .wrap{padding-block:24px 56px;display:grid;gap:22px}
+section.sol{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--strong);display:grid;gap:0;min-width:0}
+.sol-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:16px 18px 10px}
+.sol-head h2{margin:0;font:700 21px/26px var(--display);color:var(--ink2);text-wrap:balance}
+.sol-head small{font-size:12px;color:var(--muted)}
+.items{list-style:none;margin:0;padding:0}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:10px 18px;border-top:1px solid var(--line)}
+.item.is-ok{background:linear-gradient(90deg,var(--soft),transparent 40%)}
+.item.is-adj{background:linear-gradient(90deg,var(--red-soft),transparent 40%)}
+.item .what{min-width:0}
+.item .what b{display:block;font:600 14px/20px var(--sans);color:var(--ink2)}
+.item .what span{display:block;font-size:12px;line-height:17px;color:var(--muted)}
+.item .what em{display:block;font-style:normal;font-size:12px;line-height:17px;color:var(--ink);margin-top:2px}
+.sit{display:inline-block;font:700 10px/14px var(--sans);letter-spacing:.6px;text-transform:uppercase;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.sit-t{background:var(--soft);color:var(--teal)} .sit-a{background:var(--amber-soft);color:var(--amber)} .sit-i{border:1px solid var(--line);color:var(--muted)}
+.acts{display:flex;gap:0;align-self:start}
+.acts button{font:600 12px/16px var(--sans);padding:6px 10px;border:1px solid var(--strong);background:var(--surface);color:var(--ink);cursor:pointer;white-space:nowrap}
+.acts button+button{border-left:0}
+.acts button:focus-visible,.filter button:focus-visible,textarea:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.acts .b-ok[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}
+.acts .b-adj[aria-pressed=true]{background:var(--red);border-color:var(--red);color:#fff}
+.acts button:disabled{opacity:.45;cursor:default}
+.note{grid-column:1/-1;display:grid;gap:4px}
+.note textarea{width:100%;min-height:56px;resize:vertical;font:400 14px/20px var(--sans);padding:7px 10px;border:1px solid var(--strong);background:var(--surface);color:var(--ink);border-radius:0}
+.note small{font-size:11px;color:var(--muted)}
+.extra{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px;padding:14px 18px 18px;border-top:1px solid var(--line);background:var(--surface2)}
+.extra h3{margin:0 0 6px;font:700 14px/19px var(--display);color:var(--ink2)}
+.extra ul{margin:0;padding-left:18px;font-size:13px;line-height:19px}
+.extra p{margin:0 0 8px;font-size:13px;line-height:19px}
+.extra a{color:var(--teal)}
+.extra .gen{grid-column:1/-1}
+.extra .gen textarea{width:100%;min-height:64px;font:400 14px/20px var(--sans);padding:7px 10px;border:1px solid var(--strong);background:var(--surface);color:var(--ink);border-radius:0}
+.pend li{color:var(--amber)}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+footer .wrap{padding-block:18px}
+@media (max-width:640px){.item{grid-template-columns:minmax(0,1fr)}.acts{justify-self:start}.extra{grid-template-columns:minmax(0,1fr)}.filter{margin-left:0}}
+</style>
+
+<header class="top"><div class="wrap">
+  <span class="eye">Programa Gestão Unificada · etapa 1e · lote 1</span>
+  <h1>Revisão dos dados mínimos legais</h1>
+  <p class="lede">Sete soluções, cada dado que a lei e os Tribunais de Contas exigem, com a base legal conferida no texto oficial em 05/11/2026. Marque cada item como aprovado ou a ajustar e escreva o que deve mudar. Eu leio esta revisão e faço as correções.</p>
+</div></header>
+
+<div class="bar"><div class="wrap">
+  <div class="counts"><span><b id="n-all">0</b>itens</span><span class="c-ok"><b id="n-ok">0</b>aprovados</span><span class="c-adj"><b id="n-adj">0</b>a ajustar</span><span class="c-pend"><b id="n-pend">0</b>sem revisão</span></div>
+  <div class="filter" role="group" aria-label="Mostrar"><button type="button" data-f="all" aria-pressed="true">Todos</button><button type="button" data-f="pend" aria-pressed="false">Sem revisão</button><button type="button" data-f="adj" aria-pressed="false">A ajustar</button></div>
+  <p class="state" id="state">Conectando para salvar a revisão…</p>
+</div></div>
+
+<main><div class="wrap" id="list"></div></main>
+<footer><div class="wrap">Fontes completas em gestao-unificada/04-cubo-processos/base-legal/pesquisa-lote1-*.md. Valores de exemplo são fictícios.</div></footer>
+
+<script>
+(function () {
+  'use strict';
+  var DATA = [{"id":"contratos","name":"Gestão de contratos","links":[["Lei 14.133/2021","https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm"],["Lei 4.320/1964","https://www.planalto.gov.br/ccivil_03/leis/l4320.htm"],["Manual de integração do PNCP","https://www.gov.br/pncp/pt-br/acesso-a-informacao/manuais/ManualdeIntegraoPNCPVerso2.2.7.pdf"],["Manual SIM 2026 (TCE-CE)","https://www.tce.ce.gov.br/downloads/municipios/sim-documentacao-e-programas/Manual_SIM_2026_-_Municpios_vMAR-1.pdf"]],"state":"SP: AUDESP Fase IV (20/10 dias úteis). MG: SICOM, módulo de acompanhamento mensal. CE: SIM 2026, tabela 511, no mês da assinatura.","alerts":["Vigência a vencer (5 anos; contínuos até 10)","Aditivo acima de 25% do valor inicial atualizado (50% em reforma) — art. 125","Contrato fora do prazo do PNCP: 20 dias úteis (licitação) ou 10 (contratação direta) — sem eficácia","Pagamento fora da ordem cronológica sem justificativa — art. 141","Data-base do reajuste atingida","Garantia vencida","Contrato sem fiscal designado — art. 117","Sanção sem registro no Ceis/Cnep em 15 dias úteis — art. 161"],"items":[{"k":"contratos-01","dado":"Número e ano do contrato","base":"Lei 14.133 art. 91; PNCP","sit":"a","ex":null},{"k":"contratos-02","dado":"Objeto","base":"Lei 14.133 art. 92 I","sit":"t","ex":null},{"k":"contratos-03","dado":"Regime de execução","base":"Lei 14.133 art. 92 IV","sit":"a","ex":null},{"k":"contratos-04","dado":"Contratado: razão social e CNPJ/CPF","base":"PNCP; Lei 4.320 art. 61","sit":"a","ex":null},{"k":"contratos-05","dado":"Processo de origem e modalidade","base":"PNCP; Lei 14.133 art. 72","sit":"a","ex":null},{"k":"contratos-06","dado":"Data de assinatura","base":"Lei 14.133 art. 94","sit":"a","ex":null},{"k":"contratos-07","dado":"Valor inicial, aditivos e valor atualizado","base":"Lei 14.133 arts. 92 V, 124, 125","sit":"t","ex":null},{"k":"contratos-08","dado":"Apostilamentos (reajuste)","base":"Lei 14.133 art. 136","sit":"i","ex":null},{"k":"contratos-09","dado":"Vigência (início e fim)","base":"Lei 14.133 arts. 105 a 107","sit":"t","ex":null},{"k":"contratos-10","dado":"Dotação orçamentária (classificação programática)","base":"Lei 14.133 art. 92 VIII","sit":"a","ex":null},{"k":"contratos-11","dado":"Empenhado, liquidado, pago","base":"Lei 4.320 arts. 58 a 64","sit":"t","ex":null},{"k":"contratos-12","dado":"A liquidar, a pagar, saldo contratual","base":"cálculo sobre Lei 4.320 e Lei 14.133 art. 125","sit":"t","ex":null},{"k":"contratos-13","dado":"Fiscal e ato de designação","base":"Lei 14.133 art. 117","sit":"a","ex":null},{"k":"contratos-14","dado":"Gestor do contrato","base":"Lei 14.133 art. 8º §3º (regulamento local)","sit":"t","ex":null},{"k":"contratos-15","dado":"Registro de ocorrências da fiscalização","base":"Lei 14.133 art. 117 §1º","sit":"i","ex":null},{"k":"contratos-16","dado":"Garantia (modalidade, valor, validade)","base":"Lei 14.133 arts. 92 XII, 96, 98","sit":"a","ex":null},{"k":"contratos-17","dado":"Reajuste (índice, data-base, periodicidade)","base":"Lei 14.133 arts. 92 V, 25 §7º","sit":"a","ex":null},{"k":"contratos-18","dado":"Publicação no PNCP (data e nº de controle)","base":"Lei 14.133 art. 94 (condição de eficácia)","sit":"a","ex":null},{"k":"contratos-19","dado":"Medições e recebimento provisório e definitivo","base":"Lei 14.133 art. 140","sit":"a","ex":null},{"k":"contratos-20","dado":"Pagamentos em ordem cronológica por fonte","base":"Lei 14.133 art. 141","sit":"i","ex":null},{"k":"contratos-21","dado":"Penalidades e registro no Ceis/Cnep","base":"Lei 14.133 arts. 156, 161","sit":"a","ex":null},{"k":"contratos-22","dado":"Extinção (motivo e data)","base":"Lei 14.133 arts. 137 a 139","sit":"i","ex":null}],"pend":["Periodicidade do reajuste (Lei 10.192/2001)","Figura do gestor do contrato no regulamento local","Campos de contrato nos leiautes do AUDESP (SP) e do SICOM (MG)"]},{"id":"licitacoes","name":"Licitações e contratações","links":[["Lei 14.133/2021","https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14133.htm"],["Manual de integração do PNCP","https://www.gov.br/pncp/pt-br/acesso-a-informacao/manuais/ManualdeIntegraoPNCPVerso2.2.7.pdf"],["Manual SIM 2026 (TCE-CE)","https://www.tce.ce.gov.br/downloads/municipios/sim-documentacao-e-programas/Manual_SIM_2026_-_Municpios_vMAR-1.pdf"]],"state":"SP: AUDESP Fase IV. MG: SICOM Edital e Licitação (5 dias úteis). CE: Portal de Licitações e SIM, tabelas 501 a 507.","alerts":["Processo sem ETP, TR, orçamento ou análise de riscos — art. 18","Menos de 3 cotações sem justificativa — art. 23","Edital sem PNCP ou extrato — art. 54","Contratação direta sem autorização ou divulgação — art. 72","Homologação com prazo de recurso em curso — art. 165","Municípios até 20 mil habitantes: transição do art. 176 até 04/2027"],"items":[{"k":"licitacoes-01","dado":"Número do processo e da compra","base":"PNCP; Lei 14.133 art. 72","sit":"t","ex":null},{"k":"licitacoes-02","dado":"Modalidade","base":"Lei 14.133 art. 28","sit":"a","ex":"Pregão eletrônico"},{"k":"licitacoes-03","dado":"Hipótese e amparo legal da contratação direta","base":"Lei 14.133 art. 72 VIII","sit":"a","ex":"Não se aplica (licitação)"},{"k":"licitacoes-04","dado":"Critério de julgamento","base":"Lei 14.133 art. 33","sit":"a","ex":"Menor preço por item"},{"k":"licitacoes-05","dado":"Objeto","base":"Lei 14.133 art. 18 II","sit":"t","ex":null},{"k":"licitacoes-06","dado":"Valor estimado com composição","base":"Lei 14.133 arts. 18 IV, 23","sit":"a","ex":"R$ 84.300 · planilha com 12 itens"},{"k":"licitacoes-07","dado":"Pesquisa de preços (mínimo 3 cotações ou outras fontes)","base":"Lei 14.133 art. 23 §1º","sit":"a","ex":"3 cotações diretas + painel de preços"},{"k":"licitacoes-08","dado":"ETP","base":"Lei 14.133 art. 18 I","sit":"t","ex":null},{"k":"licitacoes-09","dado":"Termo de referência","base":"Lei 14.133 art. 18 II","sit":"t","ex":null},{"k":"licitacoes-10","dado":"Análise de riscos","base":"Lei 14.133 art. 18 X","sit":"a","ex":"Matriz com 5 riscos, anexo III"},{"k":"licitacoes-11","dado":"Datas de abertura e encerramento","base":"Lei 14.133 art. 17","sit":"a","ex":"18/11/2026 a 02/12/2026"},{"k":"licitacoes-12","dado":"Homologação e adjudicação","base":"Lei 14.133 art. 71 IV","sit":"a","ex":"Prevista para 10/12/2026"},{"k":"licitacoes-13","dado":"Agente de contratação e designação","base":"Lei 14.133 arts. 7º, 8º","sit":"a","ex":"Agente de contratação · Portaria 088/2026"},{"k":"licitacoes-14","dado":"Resultado e vencedor por item","base":"Lei 14.133 art. 71","sit":"i","ex":null},{"k":"licitacoes-15","dado":"Publicação no PNCP e extrato em diário oficial","base":"Lei 14.133 art. 54","sit":"a","ex":"PNCP 18/11/2026 · Diário Oficial do Município 18/11/2026"},{"k":"licitacoes-16","dado":"Recursos (3 dias úteis)","base":"Lei 14.133 art. 165","sit":"i","ex":null},{"k":"licitacoes-17","dado":"Dotação e fontes","base":"Lei 4.320 art. 60","sit":"i","ex":null}],"pend":["Lei 14.133 art. 54 §1º completo (extrato em diário estadual ou municipal)","Lei 14.133 art. 72, incisos I a VII","Obrigatoriedade campo a campo no PNCP","IN 04/2015-TCM (CE) vigente"]},{"id":"financeiro","name":"Financeiro e controle de gastos","links":[["Lei 4.320/1964","https://www.planalto.gov.br/ccivil_03/leis/l4320.htm"],["LC 101/2000 (LRF)","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm"],["Decreto 10.540/2020 (SIAFIC)","https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/decreto/D10540.htm"],["Constituição Federal","https://www.planalto.gov.br/ccivil_03/constituicao/constituicaocompilado.htm"]],"state":"SP: AUDESP, balancetes mensais. MG: SICOM AM e BLCT até o fim do mês seguinte. CE: SIM até o dia 30 do mês seguinte.","alerts":["Despesa sem empenho prévio — Lei 4.320 art. 60","Empenho acima da dotação — art. 59","Pagamento sem liquidação — art. 62","Recurso vinculado fora do objeto — LRF art. 8º","Receita abaixo da meta bimestral: limitação de empenho em 30 dias — LRF art. 9º","Último ano do mandato: obrigação sem caixa — LRF art. 42"],"items":[{"k":"financeiro-01","dado":"PPA, LDO e LOA","base":"CF art. 165","sit":"i","ex":null},{"k":"financeiro-02","dado":"Dotação inicial e atualizada","base":"Lei 4.320 art. 59; CF art. 167","sit":"t","ex":null},{"k":"financeiro-03","dado":"Créditos adicionais (tipo, lei, decreto, fonte)","base":"Lei 4.320 arts. 41 a 43","sit":"a","ex":"Suplementar · Lei 2.145/2025 · Decreto 412/2026 · excesso de arrecadação"},{"k":"financeiro-04","dado":"Classificação: função, subfunção, programa, ação","base":"Decreto 10.540 art. 8º","sit":"a","ex":"12 · 361 · 0012 Ensino Fundamental · 2.045 Manutenção das escolas"},{"k":"financeiro-05","dado":"Natureza da despesa","base":"MSC; Portaria 163/2001","sit":"a","ex":"3.3.90.30 Material de consumo"},{"k":"financeiro-06","dado":"Fonte ou destinação de recursos","base":"LRF arts. 8º, 50","sit":"t","ex":null},{"k":"financeiro-07","dado":"Empenho (nº, data, credor, tipo)","base":"Lei 4.320 arts. 58, 60, 61","sit":"a","ex":"2026/1432 · 14/10/2026 · Fornecedor 05 · ordinário"},{"k":"financeiro-08","dado":"Liquidação","base":"Lei 4.320 art. 63","sit":"t","ex":null},{"k":"financeiro-09","dado":"Pagamento","base":"Lei 4.320 arts. 62, 64","sit":"t","ex":null},{"k":"financeiro-10","dado":"Ordem cronológica por fonte","base":"Lei 14.133 art. 141","sit":"i","ex":null},{"k":"financeiro-11","dado":"Restos a pagar processados e não processados","base":"Lei 4.320 art. 36","sit":"a","ex":"Processados R$ 120 mil · não processados R$ 340 mil (inscrição 2025)"},{"k":"financeiro-12","dado":"Caixa por fonte","base":"LRF art. 50 I","sit":"t","ex":null},{"k":"financeiro-13","dado":"Receita prevista e arrecadada","base":"Lei 4.320 art. 35","sit":"a","ex":"Prevista R$ 98,4 mi · arrecadada até out R$ 81,2 mi"},{"k":"financeiro-14","dado":"Metas bimestrais de arrecadação","base":"LRF art. 13","sit":"a","ex":"5º bimestre: meta R$ 16,1 mi · realizado R$ 15,7 mi (97,5%)"},{"k":"financeiro-15","dado":"Cronograma mensal de desembolso","base":"LRF art. 8º","sit":"a","ex":"Decreto 038/2026 · cotas mensais por fonte"},{"k":"financeiro-16","dado":"Limitação de empenho","base":"LRF art. 9º","sit":"i","ex":null},{"k":"financeiro-17","dado":"Publicação em tempo real (até D+1)","base":"LRF art. 48; Decreto 10.540 art. 7º","sit":"i","ex":null},{"k":"financeiro-18","dado":"Fechamento mensal (dia 25)","base":"Decreto 10.540 art. 6º","sit":"i","ex":null}],"pend":["\"Programa\" e \"ação\" no Decreto 10.540 art. 8º","Portarias de classificação (163/2001, 42/1999, 20/2021, 710/2021)","LC 227/2026 (alteração na LC 141)"]},{"id":"contas","name":"Prestação de contas","links":[["LC 101/2000 (LRF)","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm"],["Constituição Federal","https://www.planalto.gov.br/ccivil_03/constituicao/constituicaocompilado.htm"],["LC 141/2012","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp141.htm"],["Portaria STN 642/2019 (Siconfi)","https://siconfi.tesouro.gov.br/siconfi/pages/public/arquivo/conteudo/PORTARIA_N_642_DE_20_09_2019_ATUALIZADA.pdf"]],"state":"SP: AUDESP (calendário 2026). MG: SICOM. CE: TCE-CE (instruções de contas de governo e de gestão).","alerts":["Prazos de RREO, RGF, MSC e DCA (D-10 e D-3)","Relatório não homologado no Siconfi","Pessoal acima de 48,6% e 51,3% da RCL no Executivo","Saúde abaixo de 15% ou educação abaixo de 25% na projeção","Atraso impede transferências voluntárias — LRF art. 51 §2º"],"items":[{"k":"contas-01","dado":"RREO bimestral (30 dias)","base":"LRF art. 52","sit":"a","ex":"5º bimestre: prazo 30/11/2026 · em elaboração"},{"k":"contas-02","dado":"RGF quadrimestral ou semestral","base":"LRF arts. 54, 55, 63","sit":"a","ex":"2º quadrimestre publicado 29/09/2026"},{"k":"contas-03","dado":"Pessoal sobre a RCL (54% Executivo; alerta 90%, prudencial 95%)","base":"LRF arts. 20, 22, 59","sit":"a","ex":"Executivo 47,9% da RCL · abaixo do alerta (48,6%)"},{"k":"contas-04","dado":"Mínimo em saúde (15%)","base":"CF art. 198; LC 141","sit":"a","ex":"Projeção 2026: 19,8%"},{"k":"contas-05","dado":"Mínimo em educação (25%)","base":"CF art. 212","sit":"a","ex":"Projeção 2026: 26,4%"},{"k":"contas-06","dado":"Dívida consolidada","base":"LRF art. 31","sit":"i","ex":null},{"k":"contas-07","dado":"Audiências de metas e de saúde (fev, mai, set)","base":"LRF art. 9º §4º; LC 141 art. 36","sit":"a","ex":"Setembro realizada em 29/09/2026 · próxima fevereiro/2027"},{"k":"contas-08","dado":"MSC mensal e de encerramento","base":"Portaria STN 642","sit":"a","ex":"Setembro enviada em 27/10/2026"},{"k":"contas-09","dado":"DCA até 30/04","base":"LRF art. 51","sit":"a","ex":"2025 entregue em 28/04/2026"},{"k":"contas-10","dado":"Homologação no Siconfi","base":"Portaria STN 642 art. 3º","sit":"i","ex":null},{"k":"contas-11","dado":"Prestação por instrumento (convênios)","base":"Decreto 11.531 art. 20","sit":"t","ex":null},{"k":"contas-12","dado":"Evidências conferidas","base":"Portaria Conjunta 33 art. 96","sit":"t","ex":null},{"k":"contas-13","dado":"Parecer prévio do TCE","base":"CF art. 31; LRF arts. 56, 57","sit":"i","ex":null}],"pend":["Limite da dívida (Res. Senado 40/2001)","Prazos do parecer prévio por estado","Prestação anual no TCE-MG e no TCE-CE"]},{"id":"convenios","name":"Convênios","links":[["Decreto 11.531/2023","https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/d11531.htm"],["Portaria Conjunta 33/2023","https://www.gov.br/transferegov/pt-br/legislacao/portarias/portaria-conjunta-mgi-mf-cgu-no-33-de-30-de-agosto-de-2023"],["LC 101/2000 (LRF)","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm"]],"state":"SP: Decreto 66.173/2021 (CRMC). MG: Decreto 48.745/2023, Sigcon-MG. CE: a conferir.","alerts":["Vigência a vencer: pedir alteração 60 dias antes","Cláusula suspensiva a vencer (até 9 meses, total 18)","Licitação não iniciada em 60 dias","365 dias sem execução financeira: bloqueio da conta","Saldo não devolvido em 30 dias","CAUC pendente bloqueia nova celebração"],"items":[{"k":"convenios-01","dado":"Nº da proposta e do instrumento","base":"Decreto 11.531 art. 7º; Portaria 33 art. 18","sit":"t","ex":null},{"k":"convenios-02","dado":"Concedente","base":"Decreto 11.531 art. 7º","sit":"a","ex":"Ministério das Cidades · mandatária Caixa"},{"k":"convenios-03","dado":"Objeto","base":"Portaria 33 art. 20","sit":"t","ex":null},{"k":"convenios-04","dado":"Repasse e contrapartida","base":"Portaria 33 art. 18; LRF art. 25","sit":"t","ex":null},{"k":"convenios-05","dado":"Plano de trabalho","base":"Decreto 11.531 art. 7º §2º","sit":"i","ex":null},{"k":"convenios-06","dado":"Cronograma de desembolso","base":"Portaria 33 art. 20 V","sit":"a","ex":"3 parcelas: 40% · 40% · 20%"},{"k":"convenios-07","dado":"Cláusula suspensiva e prazo","base":"Decreto 11.531 art. 13","sit":"a","ex":"Licença ambiental · até 15/03/2026 (cumprida)"},{"k":"convenios-08","dado":"Vigência","base":"Decreto 11.531 arts. 11, 15","sit":"a","ex":"01/12/2025 a 30/11/2027"},{"k":"convenios-09","dado":"Conta bancária específica","base":"Decreto 11.531 art. 17","sit":"a","ex":"Banco oficial · ag. 0000 · conta 00000-0 (fictícia)"},{"k":"convenios-10","dado":"Rendimentos de aplicação","base":"Portaria 33 art. 75","sit":"t","ex":null},{"k":"convenios-11","dado":"Licitação iniciada em 60 dias","base":"Portaria 33 art. 52","sit":"a","ex":"Edital publicado em 20/04/2026 (dentro do prazo)"},{"k":"convenios-12","dado":"Execução física e financeira","base":"Portaria 33 arts. 81, 84, 85","sit":"t","ex":null},{"k":"convenios-13","dado":"Prestação de contas (60 dias)","base":"Decreto 11.531 art. 20","sit":"t","ex":null},{"k":"convenios-14","dado":"Devolução de saldo (30 dias)","base":"Portaria 33 art. 95","sit":"t","ex":null},{"k":"convenios-15","dado":"Regularidade CAUC","base":"LRF art. 25 §1º IV","sit":"a","ex":"Regular em 31/10/2026"},{"k":"convenios-16","dado":"Extrato publicado no site oficial","base":"Portaria 33 art. 43","sit":"a","ex":"Publicado em 05/12/2025"}],"pend":["Percentuais de contrapartida da LDO 2026","Norma vigente do CAUC","Normas de convênios do Ceará (sites oficiais fora do ar)","Sistema eletrônico de convênios de SP"]},{"id":"emendas","name":"Emendas parlamentares","links":[["Constituição Federal","https://www.planalto.gov.br/ccivil_03/constituicao/constituicaocompilado.htm"],["LC 210/2024","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp210.htm"],["Portaria Conjunta 15/2025","https://www.gov.br/transferegov/pt-br/legislacao/portarias/portaria-conjunta-mf-mgi-no-15-de-28-de-julho-de-2025"]],"state":"Emendas impositivas estaduais de SP, MG e CE: a conferir.","alerts":["Plano de trabalho reprovado: sem empenho","Comunicação em 30 dias","Capital abaixo de 70% ou despesa vedada","Relatório de gestão até 30/06","Saldo sem aplicação financeira"],"items":[{"k":"emendas-01","dado":"Autor (parlamentar, bancada, comissão)","base":"CF art. 166; LC 210 art. 7º","sit":"a","ex":"Deputado(a) federal (fictício)"},{"k":"emendas-02","dado":"Tipo e modalidade","base":"CF art. 166-A","sit":"a","ex":"Individual · transferência especial"},{"k":"emendas-03","dado":"Valor indicado, empenhado e pago","base":"CF art. 166 §11","sit":"t","ex":null},{"k":"emendas-04","dado":"Impedimento técnico","base":"CF art. 166 §13; LC 210 art. 10","sit":"t","ex":null},{"k":"emendas-05","dado":"Plano de trabalho","base":"Portaria 15/2025 arts. 5º a 7º","sit":"i","ex":null},{"k":"emendas-06","dado":"Conta específica por transferência","base":"LC 210 art. 8º","sit":"a","ex":"Conta exclusiva aberta em 10/03/2026"},{"k":"emendas-07","dado":"Mínimo de 70% em capital","base":"CF art. 166-A §5º","sit":"a","ex":"82% em investimento (obras e equipamentos)"},{"k":"emendas-08","dado":"Comunicação à Câmara e ao TC em 30 dias","base":"LC 210 art. 8º","sit":"a","ex":"Ofício enviado em 28/03/2026"},{"k":"emendas-09","dado":"Relatório de gestão até 30/06","base":"Portaria 15/2025 art. 23","sit":"a","ex":"Entregue em 26/06/2026"},{"k":"emendas-10","dado":"Transparência e rastreabilidade","base":"LC 210 art. 8º","sit":"t","ex":null}],"pend":["Prazos de execução (IN TCU 93/2024)","Decisões do STF sobre emendas (ADPF 854)","Emendas impositivas estaduais (SP, MG, CE)"]},{"id":"captacao","name":"Captação de recursos","links":[["Decreto 11.531/2023","https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/decreto/d11531.htm"],["Portaria Conjunta 33/2023","https://www.gov.br/transferegov/pt-br/legislacao/portarias/portaria-conjunta-mgi-mf-cgu-no-33-de-30-de-agosto-de-2023"],["LC 101/2000 (LRF)","https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp101.htm"]],"state":"MG: Sigcon-MG. SP: Decreto 66.173/2021. CE: a conferir.","alerts":["Programa novo aderente ao município","Fim da janela de proposta","Complementação vencendo: silêncio é desistência","Contrapartida sem previsão orçamentária"],"items":[{"k":"captacao-01","dado":"Programas e editais abertos","base":"Decreto 11.531 art. 6º","sit":"t","ex":null},{"k":"captacao-02","dado":"Critérios de elegibilidade","base":"Portaria 33 art. 16","sit":"t","ex":null},{"k":"captacao-03","dado":"Habilitação (cadastro, CAUC)","base":"Portaria 33 arts. 8º, 29","sit":"a","ex":"Cadastro atualizado · CAUC regular"},{"k":"captacao-04","dado":"Contrapartida e previsão orçamentária","base":"LRF art. 25 §1º IV","sit":"t","ex":null},{"k":"captacao-05","dado":"Janela da proposta","base":"Portaria 33 art. 17","sit":"t","ex":null},{"k":"captacao-06","dado":"Situação da proposta","base":"Portaria 33 arts. 19, 23","sit":"t","ex":null},{"k":"captacao-07","dado":"Peças técnicas","base":"Portaria 33 art. 24","sit":"t","ex":null}],"pend":["Percentuais de contrapartida da LDO 2026","Regras de captação do Ceará"]}];
+  var SIT = { t:['Na tela', 'sit-t'], a:['Acrescentado', 'sit-a'], i:['Integração', 'sit-i'] };
+  var rev = {}, db = null, col = null, canWrite = false, filter = 'all', timers = {};
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function $(s, r) { return (r || document).querySelector(s); }
+
+  function render() {
+    var html = DATA.map(function (s) {
+      var gen = rev['geral-' + s.id] || {};
+      return '<section class="sol" id="' + s.id + '"><div class="sol-head"><h2>' + esc(s.name) + '</h2><small>' + s.items.length + ' dados mínimos</small></div><ol class="items">' +
+        s.items.map(function (it) {
+          var r = rev[it.k] || {}, st = r.status || '';
+          return '<li class="item' + (st === 'ok' ? ' is-ok' : st === 'ajustar' ? ' is-adj' : '') + '" data-k="' + it.k + '" data-st="' + (st || 'pend') + '">' +
+            '<div class="what"><b>' + esc(it.dado) + '<span class="sit ' + SIT[it.sit][1] + '">' + SIT[it.sit][0] + '</span></b><span>' + esc(it.base) + '</span>' + (it.ex ? '<em>Exemplo na tela: ' + esc(it.ex) + '</em>' : '') + '</div>' +
+            '<div class="acts" role="group" aria-label="Revisão de ' + esc(it.dado) + '"><button type="button" class="b-ok" data-set="ok" aria-pressed="' + (st === 'ok') + '"' + (canWrite ? '' : ' disabled') + '>Aprovado</button><button type="button" class="b-adj" data-set="ajustar" aria-pressed="' + (st === 'ajustar') + '"' + (canWrite ? '' : ' disabled') + '>Ajustar</button></div>' +
+            ((st === 'ajustar' || r.nota) ? '<label class="note"><small>O que deve mudar</small><textarea id="n-' + it.k + '" data-note="' + it.k + '" maxlength="1500"' + (canWrite ? '' : ' disabled') + '>' + esc(r.nota || '') + '</textarea></label>' : '') +
+            '</li>';
+        }).join('') + '</ol>' +
+        '<div class="extra"><div><h3>Alertas previstos</h3><ul>' + s.alerts.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul></div>' +
+        '<div><h3>Tribunais de Contas</h3><p>' + esc(s.state) + '</p><h3>Ainda a conferir</h3><ul class="pend">' + s.pend.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' +
+        '<h3>Textos oficiais</h3><ul>' + s.links.map(function (l) { return '<li><a href="' + l[1] + '" target="_blank" rel="noopener">' + esc(l[0]) + ' ↗</a></li>'; }).join('') + '</ul></div>' +
+        '<label class="gen"><h3>Observação geral sobre ' + esc(s.name) + '</h3><textarea id="n-geral-' + s.id + '" data-note="geral-' + s.id + '" maxlength="3000" placeholder="Faltou algum dado? Alguma regra local do município?"' + (canWrite ? '' : ' disabled') + '>' + esc(gen.nota || '') + '</textarea></label></div></section>';
+    }).join('');
+    var list = $('#list'), active = document.activeElement, aid = active && active.id, pos = active && active.selectionStart;
+    list.innerHTML = html;
+    if (aid) { var el = document.getElementById(aid); if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) {} } }
+    applyFilter(); counts();
+  }
+  function counts() {
+    var all = 0, ok = 0, adj = 0;
+    DATA.forEach(function (s) { s.items.forEach(function (it) { all++; var st = (rev[it.k] || {}).status; if (st === 'ok') ok++; else if (st === 'ajustar') adj++; }); });
+    $('#n-all').textContent = all; $('#n-ok').textContent = ok; $('#n-adj').textContent = adj; $('#n-pend').textContent = all - ok - adj;
+  }
+  function applyFilter() {
+    Array.prototype.forEach.call(document.querySelectorAll('.item'), function (li) { li.hidden = filter !== 'all' && li.dataset.st !== filter; });
+  }
+  function save(k, patch) {
+    if (!col) return;
+    var cur = rev[k] || {}, next = { status:patch.status !== undefined ? patch.status : (cur.status || ''), nota:patch.nota !== undefined ? patch.nota : (cur.nota || ''), at:new Date().toISOString() };
+    rev[k] = next; counts();
+    col.doc(k).set(next).then(function () { setState('Revisão salva às ' + new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }) + '.'); })
+      .catch(function (e) { setState('Não foi possível salvar (' + (e && e.code || 'erro') + '). Sua anotação continua na tela; tente de novo.', true); });
+  }
+  function setState(t, warn) { var s = $('#state'); s.textContent = t; s.classList.toggle('warn', !!warn); }
+
+  document.addEventListener('click', function (e) {
+    var f = e.target.closest('[data-f]');
+    if (f) { filter = f.dataset.f; Array.prototype.forEach.call(document.querySelectorAll('[data-f]'), function (b) { b.setAttribute('aria-pressed', String(b === f)); }); applyFilter(); return; }
+    var b = e.target.closest('[data-set]'); if (!b || !canWrite) return;
+    var k = b.closest('.item').dataset.k, cur = (rev[k] || {}).status, st = cur === b.dataset.set ? '' : b.dataset.set;
+    save(k, { status:st }); render();
+    if (st === 'ajustar') { var t = document.getElementById('n-' + k); if (t) t.focus(); }
+  });
+  document.addEventListener('input', function (e) {
+    var k = e.target.dataset && e.target.dataset.note; if (!k) return;
+    clearTimeout(timers[k]); var v = e.target.value;
+    timers[k] = setTimeout(function () { save(k, { nota:v }); }, 700);
+  });
+
+  render();
+  var done = false, to = setTimeout(function () { if (!done) setState('Esta cópia é só para leitura. Para registrar a revisão, abra a página pelo link do claude.ai.', true); }, 10000);
+  if (window.claude && window.claude.use) {
+    window.claude.use('db').then(function (d) {
+      if (!d) { done = true; clearTimeout(to); setState('Esta cópia é só para leitura. Para registrar a revisão, abra a página pelo link do claude.ai.', true); return; }
+      db = d; col = db.collection('revisao');
+      col.onSnapshot(function (snap) {
+        done = true; clearTimeout(to);
+        var m = {}; snap.docs.forEach(function (x) { if (x.exists) m[x.id] = x.data(); });
+        // não sobrescreve o que está sendo digitado agora
+        Object.keys(timers).forEach(function (k) { if (rev[k]) m[k] = rev[k]; });
+        rev = m; canWrite = true;
+        setState('Revisão conectada. Cada clique e cada anotação são salvos automaticamente.');
+        render();
+      }, function (e) { done = true; clearTimeout(to); setState('Não foi possível carregar a revisão (' + (e && e.code || 'erro') + '). Recarregue a página.', true); });
+    }).catch(function () { done = true; clearTimeout(to); setState('Esta cópia é só para leitura. Para registrar a revisão, abra a página pelo link do claude.ai.', true); });
+  } else { done = true; clearTimeout(to); setState('Esta cópia é só para leitura. Para registrar a revisão, abra a página pelo link do claude.ai.', true); }
+})();
+</script>
+</body></html>
