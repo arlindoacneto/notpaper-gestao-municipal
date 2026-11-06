@@ -1371,6 +1371,21 @@ circle.np-d-now + .np-dtask-t, circle.np-d-late + .np-dtask-t { fill:var(--np-in
 .np-cf-alerts .np-cf-al-red { border-left-color:var(--np-red); background:var(--np-red-soft); }
 @media (max-width:720px) { .np-cf-cols, .np-cf-ex dl, .np-cf-ct dl { grid-template-columns:minmax(0, 1fr); } }
 
+/* notPaper Modernist — gráficos clicáveis até o registro (R6.2) */
+.np-drill { cursor:pointer; }
+.np-drill:focus-visible { outline:2px solid var(--np-teal); outline-offset:3px; }
+div.np-drill { transition:background-color .12s; }
+div.np-drill:hover { background:var(--np-surface-2); }
+div.np-drill:hover .barfill { filter:brightness(1.12); }
+div.np-drill .np-bar-title::after { content:" ↗"; color:var(--np-teal); font-weight:600; }
+.service-scorecard.np-drill:hover { box-shadow:inset 0 0 0 1px var(--np-line-strong); }
+circle.np-drill, rect.np-drill { cursor:pointer; }
+circle.np-drill:hover, rect.np-drill:hover { stroke:var(--np-ink); stroke-width:2; }
+@media (prefers-reduced-motion:reduce) { div.np-drill { transition:none; } }
+.np-drill-flash { animation:npDrillFlash 1.6s ease-out; }
+@keyframes npDrillFlash { 0%, 30% { box-shadow:0 0 0 3px var(--np-teal); } 100% { box-shadow:0 0 0 0 transparent; } }
+@media (prefers-reduced-motion:reduce) { .np-drill-flash { animation:none; outline:3px solid var(--np-teal); } }
+
 /* notPaper Modernist — Orçamento de horas v3 (D-043, D-044), só Uso interno */
 .np-orc h3 { margin:20px 0 8px; font:700 15px/20px var(--np-display); color:var(--np-ink-2); }
 .np-orc h3 small { font:400 12px/16px var(--np-sans); color:var(--np-muted); margin-left:6px; }
@@ -1785,7 +1800,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
   function toDarkLine(o) { var L = lum(o); if (o.a === 0 || L < 0.6) return null; return '#2a3a47'; }
   var SKIP = /^(SCRIPT|STYLE|svg|path|circle|rect|line|polyline|polygon|g|text|tspan|defs|BR)$/;
   function adapt(el) {
-    if (el.nodeType !== 1 || SKIP.test(el.tagName) || el.closest('body > header, .np-side, .np-top, .np-pal-wrap, .np-cat-tools, .np-card-top, .titlebar, .np-toc, .dispatch-summary, .np-ledger, .np-autos, .np-start, .np-brief, .np-pager, .np-geo, .np-geomap, .np-mapdlg, .np-askdlg, .np-despdlg, .np-dalert, .np-subbar, .np-cf-ct, .np-cf-chip, .np-orc, .np-orc-div, .leaflet-container')) return;
+    if (el.nodeType !== 1 || SKIP.test(el.tagName) || el.closest('body > header, .np-side, .np-top, .np-pal-wrap, .np-cat-tools, .np-card-top, .titlebar, .np-toc, .dispatch-summary, .np-ledger, .np-autos, .np-start, .np-brief, .np-pager, .np-geo, .np-geomap, .np-mapdlg, .np-askdlg, .np-despdlg, .np-dalert, .np-subbar, .np-cf-ct, .np-cf-chip, .np-orc, .np-orc-div, .np-drill, .leaflet-container')) return;
     var cs = getComputedStyle(el), s = el.style, o;
     if ((o = parse(cs.backgroundColor)) && (o = toDarkBg(o))) s.setProperty('background-color', o, 'important');
     if (cs.backgroundImage && cs.backgroundImage.indexOf('gradient') > -1 && /rgb\((2[0-9]{2}),\s*(2[0-9]{2})/.test(cs.backgroundImage)) s.setProperty('background-image', 'none', 'important');
@@ -4679,6 +4694,90 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     pass();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 0); }); else setTimeout(init, 0);
+})();
+
+/* notPaper Modernist — gráficos clicáveis até o registro (R6.2).
+   Na base v2.6 só o nome com ↗ abria o registro; a barra em si não. Esta camada liga:
+   - cada grupo de barras das soluções (.barrow) ao registro de mesmo nome (ou mesma posição) da tabela da solução;
+   - os cartões "Serviços e execução" do Gabinete à solução correspondente (mesmo destino do botão Analisar);
+   - os pontos da linha "Entradas e conclusões" do Gabinete ao Pergunte por semana, que abre os protocolos. */
+(function () {
+  'use strict';
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function norm(s) { return String(s || '').replace(/[↗→]/g, '').replace(/\s+/g, ' ').trim().toLowerCase(); }
+  var SKIP = '.np-orc, .np-conf, .np-subbar, .np-geo, .np-askdlg, .np-despdlg';
+
+  function mark(el, target, label) {
+    el._npTarget = target;
+    if (el.dataset.npDrill) return;
+    el.dataset.npDrill = '1'; el.classList.add('np-drill');
+    el.setAttribute('role', 'button'); el.tabIndex = 0;
+    el.setAttribute('aria-label', 'Abrir os dados de ' + label);
+    el.title = 'Abrir os dados que formam este gráfico';
+  }
+  function fire(el) {
+    var t = el._npTarget;
+    if (typeof t === 'function') t();
+    else if (t && t.nodeType === 1 && document.contains(t)) {
+      if (t.matches('[data-record], [data-module], button')) t.click();
+      else { t.scrollIntoView({ block:'center', behavior:'smooth' }); t.classList.remove('np-drill-flash'); void t.offsetWidth; t.classList.add('np-drill-flash'); }
+    }
+  }
+
+  function bars(main) {
+    var groups = [];
+    $$('.barrow', main).forEach(function (r) { var g = r.parentElement; if (g && groups.indexOf(g) < 0 && !g.closest(SKIP)) groups.push(g); });
+    if (!groups.length) return;
+    var recs = $$('[data-record]', main), byT = {};
+    recs.forEach(function (b) { (byT[b.dataset.record] = byT[b.dataset.record] || []).push(b); });
+    groups.forEach(function (g) {
+      var tEl = g.querySelector('.np-bar-title, strong'), t = norm(tEl && tEl.textContent), target = null;
+      if (t) target = recs.filter(function (b) { return norm(b.textContent) === t; })[0] ||
+        recs.filter(function (b) { var n = norm(b.textContent); return n.length > 2 && (n.indexOf(t) === 0 || t.indexOf(n) === 0); })[0];
+      if (!target) { // mesma posição na primeira tabela com o mesmo número de linhas
+        var sib = groups.filter(function (x) { return x.parentElement === g.parentElement; });
+        var k = Object.keys(byT).filter(function (k) { return byT[k].length === sib.length; })[0];
+        if (k) target = byT[k][sib.indexOf(g)];
+      }
+      if (!target) { var tile = g.closest('.service-scorecard'); target = tile && tile.querySelector('[data-module]'); }
+      if (!target && recs.length) { // total agregado: leva à tabela com os registros que formam o número
+        var tb = recs[0].closest('table'); target = (tb && (tb.closest('.tablewrap, section') || tb)) || null;
+      }
+      if (target) mark(g, target, (tEl && tEl.textContent.trim()) || 'este item');
+    });
+  }
+  function tiles(main) {
+    $$('.service-scorecard', main).forEach(function (c) {
+      var b = c.querySelector('[data-module]'); if (!b) return;
+      var h = c.querySelector('h3, h2'); mark(c, b, (h && h.textContent.trim()) || 'esta área');
+    });
+  }
+  function trend(main) {
+    $$('[data-marker]', main).forEach(function (m) {
+      if (m.dataset.npDrill) return;
+      var q = m.dataset.marker === 'incoming' ? 'protocolos abertos por semana' : 'protocolos concluídos por semana';
+      mark(m, function () { if (window.NP_ASK) window.NP_ASK.show(q); }, (m.querySelector('title') || {}).textContent || 'esta semana');
+    });
+  }
+  function pass() {
+    var main = document.getElementById('main'); if (!main) return;
+    bars(main); tiles(main); trend(main);
+  }
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest && e.target.closest('[data-np-drill]'); if (!el) return;
+    if (e.target.closest('button, a, input, select, label') && e.target.closest('button, a, input, select, label') !== el) return; // botões internos seguem o próprio clique
+    e.preventDefault(); fire(el);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var el = e.target.closest && e.target.closest('[data-np-drill]'); if (!el || el !== e.target) return;
+    e.preventDefault(); fire(el);
+  });
+  var tm = 0;
+  function later() { if (!tm) tm = setTimeout(function () { tm = 0; pass(); }, 120); }
+  function init() { new MutationObserver(later).observe(document.body, { childList:true, subtree:true }); pass(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(init, 0); }); else setTimeout(init, 0);
+  window.NP_DRILL = { pass:pass };
 })();
 
 window.NP_ORC={
