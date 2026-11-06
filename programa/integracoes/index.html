@@ -1,0 +1,179 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>body{margin:0}[hidden]{display:none!important}</style></head><body><title>Integrações do Data Lake</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: faixa de cabeçalho, diagrama largo com rolagem própria, depois tabelas de fontes e saídas. Grade de 8px, cantos retos, fios em vez de sombras (design system Modernist do programa). */
+:root {
+  --bg:#f4f7f8; --surface:#ffffff; --ink:#162b3c; --muted:#526779; --line:#dce5e9; --strong:#9fb3bf;
+  --navy:#102b40; --teal:#007e80; --teal-soft:#e3f2f1; --amber:#a96a00; --amber-soft:#fbf0dc; --violet:#5a4aa0; --violet-soft:#ecebf7;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"Inter",Arial,sans-serif; --mono:"IBM Plex Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c;
+  --navy:#cfe0ea; --teal:#3fc1bd; --teal-soft:#123a3c; --amber:#e3a94a; --amber-soft:#3a2c12; --violet:#a99cf0; --violet-soft:#26224a; color-scheme:dark } }
+:root[data-theme="dark"] {
+  --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c;
+  --navy:#cfe0ea; --teal:#3fc1bd; --teal-soft:#123a3c; --amber:#e3a94a; --amber-soft:#3a2c12; --violet:#a99cf0; --violet-soft:#26224a; color-scheme:dark }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--ink); font:400 15px/1.55 var(--body); }
+.wrap { max-width:1180px; margin:0 auto; padding-block:32px 56px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); display:grid; gap:32px; }
+.wrap > * { min-width:0; }
+header { display:grid; gap:8px; border-bottom:3px solid var(--navy); padding-bottom:20px; }
+.eye { font:600 11px/16px var(--body); letter-spacing:.08em; text-transform:uppercase; color:var(--teal); }
+h1 { margin:0; font:800 clamp(28px, 4vw, 40px)/1.1 var(--display); color:var(--navy); text-wrap:balance; }
+h2 { margin:0 0 12px; font:700 20px/1.25 var(--display); color:var(--navy); text-wrap:balance; }
+.lede { margin:0; max-width:72ch; color:var(--muted); }
+.diagram { background:var(--surface); border:1px solid var(--line); overflow-x:auto; }
+.diagram svg { display:block; min-width:960px; width:100%; height:auto; }
+svg text { font-family:var(--body); fill:var(--ink); }
+svg .t-col { font:700 12px var(--body); letter-spacing:.08em; fill:var(--muted); }
+svg .t-box { font:600 13px var(--body); }
+svg .t-sm { font:400 11px var(--body); fill:var(--muted); }
+svg .t-mono { font:500 11px var(--mono); fill:var(--teal); }
+svg .b-src { fill:var(--surface); stroke:var(--strong); }
+svg .b-in { fill:var(--amber-soft); stroke:var(--amber); }
+svg .b-db { fill:var(--teal-soft); stroke:var(--teal); }
+svg .b-layer { fill:var(--surface); stroke:var(--teal); }
+svg .b-out { fill:var(--violet-soft); stroke:var(--violet); }
+svg .ln { stroke:var(--strong); stroke-width:1.5; fill:none; }
+svg .ln-out { stroke:var(--violet); stroke-width:1.5; fill:none; }
+svg .arrow { fill:var(--strong); } svg .arrow-out { fill:var(--violet); }
+.legend { display:flex; flex-wrap:wrap; gap:8px 20px; font-size:13px; color:var(--muted); }
+.legend i { display:inline-block; width:12px; height:12px; margin-right:6px; vertical-align:-1px; border:1px solid; }
+.tw { overflow-x:auto; border:1px solid var(--line); background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th { text-align:left; font:600 11px/15px var(--body); letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding:10px 12px; border-bottom:2px solid var(--strong); white-space:nowrap; }
+td { padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+td.k { font:500 12px var(--mono); color:var(--teal); white-space:nowrap; }
+.chip { display:inline-block; font:600 11px/16px var(--body); padding:1px 8px; border:1px solid var(--line); white-space:nowrap; }
+.chip.ok { color:var(--teal); border-color:var(--teal); } .chip.wait { color:var(--amber); border-color:var(--amber); } .chip.lock { color:var(--violet); border-color:var(--violet); }
+.grid2 { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:24px; }
+.card { background:var(--surface); border:1px solid var(--line); padding:16px 18px; min-width:0; }
+.card h3 { margin:0 0 6px; font:700 15px/1.3 var(--display); color:var(--navy); }
+.card p, .card ul { margin:0; font-size:14px; color:var(--ink); } .card ul { padding-left:18px; }
+footer { font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:12px; }
+@media (max-width:720px) { .grid2 { grid-template-columns:minmax(0, 1fr); } }
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eye">Programa Gestão Unificada · back-end · uso interno</span>
+  <h1>Como os dados chegam ao painel do prefeito</h1>
+  <p class="lede">Todas as fontes do município entram por API, robô ou arquivo, passam pelas camadas bruta, tratada e pronta de um único banco Oracle Autonomous e saem para o front, o Omnichannel, a IA e o portal da transparência. Cada número volta até o documento que o forma.</p>
+</header>
+
+<section>
+  <h2>Desenho geral</h2>
+  <div class="diagram" role="img" aria-label="Diagrama: fontes à esquerda, entrada por API, RPA ou arquivo, banco único com camadas bruta, tratada, pronta e índice de documentos, e consumo à direita por front, Omnichannel, IA e portal da transparência.">
+  <svg viewBox="0 0 1120 560" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrow"/></marker>
+      <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="arrow-out"/></marker>
+    </defs>
+    <text x="20" y="28" class="t-col">FONTES</text>
+    <text x="268" y="28" class="t-col">ENTRADA</text>
+    <text x="440" y="28" class="t-col">BANCO ÚNICO · ORACLE AUTONOMOUS · SÃO PAULO</text>
+    <text x="900" y="28" class="t-col">CONSUMO</text>
+
+    <!-- fontes -->
+    <g>
+      <rect x="20" y="50" width="200" height="56" class="b-src"/><text x="34" y="74" class="t-box">notPaper</text><text x="34" y="93" class="t-sm">processos, despachos, documentos</text>
+      <rect x="20" y="122" width="200" height="56" class="b-src"/><text x="34" y="146" class="t-box">ERP do município</text><text x="34" y="165" class="t-sm">orçamento, contratos, tributos</text>
+      <rect x="20" y="194" width="200" height="56" class="b-src"/><text x="34" y="218" class="t-box">Sistemas legados</text><text x="34" y="237" class="t-sm">cadastros fora do ERP</text>
+      <rect x="20" y="266" width="200" height="120" class="b-src"/><text x="34" y="290" class="t-box">8 sistemas federais</text>
+      <text x="34" y="310" class="t-sm">PNCP · Transferegov · Siconfi</text><text x="34" y="327" class="t-sm">Obrasgov · CNES/Siaps · SIOPE</text><text x="34" y="344" class="t-sm">CadÚnico (sigiloso) · Cadastur</text><text x="34" y="368" class="t-sm">e Mapa do Turismo</text>
+      <rect x="20" y="402" width="200" height="56" class="b-src"/><text x="34" y="426" class="t-box">Omnichannel</text><text x="34" y="445" class="t-sm">protocolos do cidadão</text>
+    </g>
+    <!-- entrada -->
+    <g>
+      <rect x="268" y="110" width="128" height="52" class="b-in"/><text x="282" y="134" class="t-box">API</text><text x="282" y="151" class="t-sm">1ª opção (R5.3)</text>
+      <rect x="268" y="196" width="128" height="52" class="b-in"/><text x="282" y="220" class="t-box">Robô (RPA)</text><text x="282" y="237" class="t-sm">sem API</text>
+      <rect x="268" y="282" width="128" height="52" class="b-in"/><text x="282" y="306" class="t-box">Arquivo</text><text x="282" y="323" class="t-sm">CSV ou leiaute</text>
+      <rect x="268" y="368" width="128" height="62" class="b-in"/><text x="282" y="392" class="t-box">Orquestrador</text><text x="282" y="409" class="t-sm">frequência, data</text><text x="282" y="423" class="t-sm">de corte, falhas</text>
+    </g>
+    <path d="M220 78 C245 78 245 136 266 136" class="ln" marker-end="url(#a)"/>
+    <path d="M220 150 L266 140" class="ln" marker-end="url(#a)"/>
+    <path d="M220 222 L266 222" class="ln" marker-end="url(#a)"/>
+    <path d="M220 326 L266 308" class="ln" marker-end="url(#a)"/>
+    <path d="M220 300 C245 300 245 230 266 226" class="ln" marker-end="url(#a)"/>
+    <path d="M220 430 C245 430 245 150 266 146" class="ln" marker-end="url(#a)"/>
+    <path d="M332 162 L332 194" class="ln"/><path d="M332 248 L332 280" class="ln"/><path d="M332 334 L332 366" class="ln" marker-end="url(#a)"/>
+
+    <!-- banco -->
+    <rect x="440" y="50" width="400" height="420" class="b-db"/>
+    <rect x="460" y="70" width="360" height="66" class="b-layer"/><text x="476" y="94" class="t-box">Bruta</text><text x="476" y="113" class="t-sm">como veio da fonte · origem, caminho, data de corte</text><text x="476" y="128" class="t-sm">nada se apaga</text>
+    <rect x="460" y="152" width="360" height="66" class="b-layer"/><text x="476" y="176" class="t-box">Tratada</text><text x="476" y="195" class="t-sm">modelo único · conciliação · dados mínimos legais</text><text x="476" y="210" class="t-sm">georreferenciamento (D-025, D-026)</text>
+    <rect x="460" y="234" width="360" height="66" class="b-layer"/><text x="476" y="258" class="t-box">Pronta</text><text x="476" y="277" class="t-sm">indicadores por solução · data de atualização</text><text x="476" y="292" class="t-sm">caminho de volta até o documento (R6.2)</text>
+    <rect x="460" y="316" width="360" height="66" class="b-layer"/><text x="476" y="340" class="t-box">Índice de documentos</text><text x="476" y="359" class="t-sm">texto extraído + vetores · o arquivo fica no notPaper</text><text x="476" y="374" class="t-sm">busca por significado</text>
+    <text x="460" y="408" class="t-mono">municipio_id em todas as tabelas</text>
+    <text x="460" y="426" class="t-sm">política de linha do Oracle: um município nunca vê o outro</text>
+    <text x="460" y="452" class="t-sm">cópia em Vinhedo · backup diário por 30 dias</text>
+    <path d="M396 399 C420 399 420 103 458 103" class="ln" marker-end="url(#a)"/>
+    <path d="M640 136 L640 150" class="ln" marker-end="url(#a)"/><path d="M640 218 L640 232" class="ln" marker-end="url(#a)"/>
+
+    <!-- consumo -->
+    <g>
+      <rect x="900" y="70" width="200" height="56" class="b-out"/><text x="914" y="94" class="t-box">Front</text><text x="914" y="113" class="t-sm">Gabinete e 20 soluções</text>
+      <rect x="900" y="146" width="200" height="56" class="b-out"/><text x="914" y="170" class="t-box">Omnichannel</text><text x="914" y="189" class="t-sm">WhatsApp, telefone, site</text>
+      <rect x="900" y="222" width="200" height="56" class="b-out"/><text x="914" y="246" class="t-box">Assessor IA</text><text x="914" y="265" class="t-sm">Select AI · IA da Oracle</text>
+      <rect x="900" y="298" width="200" height="56" class="b-out"/><text x="914" y="322" class="t-box">Portal da transparência</text><text x="914" y="341" class="t-sm">até D+1 (LRF art. 48-A)</text>
+      <rect x="900" y="374" width="200" height="56" class="b-out"/><text x="914" y="398" class="t-box">Tribunais de Contas</text><text x="914" y="417" class="t-sm">AUDESP · SICOM · SIM</text>
+    </g>
+    <text x="852" y="62" class="t-mono">REST (ORDS)</text>
+    <path d="M820 267 C860 267 860 98 898 98" class="ln-out" marker-end="url(#b)"/>
+    <path d="M820 267 C860 267 860 174 898 174" class="ln-out" marker-end="url(#b)"/>
+    <path d="M820 349 C860 349 860 250 898 250" class="ln-out" marker-end="url(#b)"/>
+    <path d="M820 270 C860 270 860 326 898 326" class="ln-out" marker-end="url(#b)"/>
+    <path d="M820 274 C860 274 860 402 898 402" class="ln-out" marker-end="url(#b)"/>
+    <path d="M1000 146 L1000 128" class="ln-out" marker-end="url(#b)"/>
+    <text x="20" y="530" class="t-sm">Seta do Omnichannel de volta para o front: o protocolo aberto pelo cidadão aparece no Gabinete e na solução correspondente.</text>
+  </svg>
+  </div>
+  <div class="legend" style="margin-top:10px">
+    <span><i style="background:var(--surface);border-color:var(--strong)"></i>Fonte</span>
+    <span><i style="background:var(--amber-soft);border-color:var(--amber)"></i>Entrada</span>
+    <span><i style="background:var(--teal-soft);border-color:var(--teal)"></i>Banco e camadas</span>
+    <span><i style="background:var(--violet-soft);border-color:var(--violet)"></i>Consumo</span>
+  </div>
+</section>
+
+<section>
+  <h2>Fontes, caminho e frequência</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Fonte</th><th>Caminho</th><th>Frequência</th><th>Alimenta</th><th>Acesso</th></tr></thead>
+    <tbody>
+      <tr><td>notPaper</td><td class="k">API</td><td>contínua</td><td>todas as soluções; índice de documentos</td><td><span class="chip ok">próprio</span></td></tr>
+      <tr><td>ERP do município</td><td class="k">API · RPA · arquivo</td><td>diária</td><td>financeiro, contratos, contas, tributos, patrimônio, almoxarifado, frota, painel</td><td><span class="chip wait">família a escolher</span></td></tr>
+      <tr><td>Sistemas legados</td><td class="k">RPA · arquivo</td><td>semanal ou mensal</td><td>conforme o sistema</td><td><span class="chip wait">por município</span></td></tr>
+      <tr><td>Omnichannel</td><td class="k">API</td><td>contínua</td><td>administração, painel e soluções com atendimento</td><td><span class="chip ok">próprio</span></td></tr>
+      <tr><td>PNCP</td><td class="k">API</td><td>diária</td><td>licitações, contratos</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>Transferegov</td><td class="k">API</td><td>diária</td><td>convênios, emendas, captação</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>Siconfi</td><td class="k">API</td><td>mensal</td><td>contas, financeiro, painel</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>Obrasgov</td><td class="k">API</td><td>semanal</td><td>obras</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>CNES / Siaps</td><td class="k">dados abertos · arquivo</td><td>mensal</td><td>saúde</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>SIOPE</td><td class="k">dados abertos · arquivo</td><td>bimestral</td><td>educação, contas</td><td><span class="chip wait">a confirmar</span></td></tr>
+      <tr><td>CadÚnico</td><td class="k">arquivo</td><td>mensal</td><td>assistência social</td><td><span class="chip lock">sigiloso · gestor municipal</span></td></tr>
+      <tr><td>Cadastur e Mapa do Turismo</td><td class="k">dados abertos</td><td>mensal</td><td>turismo</td><td><span class="chip wait">a confirmar</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="grid2">
+  <div class="card"><h3>Regras de toda carga</h3><ul>
+    <li>Registra município, origem, caminho, data de corte e resultado.</li>
+    <li>Carga que falhou aparece como "dado desatualizado desde…", nunca como número velho sem aviso.</li>
+    <li>Credenciais no cofre da nuvem, nunca no código.</li>
+    <li>Robôs só leem sistemas de terceiros.</li>
+  </ul></div>
+  <div class="card"><h3>Decisões que este desenho aplica</h3><ul>
+    <li>D-055: banco único isolado por município; documentos no notPaper.</li>
+    <li>D-056: IA da Oracle, REST nativo, robôs próprios, camadas bruta, tratada e pronta.</li>
+    <li>D-053: São Paulo com cópia em Vinhedo; backup por 30 dias.</li>
+    <li>R5.3: API, depois robô, depois arquivo.</li>
+  </ul></div>
+</section>
+
+<footer>2026-11-06 · Versão 1 · Detalhe em gestao-unificada/02-back-datalake (arquitetura, modelo de dados, integrações, segurança e LGPD). "A confirmar": forma de acesso de cada API federal a conferir antes da primeira implantação.</footer>
+</div>
+</body></html>
