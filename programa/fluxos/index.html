@@ -1,0 +1,725 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>body{margin:0}</style></head><body><title>Fluxos dos 20 Processos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&display=swap">
+<style>
+/* Layout: índice das 20 soluções em pílulas, depois uma seção por processo com o diagrama BPMN (rola na horizontal) e a tabela de etapas. Modernist: cantos retos, fios. */
+:root { --bg:#f4f7f8; --surface:#fff; --ink:#162b3c; --muted:#526779; --line:#dce5e9; --strong:#9fb3bf; --navy:#102b40; --teal:#007e80; --amber:#a96a00;
+  --display:"Archivo",Arial,sans-serif; --body:"Inter",Arial,sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c; --navy:#cfe0ea; --teal:#3fc1bd; --amber:#e3a94a; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c; --navy:#cfe0ea; --teal:#3fc1bd; --amber:#e3a94a; color-scheme:dark }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--ink); font:400 15px/1.55 var(--body); }
+.wrap { max-width:1240px; margin:0 auto; padding-block:32px 56px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); display:grid; gap:28px; }
+.wrap > * { min-width:0; }
+header { border-bottom:3px solid var(--navy); padding-bottom:18px; display:grid; gap:8px; }
+.eye { font:600 11px/16px var(--body); letter-spacing:.08em; text-transform:uppercase; color:var(--teal); }
+h1 { margin:0; font:800 clamp(28px,4vw,40px)/1.1 var(--display); color:var(--navy); text-wrap:balance; }
+h2 { margin:0 0 12px; font:700 22px/1.25 var(--display); color:var(--navy); }
+.lede { margin:0; max-width:75ch; color:var(--muted); }
+nav { display:flex; flex-wrap:wrap; gap:6px; }
+nav a { font-size:13px; padding:4px 10px; border:1px solid var(--line); background:var(--surface); color:var(--ink); text-decoration:none; }
+nav a:hover, nav a:focus-visible { border-color:var(--teal); color:var(--teal); }
+nav a.falta { border-style:dashed; color:var(--muted); }
+section { background:var(--surface); border:1px solid var(--line); padding:20px; display:grid; gap:14px; scroll-margin-top:16px; }
+.dg { overflow-x:auto; border:1px solid var(--line); padding:12px; background:var(--bg); }
+.dg pre { margin:0; min-width:720px; }
+.dg svg { max-width:none !important; height:auto; }
+.tw { overflow-x:auto; border:1px solid var(--line); }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; font:600 11px/15px var(--body); letter-spacing:.05em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:2px solid var(--strong); }
+td { padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+td:first-child { font-variant-numeric:tabular-nums; color:var(--muted); }
+code { font-size:12px; }
+.desp { margin:0; font-size:14px; padding:10px 12px; border-left:3px solid var(--amber); background:var(--bg); }
+.falta { color:var(--muted); }
+footer { font-size:12px; color:var(--muted); }
+</style>
+<div class="wrap">
+<header><span class="eye">Programa Gestão Unificada · cubo de processos · uso interno</span>
+<h1>Fluxos dos 20 processos</h1>
+<p class="lede">Cada processo em BPMN 2.0, com raias por responsável, decisões, prazos legais conferidos e os pontos onde entram os despachos do prefeito ou do secretário. Fonte: seção 3 de cada memorial do cubo (D-057).</p></header>
+<nav aria-label="Processos"><a href="#p01">01 · Painel executivo e indicadores</a><a href="#p02">02 · Convênios</a><a href="#p03">03 · Emendas parlamentares</a><a href="#p04">04 · Controle de frota</a><a href="#p05">05 · Patrimônio</a><a href="#p06">06 · Financeiro e controle de gastos</a><a href="#p07">07 · Gestão de saúde</a><a href="#p08">08 · Gestão administrativa e secretarias</a><a href="#p09">09 · Licitações e contratações (Lei 14.133)</a><a href="#p10">10 · Gestão de contratos</a><a href="#p11">11 · Turismo inteligente</a><a href="#p12">12 · Gestão tributária</a><a href="#p13">13 · Obras públicas e zeladoria</a><a href="#p14">14 · Planejamento estratégico</a><a href="#p15">15 · Controle de processos</a><a href="#p16">16 · Gestão de educação</a><a href="#p17">17 · Assistência social</a><a href="#p18">18 · Captação de recursos</a><a href="#p19">19 · Prestação de contas</a><a href="#p20">20 · Almoxarifado</a></nav>
+<section id="p01"><h2>01 · Painel executivo e indicadores</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / prefeito]
+    PN[Painel do Gabinete&lt;br/&gt;com drill-down]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+    PN --&gt; D1
+  end
+  subgraph SE[Secretarias]
+    S((Início: registro no&lt;br/&gt;sistema de origem))
+    CS[Cumprir e comprovar&lt;br/&gt;o despacho]
+    FM((Fim: indicador&lt;br/&gt;publicado e acompanhado))
+  end
+  subgraph DL[Data lake · cargas automáticas]
+    S --&gt; CG[Carga: notPaper, ERP,&lt;br/&gt;PNCP, Siconfi, Omnichannel]
+    CG --&gt; OK{Carga&lt;br/&gt;sem falha?}
+    OK -- não --&gt; DD[Aviso: dado&lt;br/&gt;desatualizado desde]
+    OK -- sim --&gt; TR[Tratar e conciliar&lt;br/&gt;no modelo único]
+    TR --&gt; IN[Indicador com&lt;br/&gt;data e fonte]
+    IN --&gt; LG{Recorte respeita&lt;br/&gt;o limite da LGPD?}
+    LG -- não --&gt; BQ[Uso só interno&lt;br/&gt;publicação bloqueada]
+  end
+  subgraph TP[Transparência · portal]
+    LG -- sim --&gt; PB[Publicar no portal até&lt;br/&gt;o 1º dia útil após o registro]
+  end
+  IN --&gt; PN
+  BQ --&gt; PN
+  PB --&gt; FM
+  CS --&gt; FM
+  D1 -.-&gt; CS
+  D1 -.-&gt; TR
+  D1 -.-&gt; PB
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Registrar o fato no sistema de origem</td><td>Secretarias</td><td>—</td><td>Decreto 10.540 art. 8º</td><td>notPaper / ERP / Omnichannel</td></tr><tr><td>2</td><td>Carregar as bases</td><td>Data lake</td><td>— (frequência de cada fonte na seção 7)</td><td>—</td><td>orquestrador de cargas</td></tr><tr><td>3</td><td>Tratar, conciliar e agregar</td><td>Data lake</td><td>—</td><td>Decreto 10.540 art. 8º I e II</td><td>data lake</td></tr><tr><td>4</td><td>Gerar o indicador com data e fonte</td><td>Data lake</td><td>—</td><td>LAI art. 8º §3º VI</td><td>data lake</td></tr><tr><td>5</td><td>Conferir o recorte (dado pessoal só agregado ou anonimizado)</td><td>Data lake</td><td>—</td><td>LGPD art. 12; LAI art. 31</td><td>data lake</td></tr><tr><td>6</td><td>Publicar no portal</td><td>Transparência</td><td>execução até o 1º dia útil após o registro; RREO e RGF até 30 dias após o período</td><td>LRF arts. 48-A, 52, 55 §2º; Decreto 10.540 arts. 2º IX, 7º §1º</td><td>portal da transparência / Siconfi</td></tr><tr><td>7</td><td>Acompanhar no painel com drill-down</td><td>Gabinete</td><td>—</td><td>—</td><td>front do Gabinete</td></tr><tr><td>8</td><td>Despachar</td><td>Gabinete</td><td>prazo fixado no despacho</td><td>—</td><td>notPaper</td></tr><tr><td>9</td><td>Cumprir e comprovar</td><td>Secretarias</td><td>prazo fixado no despacho</td><td>—</td><td>notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito despacha para qualquer secretaria e o secretário para as equipes da própria pasta, a partir de qualquer indicador do painel: determinar providência, cobrar prazo, pedir informação ou autorizar (correção de dado, publicação). O despacho fica ligado ao indicador e aos registros de origem e aparece no quadro de despachos.</p></section>
+<section id="p02"><h2>02 · Convênios</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph C[Setor de convênios]
+    S((Início:&lt;br/&gt;programa aberto)) --&gt; PR[Proposta e plano de&lt;br/&gt;trabalho no Transferegov]
+    PR --&gt; CE{Cadastro e CAUC&lt;br/&gt;regulares?}
+    CE -- não · regularizar --&gt; PR
+    CE -- sim --&gt; CL[Celebração e&lt;br/&gt;extrato publicado]
+    CL --&gt; CS{Cláusula suspensiva&lt;br/&gt;resolvida no prazo?}
+    CS -- não --&gt; XA[Alerta: cláusula&lt;br/&gt;suspensiva vencida]
+    PRG[Pedido de prorrogação&lt;br/&gt;60 dias antes do fim]
+    PC[Prestação de contas&lt;br/&gt;final em 60 dias]
+    FM((Fim: prestação&lt;br/&gt;de contas entregue))
+  end
+  subgraph E[Secretaria executora]
+    CS -- sim --&gt; LI[Licitação iniciada&lt;br/&gt;em até 60 dias]
+    LI --&gt; AO[Autorização de&lt;br/&gt;início de obra]
+    AO --&gt; EX[Execução física e&lt;br/&gt;acompanhamento]
+  end
+  subgraph T[Contabilidade e tesouraria]
+    EX --&gt; PG[Pagamentos pela OPP&lt;br/&gt;na conta específica]
+    PG --&gt; VG{Vigência e&lt;br/&gt;objeto concluído?}
+    VG -- prorrogar --&gt; PRG
+    VG -- concluído --&gt; PC
+    PC --&gt; DV[Devolução de saldo&lt;br/&gt;em 30 dias]
+  end
+  PRG --&gt; EX
+  DV --&gt; FM
+  D1 -.-&gt; PR
+  D1 -.-&gt; EX
+  D1 -.-&gt; PRG
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Enviar proposta e plano de trabalho</td><td>Setor de convênios</td><td>na janela do programa</td><td>Dec. 11.531 art. 7º §2º, art. 12 II; Port. 33 arts. 17, 18, 20</td><td>Transferegov</td></tr><tr><td>2</td><td>Comprovar cadastro e regularidade no CAUC</td><td>Setor de convênios</td><td>antes da celebração</td><td>LRF art. 25 §1º IV; Dec. 11.531 art. 12 I; Port. 33 art. 8º, art. 29 §§9º e 10</td><td>Transferegov / CAUC</td></tr><tr><td>3</td><td>Celebrar e publicar o extrato</td><td>Setor de convênios</td><td>—</td><td>Port. 33 arts. 9º, 43</td><td>Transferegov / notPaper</td></tr><tr><td>4</td><td>Resolver a cláusula suspensiva</td><td>Setor de convênios</td><td>até 9 meses, no total até 18</td><td>Dec. 11.531 art. 13; Port. 33 art. 24 §3º</td><td>Transferegov</td></tr><tr><td>5</td><td>Iniciar a licitação</td><td>Secretaria executora</td><td>até 60 dias</td><td>Port. 33 art. 52</td><td>ERP de compras / PNCP</td></tr><tr><td>6</td><td>Autorizar o início da obra</td><td>Secretaria executora</td><td>antes do início da obra</td><td>Port. 33 art. 73</td><td>Transferegov</td></tr><tr><td>7</td><td>Executar e acompanhar (físico e financeiro)</td><td>Secretaria executora</td><td>conforme cronograma do plano de trabalho</td><td>Port. 33 arts. 81, 84, 85; Dec. 11.531 art. 18</td><td>Transferegov / notPaper</td></tr><tr><td>8</td><td>Pagar pela OPP, na conta específica</td><td>Contabilidade e tesouraria</td><td>conforme cronograma de desembolso</td><td>Dec. 11.531 art. 17 §1º; Port. 33 arts. 75, 76</td><td>Transferegov / ERP contábil / banco</td></tr><tr><td>9</td><td>Pedir prorrogação</td><td>Setor de convênios</td><td>60 dias antes do fim da vigência</td><td>Dec. 11.531 arts. 11 §3º II e 15 §1º</td><td>Transferegov</td></tr><tr><td>10</td><td>Prestar contas final</td><td>Setor de convênios</td><td>60 dias; análise em 60 ou 180 dias</td><td>Dec. 11.531 art. 20 §2º; Port. 33 arts. 96 a 98, 103</td><td>Transferegov</td></tr><tr><td>11</td><td>Devolver o saldo</td><td>Contabilidade e tesouraria</td><td>30 dias</td><td>Dec. 11.531 art. 20 §1º; Port. 33 art. 95 §1º</td><td>Transferegov / banco</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (proposta, contrapartida, prorrogação) em qualquer etapa. O despacho fica ligado ao convênio e aparece no quadro de despachos.</p></section>
+<section id="p03"><h2>03 · Emendas parlamentares</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph P[Planejamento]
+    S((Início:&lt;br/&gt;emenda indicada)) --&gt; IT{Impedimento&lt;br/&gt;técnico?}
+    IT -- sim --&gt; AI[Registrar e comunicar&lt;br/&gt;o impedimento]
+    IT -- não --&gt; TP{Transferência especial&lt;br/&gt;ou finalidade definida?}
+    TP -- finalidade definida --&gt; RC[Rito de convênio&lt;br/&gt;ver processo 02]
+    TP -- especial --&gt; PT[Plano de trabalho&lt;br/&gt;no Transferegov]
+    PT --&gt; AP{Plano&lt;br/&gt;aprovado?}
+    AP -- não · ajustar --&gt; PT
+    CM[Comunicar Câmara&lt;br/&gt;e TC em 30 dias]
+    RG[Relatório de gestão&lt;br/&gt;até 30/06]
+    FM((Fim: emenda executada&lt;br/&gt;e documentos guardados))
+  end
+  subgraph T[Contabilidade e tesouraria]
+    AP -- sim · empenho --&gt; CT[Crédito em conta&lt;br/&gt;específica e aplicação]
+  end
+  subgraph E[Secretaria executora]
+    EX[Execução do objeto] --&gt; CK{Mínimo de 70%&lt;br/&gt;em capital e sem vedação?}
+    CK -- não --&gt; AL[Alerta e&lt;br/&gt;correção]
+  end
+  CT --&gt; CM
+  CM --&gt; EX
+  AL --&gt; EX
+  CK -- sim --&gt; RG
+  RG --&gt; FM
+  D1 -.-&gt; PT
+  D1 -.-&gt; EX
+  D1 -.-&gt; RG
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Receber a indicação e verificar impedimento técnico</td><td>Planejamento</td><td>—</td><td>CF art. 166 §§9º, 13; LC 210 arts. 2º a 4º, 7º, 10</td><td>Transferegov</td></tr><tr><td>2</td><td>Definir a modalidade</td><td>Planejamento</td><td>—</td><td>CF art. 166-A I e II; LC 210 arts. 2º e 4º</td><td>Transferegov</td></tr><tr><td>3</td><td>Finalidade definida: seguir o rito de convênio</td><td>Planejamento</td><td>prazos do processo 02</td><td>CF art. 166-A §4º; Dec. 11.531; Port. 33</td><td>Transferegov</td></tr><tr><td>4</td><td>Transferência especial: plano de trabalho</td><td>Planejamento</td><td>—</td><td>Port. 15/2025 arts. 5º a 7º; LC 210 art. 8º par. único</td><td>Transferegov</td></tr><tr><td>5</td><td>Receber o crédito na conta específica e aplicar o saldo</td><td>Contabilidade e tesouraria</td><td>—</td><td>LC 210 arts. 8º e 10 XV; Port. 15/2025 art. 5º §§2º e 3º, art. 20</td><td>banco / ERP contábil</td></tr><tr><td>6</td><td>Comunicar à Câmara e ao Tribunal de Contas</td><td>Planejamento</td><td>30 dias</td><td>LC 210 art. 8º par. único; Port. 15/2025 art. 5º §1º III</td><td>notPaper</td></tr><tr><td>7</td><td>Executar com mínimo de 70% em capital, sem despesa vedada</td><td>Secretaria executora</td><td>—</td><td>CF art. 166-A §§1º e 5º; Port. 15/2025 art. 18</td><td>ERP / notPaper</td></tr><tr><td>8</td><td>Apresentar o relatório de gestão</td><td>Planejamento</td><td>até 30/06</td><td>Port. 15/2025 art. 23</td><td>Transferegov</td></tr><tr><td>9</td><td>Guardar os documentos</td><td>Planejamento</td><td>5 anos</td><td>Port. 15/2025 art. 24</td><td>notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (plano de trabalho, destinação, correção de despesa) em qualquer etapa. O despacho fica ligado à emenda e aparece no quadro de despachos.</p></section>
+<section id="p04"><h2>04 · Controle de frota</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: exceção,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph GA[Garagem · Administração]
+    S((Início:&lt;br/&gt;veículo recebido)) --&gt; CA[Cadastrar e licenciar&lt;br/&gt;CRLV do exercício]
+    CA --&gt; LO[Lotar na secretaria]
+    CN{CNH válida e&lt;br/&gt;categoria certa?}
+    CN -- não --&gt; BQ[Bloquear a viagem]
+    MU{Multa&lt;br/&gt;recebida?}
+    MU -- sim --&gt; IC[Indicar o condutor&lt;br/&gt;em 30 dias]
+    AB[Abastecimento e manutenção&lt;br/&gt;por ordem de serviço]
+    AB --&gt; CM{Consumo&lt;br/&gt;na média?}
+    CM -- não --&gt; AL[Alerta e&lt;br/&gt;justificativa]
+    CM -- sim --&gt; VU{Veículo inservível&lt;br/&gt;ou antieconômico?}
+    VU -- sim --&gt; BX[Avaliar e&lt;br/&gt;levar a leilão]
+    BX --&gt; F((Fim: veículo&lt;br/&gt;baixado))
+  end
+  subgraph SU[Secretaria usuária]
+    RV[Requisição de viagem&lt;br/&gt;motivo e destino]
+  end
+  subgraph M[Motorista]
+    DB[Diário de bordo&lt;br/&gt;saída, chegada e km]
+  end
+  LO --&gt; RV
+  RV --&gt; CN
+  CN -- sim --&gt; DB
+  DB --&gt; MU
+  MU -- não --&gt; AB
+  IC --&gt; AB
+  VU -- não --&gt; RV
+  D1 -.-&gt; LO
+  D1 -.-&gt; AL
+  D1 -.-&gt; BX
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Cadastrar e licenciar o veículo</td><td>Garagem</td><td>licenciamento anual do exercício; sem ele, infração gravíssima</td><td>CTB arts. 120, 130, 131</td><td>ERP de frota; Detran / Senatran</td></tr><tr><td>2</td><td>Lotar na secretaria</td><td>Garagem</td><td>—</td><td>SIM-CE tabelas 992, 993</td><td>ERP de frota</td></tr><tr><td>3</td><td>Requisitar a viagem</td><td>Secretaria usuária</td><td>—</td><td>Manual TCE-SP item 2.14</td><td>ERP de frota / notPaper</td></tr><tr><td>4</td><td>Conferir o condutor</td><td>Garagem</td><td>antes de cada viagem; CNH vencida há mais de 30 dias impede a direção</td><td>CTB art. 162 I, III e V</td><td>ERP de frota</td></tr><tr><td>5</td><td>Registrar o diário de bordo</td><td>Motorista</td><td>a cada viagem</td><td>Manual TCE-SP item 2.14</td><td>ERP de frota</td></tr><tr><td>6</td><td>Indicar o condutor da multa</td><td>Garagem</td><td>30 dias; depois disso, nova multa de 2 vezes para a prefeitura</td><td>CTB art. 257 §§7º e 8º</td><td>Detran / Senatran; notPaper</td></tr><tr><td>7</td><td>Abastecer e manter por ordem de serviço</td><td>Garagem</td><td>CE: envio mensal do abastecimento ao SIM</td><td>Manual TCE-SP item 2.14; SIM-CE tabelas 994, 995</td><td>ERP de frota e de contratos</td></tr><tr><td>8</td><td>Conferir o consumo médio</td><td>Garagem</td><td>a cada abastecimento</td><td>Manual TCE-SP item 2.14</td><td>ERP de frota</td></tr><tr><td>9</td><td>Baixar e alienar</td><td>Garagem</td><td>avaliação prévia antes do leilão</td><td>Lei 14.133 arts. 31, 76 II</td><td>ERP de patrimônio / notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (lotação, viagem fora da rotina, baixa e leilão) em qualquer etapa. Nas exceções (consumo acima da média, veículo parado, multa sem condutor indicado) o despacho cobra a justificativa. O despacho fica ligado ao veículo e aparece no quadro de despachos.</p></section>
+<section id="p05"><h2>05 · Patrimônio</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph C[Contabilidade]
+    S((Início: empenho&lt;br/&gt;e nota fiscal)) --&gt; LQ[Liquidar com&lt;br/&gt;comprovante de entrega]
+    DP[Depreciar&lt;br/&gt;todo mês]
+    DP --&gt; RV[Revisar vida útil&lt;br/&gt;no fim do exercício]
+    RV --&gt; RA[Reavaliar ou reduzir&lt;br/&gt;ao valor recuperável&lt;br/&gt;quando houver indício]
+  end
+  subgraph P[Setor de patrimônio]
+    TB[Tombar e&lt;br/&gt;afixar plaqueta]
+    TR[Transferir&lt;br/&gt;com termo]
+    IV[Inventário físico]
+    IV --&gt; DV{Inventário bate com&lt;br/&gt;a contabilidade?}
+    DV -- não --&gt; AJ[Apurar e&lt;br/&gt;regularizar a diferença]
+    AJ --&gt; IV
+    AV[Avaliar e alienar&lt;br/&gt;por leilão]
+    AV --&gt; F((Fim: bem&lt;br/&gt;baixado))
+  end
+  subgraph U[Unidade responsável]
+    RS[Termo de&lt;br/&gt;responsabilidade]
+    US{Bem em uso&lt;br/&gt;e servível?}
+  end
+  LQ --&gt; TB
+  TB --&gt; RS
+  RS --&gt; DP
+  RA --&gt; IV
+  DV -- sim --&gt; US
+  US -- sim --&gt; DP
+  US -- muda de unidade --&gt; TR
+  TR --&gt; RS
+  US -- não --&gt; AV
+  D1 -.-&gt; TR
+  D1 -.-&gt; AJ
+  D1 -.-&gt; AV
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Liquidar com comprovante de entrega</td><td>Contabilidade</td><td>na liquidação</td><td>Lei 4.320 art. 63 §2º III</td><td>ERP contábil</td></tr><tr><td>2</td><td>Tombar e afixar plaqueta</td><td>Setor de patrimônio</td><td>conforme regulamento local</td><td>Lei 4.320 art. 94; Manual TCE-SP item 2.13</td><td>ERP de patrimônio</td></tr><tr><td>3</td><td>Assinar o termo de responsabilidade</td><td>Unidade responsável</td><td>conforme regulamento local</td><td>Lei 4.320 art. 94</td><td>notPaper</td></tr><tr><td>4</td><td>Depreciar</td><td>Contabilidade</td><td>mensal</td><td>MCASP Parte II item 11.5</td><td>ERP de patrimônio e contábil</td></tr><tr><td>5</td><td>Transferir entre unidades</td><td>Setor de patrimônio</td><td>—</td><td>Manual TCE-SP item 2.13</td><td>ERP de patrimônio / notPaper</td></tr><tr><td>6</td><td>Revisar vida útil e valor residual</td><td>Contabilidade</td><td>ao menos no fim de cada exercício</td><td>NBC TSP 07 itens 67 e 77</td><td>ERP de patrimônio</td></tr><tr><td>7</td><td>Reavaliar ou reduzir ao valor recuperável</td><td>Contabilidade</td><td>quando houver indício</td><td>Lei 4.320 art. 106 §3º; MCASP itens 11.4 e 11.7</td><td>ERP de patrimônio / notPaper (laudo)</td></tr><tr><td>8</td><td>Fazer o inventário conciliado</td><td>Setor de patrimônio</td><td>conforme regulamento local (a lei não fixa periodicidade)</td><td>Lei 4.320 arts. 95, 96</td><td>ERP de patrimônio e contábil</td></tr><tr><td>9</td><td>Baixar ou alienar</td><td>Setor de patrimônio</td><td>avaliação prévia; imóvel com autorização legislativa; receita fora de despesa corrente</td><td>Lei 14.133 arts. 31, 76; MCASP Parte II item 11.8; LRF art. 44</td><td>ERP / notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (transferência, baixa, alienação, envio do pedido de autorização legislativa para imóvel) em qualquer etapa. Diferença de inventário e troca de mandato sem ata de transmissão geram cobrança. O despacho fica ligado ao bem e aparece no quadro de despachos.</p></section>
+<section id="p06"><h2>06 · Financeiro e controle de gastos</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph F[Secretaria de Finanças]
+    S((Início:&lt;br/&gt;LOA publicada)) --&gt; PF[Programação financeira&lt;br/&gt;e cronograma mensal]
+    PF --&gt; MB[Metas bimestrais&lt;br/&gt;de arrecadação]
+    MB --&gt; RM{Receita na meta&lt;br/&gt;do bimestre?}
+    RM -- não --&gt; LE[Limitação&lt;br/&gt;de empenho]
+    CA[Crédito adicional&lt;br/&gt;com lei e fonte]
+  end
+  subgraph O[Secretaria ordenadora]
+    PD[Pedido de despesa&lt;br/&gt;com dotação] --&gt; SD{Saldo de&lt;br/&gt;dotação?}
+  end
+  subgraph C[Contabilidade]
+    EM[Empenho] --&gt; LQ[Liquidação]
+    FM[Fechamento mensal dia 25&lt;br/&gt;e publicação até D+1]
+    E((Fim: fechamento anual&lt;br/&gt;e restos a pagar))
+  end
+  subgraph T[Tesouraria]
+    PG[Pagamento na ordem&lt;br/&gt;cronológica por fonte]
+  end
+  RM -- sim --&gt; PD
+  LE --&gt; PD
+  SD -- não --&gt; CA
+  CA --&gt; EM
+  SD -- sim --&gt; EM
+  LQ --&gt; PG
+  PG --&gt; FM
+  FM --&gt; E
+  D1 -.-&gt; CA
+  D1 -.-&gt; PD
+  D1 -.-&gt; PG
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Programação financeira e cronograma mensal de desembolso</td><td>Secretaria de Finanças</td><td>até 30 dias após a publicação da LOA</td><td>LRF art. 8º</td><td>ERP contábil (SIAFIC)</td></tr><tr><td>2</td><td>Desdobrar a receita em metas bimestrais</td><td>Secretaria de Finanças</td><td>—</td><td>LRF art. 13</td><td>ERP contábil (SIAFIC)</td></tr><tr><td>3</td><td>Limitar empenho se a receita não comportar as metas</td><td>Secretaria de Finanças</td><td>em 30 dias após o bimestre</td><td>LRF art. 9º</td><td>ERP contábil (SIAFIC)</td></tr><tr><td>4</td><td>Pedido de despesa com dotação</td><td>Secretaria ordenadora</td><td>—</td><td>Lei 4.320 art. 59; CF art. 167 II</td><td>notPaper / ERP</td></tr><tr><td>5</td><td>Crédito adicional</td><td>Secretaria de Finanças</td><td>— (exige lei e indicação da fonte)</td><td>Lei 4.320 arts. 41–43; CF art. 167 V</td><td>ERP contábil / notPaper (decreto)</td></tr><tr><td>6</td><td>Empenho</td><td>Contabilidade</td><td>antes da despesa</td><td>Lei 4.320 arts. 58, 60, 61</td><td>ERP contábil (SIAFIC)</td></tr><tr><td>7</td><td>Liquidação</td><td>Contabilidade</td><td>após a entrega, com documento e comprovante</td><td>Lei 4.320 art. 63</td><td>ERP contábil / notPaper</td></tr><tr><td>8</td><td>Pagamento na ordem cronológica por fonte</td><td>Tesouraria</td><td>ordem por fonte, salvo justificativa publicada</td><td>Lei 14.133 art. 141; Lei 4.320 arts. 62, 64, 65</td><td>ERP / banco</td></tr><tr><td>9</td><td>Fechamento mensal e publicação</td><td>Contabilidade</td><td>fechamento até o dia 25; publicação até o 1º dia útil após o registro</td><td>Decreto 10.540 arts. 6º e 7º §1º; LRF art. 48 §1º II</td><td>ERP contábil → portal da transparência</td></tr><tr><td>10</td><td>Fechamento anual e restos a pagar</td><td>Contabilidade</td><td>no encerramento do exercício</td><td>Lei 4.320 art. 36; Decreto 10.540 art. 6º</td><td>ERP contábil (SIAFIC)</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário de Finanças pode determinar providência, cobrar prazo, pedir informação ou autorizar (crédito adicional, despesa, pagamento com justificativa de quebra da ordem cronológica) em qualquer etapa. O despacho fica ligado ao empenho ou ao processo da despesa e aparece no quadro de despachos.</p></section>
+<section id="p07"><h2>07 · Gestão de saúde</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph PL[Planejamento da Secretaria de Saúde]
+    S((Início:&lt;br/&gt;Plano Municipal&lt;br/&gt;de Saúde quadrienal)) --&gt; PA[PAS antes da LDO]
+    RD[RDQA em fev, mai e set&lt;br/&gt;com audiência pública]
+    RA[RAG até 30/03]
+  end
+  subgraph U[Unidades de saúde]
+    PA --&gt; CN[CNES atualizado&lt;br/&gt;todo mês]
+    CN --&gt; AT[Atendimento e registro&lt;br/&gt;no e-SUS APS · Siaps]
+  end
+  subgraph R[Regulação e farmácia]
+    AT --&gt; RG[Regulação e fila com&lt;br/&gt;critério de prioridade]
+    RG --&gt; FT{Fila dentro&lt;br/&gt;do tempo-alvo?}
+    FT -- não --&gt; AF[Alerta: fila acima&lt;br/&gt;do tempo-alvo]
+    AT --&gt; DI[Dispensação e&lt;br/&gt;envio à BNAFAR]
+  end
+  subgraph FU[Fundo Municipal de Saúde]
+    FT -- sim --&gt; EB[Execução por bloco&lt;br/&gt;e ASPS ≥ 15%]
+    DI --&gt; EB
+    EB --&gt; RD
+    RD --&gt; SI[SIOPS]
+    SI --&gt; RA
+  end
+  subgraph CS[Conselho Municipal de Saúde]
+    RA --&gt; PC{Parecer em&lt;br/&gt;120 dias?}
+    PC -- não --&gt; AC[Alerta: Conselho&lt;br/&gt;sem parecer]
+    PC -- sim --&gt; F((Fim:&lt;br/&gt;ciclo anual prestado))
+  end
+  D1 -.-&gt; RG
+  D1 -.-&gt; EB
+  D1 -.-&gt; RD
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Elaborar o Plano Municipal de Saúde</td><td>Planejamento</td><td>quadrienal</td><td>Lei 8.080 art. 36; PRC 1 art. 97</td><td>DigiSUS Gestor / notPaper</td></tr><tr><td>2</td><td>Elaborar a PAS</td><td>Planejamento</td><td>antes da LDO</td><td>LC 141 art. 36 §2º; PRC 1 art. 98</td><td>DigiSUS Gestor</td></tr><tr><td>3</td><td>Atualizar e validar o CNES</td><td>Unidades de saúde</td><td>atualização mensal</td><td>PRC 1 arts. 361, 369, 370, 372, 373</td><td>CNES</td></tr><tr><td>4</td><td>Atender e registrar no e-SUS APS</td><td>Unidades de saúde</td><td>—</td><td>PRC 1 arts. 305, 306, 308</td><td>e-SUS APS → Siaps</td></tr><tr><td>5</td><td>Regular a fila com critério de prioridade e publicidade</td><td>Regulação</td><td>conforme regulamento local (tempo-alvo)</td><td>Portaria 9.262/2025 arts. 26, 27, 35 a 39, 53</td><td>sistema de regulação</td></tr><tr><td>6</td><td>Dispensar e enviar à BNAFAR</td><td>Farmácia</td><td>— (artigos a conferir)</td><td>Portaria 5.713/2024</td><td>Hórus / BNAFAR</td></tr><tr><td>7</td><td>Executar por bloco, com conta por bloco</td><td>Fundo</td><td>ASPS ≥ 15% no ano</td><td>PRC 6 arts. 3º, 6º; LC 141 arts. 7º, 14</td><td>ERP contábil</td></tr><tr><td>8</td><td>Apresentar o RDQA</td><td>Planejamento</td><td>fevereiro, maio e setembro, com audiência pública</td><td>LC 141 art. 36 §5º; PRC 1 art. 99</td><td>DigiSUS Gestor</td></tr><tr><td>9</td><td>Enviar o SIOPS</td><td>Fundo</td><td>—</td><td>LC 141 art. 39</td><td>SIOPS</td></tr><tr><td>10</td><td>Enviar o RAG</td><td>Planejamento</td><td>até 30/03</td><td>LC 141 art. 36 §1º; PRC 1 art. 100</td><td>DigiSUS Gestor</td></tr><tr><td>11</td><td>Emitir parecer sobre o RAG</td><td>Conselho de Saúde</td><td>120 dias</td><td>LC 141 art. 36 §1º; PRC 1 art. 100</td><td>notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar em qualquer etapa. Exemplos: cobrar a fila acima do tempo-alvo, autorizar remanejamento dentro do bloco, cobrar o RDQA antes da audiência. O despacho fica ligado ao processo ou ao instrumento de planejamento e aparece no quadro de despachos. Nunca leva dado nominal de paciente.</p></section>
+<section id="p08"><h2>08 · Gestão administrativa e secretarias</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph PT[Protocolo e atendimento]
+    S((Início: pedido&lt;br/&gt;ou manifestação)) --&gt; PR[Protocolar e entregar&lt;br/&gt;o número ao cidadão]
+    PR --&gt; TR[Triagem e&lt;br/&gt;prioridade legal]
+    TR --&gt; TP{Tipo de&lt;br/&gt;demanda?}
+    AV[Avaliação&lt;br/&gt;de satisfação]
+    AV --&gt; F((Fim: resposta&lt;br/&gt;e encerramento))
+  end
+  subgraph SIC[Serviço de Informação ao Cidadão]
+    LA[Responder em 20 dias&lt;br/&gt;mais 10 justificados]
+    LA --&gt; RC{Requerente&lt;br/&gt;recorre?}
+  end
+  subgraph OV[Ouvidoria]
+    OU[Responder em 30 dias&lt;br/&gt;mais 30 uma vez]
+  end
+  subgraph SE[Secretaria responsável]
+    AT[Área técnica responde&lt;br/&gt;em 20 dias mais 20]
+    RQ[Analisar o requerimento&lt;br/&gt;e praticar o ato]
+  end
+  subgraph AS[Autoridade superior]
+    DR[Decidir o recurso&lt;br/&gt;em 5 dias]
+  end
+  TP -- pedido de informação --&gt; LA
+  TP -- manifestação --&gt; OU
+  TP -- requerimento --&gt; RQ
+  OU -- pede à área --&gt; AT
+  AT -- responde --&gt; OU
+  OU --&gt; AV
+  RC -- sim, em 10 dias --&gt; DR
+  RC -- não --&gt; AV
+  DR --&gt; AV
+  RQ --&gt; AV
+  D1 -.-&gt; TR
+  D1 -.-&gt; AT
+  D1 -.-&gt; RQ
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Receber e protocolar</td><td>Protocolo e atendimento</td><td>número de protocolo entregue ao cidadão</td><td>Lei 13.460 art. 12 parágrafo único II; Lei 9.784 art. 6º (aplicação subsidiária)</td><td>notPaper / Omnichannel</td></tr><tr><td>2</td><td>Fazer a triagem e marcar prioridade</td><td>Protocolo e atendimento</td><td>prioridade para 60 anos ou mais, pessoa com deficiência e doença grave, quando pedida</td><td>Lei 9.784 art. 69-A</td><td>notPaper</td></tr><tr><td>3</td><td>Responder pedido de informação</td><td>SIC</td><td>20 dias, mais 10 com justificativa e ciência ao requerente</td><td>LAI art. 11</td><td>notPaper / e-SIC</td></tr><tr><td>4</td><td>Decidir recurso de acesso</td><td>Autoridade superior</td><td>10 dias para recorrer; decisão em 5</td><td>LAI art. 15</td><td>notPaper</td></tr><tr><td>5</td><td>Responder manifestação</td><td>Ouvidoria</td><td>30 dias, mais 30 uma vez com justificativa</td><td>Lei 13.460 art. 16</td><td>notPaper / Omnichannel</td></tr><tr><td>6</td><td>Responder à ouvidoria</td><td>Secretaria responsável</td><td>20 dias, mais 20</td><td>Lei 13.460 art. 16</td><td>notPaper</td></tr><tr><td>7</td><td>Analisar o requerimento</td><td>Secretaria responsável</td><td>5 dias para o ato sem prazo próprio</td><td>Lei 9.784 art. 24</td><td>notPaper</td></tr><tr><td>8</td><td>Avaliar a satisfação</td><td>Protocolo e atendimento</td><td>ao menos 1 vez por ano</td><td>Lei 13.460 art. 23</td><td>Omnichannel</td></tr><tr><td>9</td><td>Publicar relatórios anuais</td><td>SIC e Ouvidoria</td><td>anual</td><td>LAI art. 30; Lei 13.460 arts. 14 II, 15</td><td>notPaper / portal da transparência</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (prorrogação justificada, encaminhamento à secretaria) em qualquer etapa. Pedido ou manifestação perto de vencer gera cobrança à área técnica. O despacho fica ligado ao protocolo e aparece no quadro de despachos.</p></section>
+<section id="p09"><h2>09 · Licitações e contratações (Lei 14.133)</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph DM[Secretaria demandante]
+    S((Início:&lt;br/&gt;demanda DFD)) --&gt; ET[ETP e termo&lt;br/&gt;de referência]
+  end
+  subgraph CP[Setor de compras e agente de contratação]
+    PP[Pesquisa de preços&lt;br/&gt;e análise de riscos]
+    DI{Contratação&lt;br/&gt;direta?}
+    CD[Autorizar e divulgar&lt;br/&gt;em sítio oficial]
+    ED[Edital no PNCP&lt;br/&gt;e extrato no diário]
+    JU[Propostas, lances,&lt;br/&gt;julgamento e habilitação]
+    RC{Houve&lt;br/&gt;recurso?}
+    DR[Decidir recurso]
+    HO[Adjudicação&lt;br/&gt;e homologação]
+    CT((Fim:&lt;br/&gt;contrato))
+  end
+  subgraph CO[Contabilidade]
+    RO[Reserva&lt;br/&gt;orçamentária]
+  end
+  subgraph PJ[Procuradoria]
+    PA[Parecer&lt;br/&gt;jurídico]
+  end
+  ET --&gt; PP
+  PP --&gt; RO
+  RO --&gt; PA
+  PA --&gt; DI
+  DI -- sim --&gt; CD
+  CD --&gt; CT
+  DI -- não --&gt; ED
+  ED --&gt; JU
+  JU --&gt; RC
+  RC -- sim --&gt; DR
+  DR --&gt; HO
+  RC -- não --&gt; HO
+  HO --&gt; CT
+  D1 -.-&gt; ET
+  D1 -.-&gt; CD
+  D1 -.-&gt; HO
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Formalizar a demanda (DFD)</td><td>Secretaria demandante</td><td>—</td><td>Lei 14.133 arts. 17, 18; plano de contratações anual (art. 12 VII, recomendado)</td><td>notPaper</td></tr><tr><td>2</td><td>ETP e termo de referência ou projeto</td><td>Secretaria demandante</td><td>—</td><td>arts. 6º XX e XXIII, 18 I e II</td><td>notPaper</td></tr><tr><td>3</td><td>Pesquisa de preços e análise de riscos</td><td>Compras</td><td>— (mínimo de 3 cotações ou outras fontes)</td><td>arts. 18 IV e X, 23 §1º</td><td>ERP de compras / notPaper</td></tr><tr><td>4</td><td>Reserva orçamentária</td><td>Contabilidade</td><td>—</td><td>Lei 4.320 art. 60</td><td>ERP contábil</td></tr><tr><td>5</td><td>Parecer jurídico</td><td>Procuradoria</td><td>conforme regulamento local</td><td>—</td><td>notPaper</td></tr><tr><td>6</td><td>Contratação direta: autorização e divulgação</td><td>Compras e autoridade</td><td>divulgação em sítio oficial; envio ao TC: AUDESP 10 dias úteis</td><td>art. 72 VIII e par. único; AUDESP Fase IV</td><td>notPaper / PNCP</td></tr><tr><td>7</td><td>Publicar edital no PNCP e extrato no diário</td><td>Compras</td><td>envio ao TC: AUDESP 20 dias úteis; SICOM 5 dias úteis</td><td>arts. 54, 174; AUDESP Fase IV; IN TCE-MG 02/2023</td><td>plataforma de licitação eletrônica → PNCP / diário oficial</td></tr><tr><td>8</td><td>Propostas, lances, julgamento e habilitação</td><td>Agente de contratação</td><td>datas de abertura e encerramento do edital</td><td>arts. 17, 33</td><td>plataforma de licitação eletrônica</td></tr><tr><td>9</td><td>Recursos</td><td>Agente de contratação</td><td>3 dias úteis</td><td>art. 165 I "a"</td><td>plataforma de licitação eletrônica</td></tr><tr><td>10</td><td>Adjudicação e homologação</td><td>Compras e autoridade</td><td>após o prazo de recurso</td><td>art. 71 IV</td><td>ERP de compras / PNCP</td></tr><tr><td>11</td><td>Contrato</td><td>Setor de contratos</td><td>ver memorial 10 (PNCP em 20 ou 10 dias úteis)</td><td>art. 94</td><td>ERP de contratos → PNCP</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar a abertura da demanda, cobrar prazo de processo parado, pedir informação ou autorizar (contratação direta, homologação) em qualquer etapa. O despacho fica ligado ao processo de contratação e aparece no quadro de despachos.</p></section>
+<section id="p10"><h2>10 · Gestão de contratos</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph C[Setor de contratos]
+    S((Início:&lt;br/&gt;contrato assinado)) --&gt; P[Publicar no PNCP&lt;br/&gt;20 dias úteis · 10 se direta]
+    P --&gt; PE{Publicado&lt;br/&gt;no prazo?}
+    PE -- não --&gt; X[Alerta: contrato&lt;br/&gt;sem eficácia]
+    PE -- sim --&gt; DS[Designar gestor&lt;br/&gt;e fiscal · portaria]
+    AD[Aditivo ou apostila] --&gt; L25{Aditivos ≤ 25%&lt;br/&gt;· 50% em reforma?}
+    L25 -- não --&gt; BL[Bloquear e&lt;br/&gt;pedir justificativa]
+    EX((Fim: extinção&lt;br/&gt;e encerramento))
+  end
+  subgraph F[Fiscal e gestor]
+    DS --&gt; OS[Ordem de fornecimento&lt;br/&gt;ou de serviço]
+    OS --&gt; ME[Medição e registro&lt;br/&gt;de ocorrências]
+    ME --&gt; RP[Recebimento provisório&lt;br/&gt;e definitivo]
+  end
+  subgraph T[Contabilidade e tesouraria]
+    RP --&gt; LQ[Liquidação]
+    LQ --&gt; PG[Pagamento na ordem&lt;br/&gt;cronológica por fonte]
+    PG --&gt; VG{Vigência e&lt;br/&gt;saldo ok?}
+    VG -- prorrogar ou reajustar --&gt; AD
+    VG -- encerrar --&gt; EX
+  end
+  D1 -.-&gt; DS
+  D1 -.-&gt; ME
+  D1 -.-&gt; AD
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Publicar o contrato no PNCP</td><td>Setor de contratos</td><td>20 dias úteis (licitação) ou 10 (contratação direta); sem isso não tem eficácia</td><td>Lei 14.133 art. 94</td><td>ERP de contratos → PNCP</td></tr><tr><td>2</td><td>Designar gestor e fiscal</td><td>Setor de contratos</td><td>antes da execução</td><td>art. 117</td><td>notPaper (portaria)</td></tr><tr><td>3</td><td>Emitir ordem de fornecimento ou serviço</td><td>Fiscal e gestor</td><td>conforme contrato</td><td>art. 92</td><td>ERP / notPaper</td></tr><tr><td>4</td><td>Medir e registrar ocorrências</td><td>Fiscal</td><td>a cada medição</td><td>art. 117 §1º</td><td>notPaper</td></tr><tr><td>5</td><td>Receber (provisório e definitivo)</td><td>Fiscal e gestor</td><td>definitivo no prazo do contrato</td><td>art. 140</td><td>notPaper</td></tr><tr><td>6</td><td>Liquidar</td><td>Contabilidade</td><td>após o recebimento</td><td>Lei 4.320 art. 63</td><td>ERP contábil</td></tr><tr><td>7</td><td>Pagar na ordem cronológica</td><td>Tesouraria</td><td>ordem por fonte, salvo justificativa publicada</td><td>Lei 14.133 art. 141</td><td>ERP / banco</td></tr><tr><td>8</td><td>Aditivo ou apostila</td><td>Setor de contratos</td><td>dentro da vigência; até 25% (50% em reforma)</td><td>arts. 124 a 136</td><td>ERP / notPaper / PNCP</td></tr><tr><td>9</td><td>Extinguir e encerrar</td><td>Setor de contratos</td><td>ao fim da vigência ou por motivo legal</td><td>arts. 137 a 139</td><td>ERP / PNCP</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (aditivo, prorrogação, sanção) em qualquer etapa. O despacho fica ligado ao contrato e aparece no quadro de despachos.</p></section>
+<section id="p11"><h2>11 · Turismo inteligente</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph OT[Órgão municipal de turismo]
+    S((Início:&lt;br/&gt;órgão criado e&lt;br/&gt;dotação na LOA)) --&gt; CO[Conselho com posse&lt;br/&gt;e 2 reuniões em 12 meses]
+    CO --&gt; PT[Plano de trabalho]
+    PT --&gt; CD[Prestadores regulares&lt;br/&gt;no Cadastur]
+    CD --&gt; TC[Termo de compromisso&lt;br/&gt;do ano assinado]
+    TC --&gt; RN[Pedido de renovação&lt;br/&gt;90 dias antes do vencimento]
+    AE[Ações e eventos com&lt;br/&gt;orçamento, contrato&lt;br/&gt;e acessibilidade]
+    AE --&gt; CL[Coleta de ocupação&lt;br/&gt;e satisfação]
+    CL --&gt; PC[Prestação de contas&lt;br/&gt;e publicação]
+    PC --&gt; UF{Estado exige&lt;br/&gt;envio próprio?}
+    UF -- SP --&gt; ES[Revisão trienal&lt;br/&gt;envio até 30/04]
+    UF -- MG --&gt; IM[ICMS Turismo:&lt;br/&gt;política, COMTUR e FUMTUR]
+    UF -- não --&gt; F((Fim:&lt;br/&gt;ciclo anual))
+    ES --&gt; F
+    IM --&gt; F
+  end
+  subgraph MT[MTur · SISMAPA]
+    RN --&gt; RV{Renovado&lt;br/&gt;no prazo?}
+    RV -- não --&gt; EXC[Exclusão automática&lt;br/&gt;do Mapa]
+    RV -- sim --&gt; AE
+  end
+  D1 -.-&gt; TC
+  D1 -.-&gt; RN
+  D1 -.-&gt; AE
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Manter o órgão de turismo e a dotação na LOA e no QDD</td><td>Órgão de turismo</td><td>na elaboração e aprovação da LOA</td><td>Portaria MTur 1/2026 arts. 13 I e II, 18 III</td><td>ERP contábil</td></tr><tr><td>2</td><td>Dar posse ao conselho e registrar as reuniões</td><td>Órgão de turismo e conselho</td><td>no mínimo 2 atas nos últimos 12 meses</td><td>Portaria MTur 1/2026 art. 13 IV</td><td>notPaper</td></tr><tr><td>3</td><td>Aprovar o plano de trabalho</td><td>Órgão de turismo</td><td>por período de gestão</td><td>Portaria MTur 1/2026 arts. 13 IV, 18 VI</td><td>notPaper</td></tr><tr><td>4</td><td>Manter prestadores regulares no Cadastur</td><td>Órgão de turismo</td><td>certificado vale 2 anos; ao menos 1 prestador obrigatório regular</td><td>Lei 11.771 arts. 21, 22 §4º; Portaria MTur 1/2026 art. 13 III</td><td>Cadastur</td></tr><tr><td>5</td><td>Assinar o termo de compromisso do ano</td><td>Órgão de turismo, prefeito e presidente do conselho</td><td>ano vigente</td><td>Portaria MTur 1/2026 art. 13 V</td><td>notPaper → SISMAPA</td></tr><tr><td>6</td><td>Pedir a renovação no Mapa, com declaração da IGR</td><td>Órgão de turismo</td><td>90 dias antes do vencimento; sem renovação, exclusão automática</td><td>Portaria MTur 1/2026 arts. 13 §3º, 22, 26 §1º</td><td>SISMAPA</td></tr><tr><td>7</td><td>Realizar ações e eventos acessíveis e publicá-los</td><td>Órgão de turismo</td><td>local, data, custo e fonte publicados no portal</td><td>LAI art. 8º §1º V; Lei 13.146 arts. 42, 44</td><td>ERP de contratos / notPaper</td></tr><tr><td>8</td><td>Coletar ocupação e satisfação</td><td>Órgão de turismo</td><td>—</td><td>Lei 11.771 art. 26 (só agregado)</td><td>pesquisa amostral / ficha de hóspede agregada</td></tr><tr><td>9</td><td>Prestar contas e enviar ao estado</td><td>Órgão de turismo</td><td>SP: até 30/04 no ano da revisão trienal; MG: dados provisórios até 15/07 e definitivos até 15/08</td><td>LC-SP 1.261/2015 art. 6º §3º; Lei-MG 18.030/2009 art. 9º §§ 1º e 5º</td><td>notPaper / ERP</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar em qualquer etapa. Exemplos: cobrar o pedido de renovação antes dos 90 dias, autorizar a assinatura do termo de compromisso, autorizar evento e sua despesa. O despacho fica ligado ao processo ou ao evento e aparece no quadro de despachos.</p></section>
+<section id="p12"><h2>12 · Gestão tributária</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou informação}}
+  end
+  subgraph TB[Setor de tributação]
+    S((Início: cadastro&lt;br/&gt;imobiliário e mobiliário)) --&gt; PV[Planta genérica&lt;br/&gt;e alíquotas]
+    PV --&gt; LA[Lançamento&lt;br/&gt;e notificação]
+  end
+  subgraph AR[Arrecadação · Secretaria de Finanças]
+    RA[Arrecadação e&lt;br/&gt;metas bimestrais]
+    PG{Pago no&lt;br/&gt;vencimento?}
+    PC[Parcelamento]
+    FP((Fim: crédito&lt;br/&gt;extinto))
+  end
+  subgraph PR[Procuradoria]
+    IN[Inscrição em&lt;br/&gt;dívida ativa]
+    CD[Emitir CDA]
+    CB{Cobrar por&lt;br/&gt;protesto?}
+    PT[Protesto&lt;br/&gt;da CDA]
+    EX[Execução fiscal]
+  end
+  LA --&gt; RA
+  RA --&gt; PG
+  PG -- sim --&gt; FP
+  PG -- parcelar --&gt; PC
+  PC --&gt; RA
+  PG -- não --&gt; IN
+  IN --&gt; CD
+  CD --&gt; CB
+  CB -- sim --&gt; PT
+  CB -- não --&gt; EX
+  PT -- pago --&gt; FP
+  PT -- não pago --&gt; EX
+  EX --&gt; FP
+  D1 -.-&gt; LA
+  D1 -.-&gt; IN
+  D1 -.-&gt; EX
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Manter cadastro imobiliário e mobiliário</td><td>Setor de tributação</td><td>—</td><td>CTN art. 32; LC 116 art. 3º</td><td>ERP tributário</td></tr><tr><td>2</td><td>Planta genérica de valores e alíquotas</td><td>Setor de tributação</td><td>conforme lei municipal; ISS nunca abaixo de 2%</td><td>CTN art. 33; CF art. 156 §1º; LC 116 art. 8º-A</td><td>ERP tributário</td></tr><tr><td>3</td><td>Lançamento e notificação</td><td>Setor de tributação</td><td>—</td><td>CTN art. 142</td><td>ERP tributário / notPaper</td></tr><tr><td>4</td><td>Arrecadação e metas bimestrais</td><td>Secretaria de Finanças</td><td>metas por bimestre</td><td>LRF arts. 11, 13, 58</td><td>ERP / retorno bancário</td></tr><tr><td>5</td><td>Parcelamento</td><td>Secretaria de Finanças</td><td>conforme lei municipal</td><td>CTN art. 151 VI</td><td>ERP tributário</td></tr><tr><td>6</td><td>Inscrição em dívida ativa</td><td>Procuradoria</td><td>antes da prescrição de 5 anos</td><td>CTN arts. 174, 201–202; Lei 6.830 art. 2º</td><td>ERP tributário</td></tr><tr><td>7</td><td>Emitir a CDA</td><td>Procuradoria</td><td>—</td><td>Lei 6.830 art. 2º §6º; CTN art. 204</td><td>ERP tributário / notPaper</td></tr><tr><td>8</td><td>Protesto da CDA</td><td>Procuradoria</td><td>faculdade do município</td><td>Lei 9.492 art. 1º par. único</td><td>ERP / cartório</td></tr><tr><td>9</td><td>Execução fiscal e controle da prescrição intercorrente</td><td>Procuradoria</td><td>prescrição intercorrente</td><td>Lei 6.830 art. 40</td><td>ERP / Tribunal de Justiça</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário de Finanças pode determinar providência, cobrar prazo, pedir informação ou autorizar (campanha de cobrança, envio a protesto ou execução) em qualquer etapa. O despacho fica ligado ao crédito ou ao lote de créditos e aparece no quadro de despachos. Despacho não mostra dado protegido por sigilo fiscal fora do perfil autorizado (CTN art. 198).</p></section>
+<section id="p13"><h2>13 · Obras públicas e zeladoria</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph EN[Secretaria de Obras · engenharia]
+    S((Início:&lt;br/&gt;demanda)) --&gt; ET[ETP e projetos&lt;br/&gt;com ART ou RRT]
+    ET --&gt; OR[Orçamento SINAPI&lt;br/&gt;e ID Cipi se federal]
+  end
+  subgraph CC[Compras e contratos]
+    LC[Licitação e contrato&lt;br/&gt;publicado no PNCP]
+  end
+  subgraph FI[Fiscal da obra]
+    OI[Ordem de início]
+    ME[Medição atestada]
+    PZ{Obra&lt;br/&gt;paralisada?}
+    PL[Placa e aviso&lt;br/&gt;no site]
+    CO{Execução&lt;br/&gt;concluída?}
+    RC[Recebimento provisório&lt;br/&gt;e definitivo]
+    FO((Fim:&lt;br/&gt;obra recebida))
+  end
+  subgraph ZL[Zeladoria]
+    ZS((Início: protocolo&lt;br/&gt;ou vistoria)) --&gt; ZO[Ordem de serviço&lt;br/&gt;com local e equipe]
+    ZO --&gt; ZF((Fim: execução&lt;br/&gt;com fotos e baixa))
+  end
+  OR --&gt; LC
+  LC --&gt; OI
+  OI --&gt; ME
+  ME --&gt; PZ
+  PZ -- sim --&gt; PL
+  PL --&gt; ME
+  PZ -- não --&gt; CO
+  CO -- não --&gt; ME
+  CO -- sim --&gt; RC
+  RC --&gt; FO
+  D1 -.-&gt; ET
+  D1 -.-&gt; PZ
+  D1 -.-&gt; ZO
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>ETP</td><td>Secretaria de Obras</td><td>—</td><td>Lei 14.133 art. 18 I</td><td>notPaper</td></tr><tr><td>2</td><td>Projeto básico e executivo com ART ou RRT</td><td>Secretaria de Obras</td><td>—</td><td>arts. 6º XXV e XXVI; Lei 6.496 art. 1º; Lei 12.378 art. 45</td><td>notPaper</td></tr><tr><td>3</td><td>Orçamento de referência com data-base</td><td>Secretaria de Obras</td><td>—</td><td>art. 23 §2º; Decreto 7.983 art. 3º (recurso federal)</td><td>ERP / tabela SINAPI</td></tr><tr><td>4</td><td>Cadastro no Cipi (recurso federal)</td><td>Secretaria de Obras</td><td>antes do empenho</td><td>Decreto 10.496 art. 5º §1º</td><td>Obrasgov</td></tr><tr><td>5</td><td>Licitação e contrato no PNCP</td><td>Compras e contratos</td><td>20 dias úteis (licitação) ou 10 (contratação direta); sem isso não tem eficácia</td><td>arts. 46, 94</td><td>ERP de contratos → PNCP</td></tr><tr><td>6</td><td>Ordem de início</td><td>Fiscal da obra</td><td>conforme contrato</td><td>—</td><td>notPaper</td></tr><tr><td>7</td><td>Medição atestada pelo fiscal</td><td>Fiscal da obra</td><td>conforme contrato; sem medição em prazo configurável gera alerta</td><td>art. 117</td><td>notPaper / ERP</td></tr><tr><td>8</td><td>Paralisação: motivo, placa e aviso no site</td><td>Fiscal da obra</td><td>—</td><td>art. 115 §§1º, 6º e 7º; TCESP Cadastro de Obras (SP)</td><td>notPaper / portal da transparência</td></tr><tr><td>9</td><td>Aditivo</td><td>Compras e contratos</td><td>dentro da vigência; até 25%</td><td>arts. 124, 125</td><td>ERP / notPaper / PNCP</td></tr><tr><td>10</td><td>Recebimento provisório e definitivo</td><td>Fiscal da obra</td><td>definitivo no prazo do contrato</td><td>art. 140 I</td><td>notPaper</td></tr><tr><td>11</td><td>Zeladoria: ordem de serviço, execução e baixa</td><td>Zeladoria</td><td>conforme regulamento local</td><td>norma municipal</td><td>Omnichannel (App Sua Cidade) / notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário de Obras pode determinar providência, cobrar prazo, pedir informação ou autorizar (início, aditivo, retomada de obra paralisada, prioridade de zeladoria) em qualquer etapa. O despacho fica ligado à obra ou à ordem de serviço e aparece no quadro de despachos e no mapa.</p></section>
+<section id="p14"><h2>14 · Planejamento estratégico</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / prefeito]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph PL[Secretaria de Planejamento e Fazenda]
+    S((Início: plano diretor&lt;br/&gt;vigente)) --&gt; PE[Elaborar PPA, LDO&lt;br/&gt;e LOA com anexos]
+    PE --&gt; AU{Audiência pública&lt;br/&gt;com ata?}
+    AU -- não --&gt; AP[Realizar audiência&lt;br/&gt;e anexar ata]
+    AP --&gt; AU
+    AQ[Audiência de metas fiscais&lt;br/&gt;por quadrimestre]
+    TC[Envio ao Tribunal&lt;br/&gt;de Contas]
+    E((Fim: avaliação&lt;br/&gt;dos programas))
+  end
+  subgraph CM[Câmara Municipal]
+    VT[Envio e votação&lt;br/&gt;das leis]
+  end
+  subgraph SC[Secretarias responsáveis]
+    CP[Compromissos com meta&lt;br/&gt;física e responsável]
+    AE[Apuração e&lt;br/&gt;evidência]
+    MF{Meta física distante&lt;br/&gt;da execução em 20%?}
+    AJ[Alerta e ajuste&lt;br/&gt;do compromisso]
+  end
+  AU -- sim --&gt; VT
+  VT --&gt; CP
+  CP --&gt; AE
+  AE --&gt; MF
+  MF -- sim --&gt; AJ
+  AJ --&gt; CP
+  MF -- não --&gt; AQ
+  AQ --&gt; TC
+  TC --&gt; E
+  D1 -.-&gt; PE
+  D1 -.-&gt; CP
+  D1 -.-&gt; AJ
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Plano diretor aprovado e revisado</td><td>Secretaria de Planejamento e Fazenda</td><td>revisão no mínimo a cada 10 anos</td><td>Estatuto da Cidade arts. 40 §3º, 41</td><td>notPaper</td></tr><tr><td>2</td><td>Elaborar PPA, LDO e LOA com programas, indicadores e anexos</td><td>Secretaria de Planejamento e Fazenda</td><td>conforme Lei Orgânica</td><td>CF art. 165 I, II e §§1º, 2º; LRF arts. 4º, 5º; Portaria 42/1999 arts. 2º, 4º</td><td>ERP de planejamento e orçamento</td></tr><tr><td>3</td><td>Audiência pública na elaboração</td><td>Secretaria de Planejamento e Fazenda</td><td>antes da aprovação na Câmara</td><td>LRF art. 48 §1º I; Estatuto da Cidade art. 44</td><td>notPaper (ata)</td></tr><tr><td>4</td><td>Envio e votação das leis</td><td>Câmara Municipal</td><td>conforme Lei Orgânica</td><td>CF art. 165</td><td>notPaper</td></tr><tr><td>5</td><td>Compromissos com meta física, prazo e responsável</td><td>Secretarias responsáveis</td><td>prazo do próprio compromisso</td><td>Lei 4.320 art. 25; CF art. 37 §16</td><td>front do programa / notPaper</td></tr><tr><td>6</td><td>Apuração física e financeira com evidência</td><td>Secretarias responsáveis</td><td>—</td><td>Lei 4.320 arts. 75 III, 79</td><td>ERP / notPaper</td></tr><tr><td>7</td><td>Comparar meta física e execução financeira</td><td>Secretarias responsáveis</td><td>— (critério de 20% do i-Plan, SP)</td><td>Manual IEG-M 2025 TCE-SP item 9.1</td><td>front do programa</td></tr><tr><td>8</td><td>Audiência de metas fiscais</td><td>Secretaria de Planejamento e Fazenda</td><td>até o fim de maio, setembro e fevereiro</td><td>LRF art. 9º §4º</td><td>notPaper (ata)</td></tr><tr><td>9</td><td>Envio ao Tribunal de Contas</td><td>Secretaria de Planejamento e Fazenda</td><td>SP: peças iniciais até 05/02 (2026); MG: reenvio do módulo IP até 20/02; CE: tabelas de orçamento até 30/12 do exercício anterior</td><td>Comunicado SDG 67/2025 (SP); Agenda do Gestor TCE-MG 2026 (MG); Manual SIM 2026 (CE)</td><td>ERP → AUDESP, SICOM, SIM</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo de compromisso atrasado, pedir informação ou autorizar (nova ação, ajuste de meta) em qualquer etapa. O despacho fica ligado ao compromisso ou ao programa e aparece no quadro de despachos.</p></section>
+<section id="p15"><h2>15 · Controle de processos</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph UN[Unidade que autua]
+    S((Início:&lt;br/&gt;autuação)) --&gt; AU[Classificar e fixar&lt;br/&gt;prazo de guarda]
+    AU --&gt; PN[Numerar peças&lt;br/&gt;e instruir]
+    PN --&gt; IN[Intimar com 3 dias&lt;br/&gt;úteis de antecedência]
+  end
+  subgraph PJ[Procuradoria]
+    PA[Parecer&lt;br/&gt;em 15 dias]
+  end
+  subgraph AC[Autoridade competente]
+    DE[Decisão motivada&lt;br/&gt;em 30 dias mais 30]
+    DE --&gt; QL[Assinar · ato do prefeito&lt;br/&gt;com assinatura qualificada]
+    QL --&gt; RE{Recurso&lt;br/&gt;em 10 dias?}
+    RE -- sim --&gt; DR[Decidir o recurso&lt;br/&gt;em 30 dias mais 30]
+  end
+  subgraph AR[Arquivo municipal]
+    AQ[Arquivar na&lt;br/&gt;fase certa]
+    AQ --&gt; GV{Valor&lt;br/&gt;permanente?}
+    GV -- sim --&gt; GP((Fim: guarda&lt;br/&gt;permanente))
+    GV -- não, guarda vencida --&gt; LE[Listagem, autorização,&lt;br/&gt;edital e termo]
+    LE --&gt; FE((Fim: eliminação&lt;br/&gt;registrada))
+  end
+  IN --&gt; PA
+  PA --&gt; DE
+  RE -- não --&gt; AQ
+  DR --&gt; AQ
+  D1 -.-&gt; PN
+  D1 -.-&gt; DE
+  D1 -.-&gt; LE
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Autuar com classificação e prazo de guarda</td><td>Unidade que autua</td><td>ao autuar</td><td>Lei 8.159 art. 8º; Res. CONARQ 40 art. 2º</td><td>notPaper</td></tr><tr><td>2</td><td>Numerar as peças e instruir</td><td>Unidade que autua</td><td>—</td><td>Lei 9.784 art. 22 §4º</td><td>notPaper</td></tr><tr><td>3</td><td>Intimar o interessado</td><td>Unidade que autua</td><td>3 dias úteis de antecedência</td><td>Lei 9.784 art. 26</td><td>notPaper / Omnichannel</td></tr><tr><td>4</td><td>Emitir parecer obrigatório</td><td>Procuradoria</td><td>15 dias</td><td>Lei 9.784 art. 42</td><td>notPaper</td></tr><tr><td>5</td><td>Decidir com motivação</td><td>Autoridade competente</td><td>30 dias após a instrução, mais 30 com prorrogação motivada</td><td>Lei 9.784 arts. 49, 50</td><td>notPaper</td></tr><tr><td>6</td><td>Assinar</td><td>Autoridade competente</td><td>ao assinar; ato do prefeito com assinatura qualificada</td><td>Lei 14.063 arts. 4º, 5º; art. 5º §2º I</td><td>notPaper com certificado ICP-Brasil</td></tr><tr><td>7</td><td>Recorrer e decidir o recurso</td><td>Autoridade competente</td><td>10 dias para recorrer; decisão em 30, mais 30</td><td>Lei 9.784 arts. 56, 59</td><td>notPaper</td></tr><tr><td>8</td><td>Arquivar na fase certa</td><td>Arquivo municipal</td><td>conforme a tabela de temporalidade local</td><td>Lei 8.159 art. 8º</td><td>notPaper</td></tr><tr><td>9</td><td>Eliminar ou guardar para sempre</td><td>Arquivo municipal</td><td>após o prazo de guarda, com listagem, autorização, edital e termo; documento permanente nunca é eliminado</td><td>Res. CONARQ 40 arts. 1º a 6º; Lei 8.159 arts. 10, 25</td><td>notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (instrução, prorrogação motivada da decisão, listagem de eliminação) em qualquer etapa. Parecer ou decisão perto de vencer gera cobrança. O despacho fica ligado ao processo e aparece no quadro de despachos.</p></section>
+<section id="p16"><h2>16 · Gestão de educação</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph SE[Secretaria de Educação]
+    S((Início:&lt;br/&gt;recenseamento e&lt;br/&gt;chamada pública)) --&gt; MT[Matrícula e fila&lt;br/&gt;de creche publicada]
+    CE[Censo Escolar&lt;br/&gt;referência última&lt;br/&gt;quarta-feira de maio]
+  end
+  subgraph ES[Escolas]
+    MT --&gt; TU[Turmas e calendário&lt;br/&gt;de 200 dias]
+    TU --&gt; FR[Frequência diária]
+    FR --&gt; FL{Faltas acima&lt;br/&gt;do limite?}
+    FL -- sim --&gt; NT[Notificar o&lt;br/&gt;Conselho Tutelar]
+  end
+  subgraph TA[Transporte e alimentação]
+    FL -- não --&gt; TR[Transporte escolar&lt;br/&gt;e prestação do PNATE]
+    NT --&gt; TR
+    TR --&gt; AL[Cardápio por nutricionista&lt;br/&gt;e 45% da agricultura familiar]
+    AL --&gt; CE
+  end
+  subgraph CT[Contabilidade e Fundeb]
+    CE --&gt; SO[SIOPE bimestral]
+    SO --&gt; AP{MDE ≥ 25% e&lt;br/&gt;Fundeb ≥ 70%?}
+    AP -- não --&gt; AX[Alerta e ajuste&lt;br/&gt;da aplicação]
+  end
+  subgraph CO[Conselhos do Fundeb e CAE]
+    AP -- sim --&gt; PC[Pareceres do&lt;br/&gt;CACS e do CAE]
+    PC --&gt; F((Fim:&lt;br/&gt;exercício prestado))
+  end
+  D1 -.-&gt; MT
+  D1 -.-&gt; NT
+  D1 -.-&gt; AP
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Recensear e fazer a chamada pública</td><td>Secretaria de Educação</td><td>conforme regulamento local</td><td>CF art. 208 §3º; LDB art. 5º §1º; ECA art. 54 §3º</td><td>sistema de gestão escolar</td></tr><tr><td>2</td><td>Matricular e publicar a fila de creche</td><td>Secretaria de Educação</td><td>fila publicada; vaga perto de casa</td><td>LDB arts. 4º X, 5º §1º IV</td><td>sistema de gestão escolar / Omnichannel</td></tr><tr><td>3</td><td>Formar turmas e cumprir o calendário</td><td>Escolas</td><td>200 dias letivos e carga horária mínima</td><td>LDB arts. 24 I, 31 II</td><td>sistema de gestão escolar</td></tr><tr><td>4</td><td>Registrar a frequência diária</td><td>Escolas</td><td>mínimo de 75% no fundamental e 60% na pré-escola</td><td>LDB arts. 24 VI, 31 IV</td><td>sistema de gestão escolar</td></tr><tr><td>5</td><td>Notificar o Conselho Tutelar</td><td>Escolas</td><td>faltas acima de 30% do percentual permitido</td><td>LDB art. 12 VIII; ECA art. 56 II</td><td>sistema de gestão escolar / notPaper</td></tr><tr><td>6</td><td>Prestar o transporte e as contas do PNATE</td><td>Transporte e alimentação</td><td>guarda dos documentos por 5 anos</td><td>LDB art. 11 VI; Lei 10.880 arts. 2º, 5º §3º, 6º</td><td>ERP de contratos / notPaper</td></tr><tr><td>7</td><td>Servir alimentação com cardápio e compra da agricultura familiar</td><td>Transporte e alimentação</td><td>cardápio por nutricionista RT; ≥ 45% da verba do PNAE</td><td>Lei 11.947 arts. 12, 14</td><td>ERP de compras / notPaper</td></tr><tr><td>8</td><td>Responder o Censo Escolar</td><td>Secretaria de Educação</td><td>referência na última quarta-feira de maio; prazos da portaria do Inep</td><td>Decreto 6.425 arts. 1º, 4º</td><td>Educacenso</td></tr><tr><td>9</td><td>Enviar o SIOPE</td><td>Contabilidade</td><td>bimestral, em 30 dias</td><td>Lei 14.113 art. 38</td><td>SIOPE</td></tr><tr><td>10</td><td>Aplicar MDE e Fundeb</td><td>Contabilidade</td><td>MDE ≥ 25% no ano; Fundeb ≥ 70% em remuneração; saldo até 10% usado no 1º quadrimestre seguinte</td><td>CF arts. 212, 212-A XI; Lei 14.113 arts. 25 §3º, 26</td><td>ERP contábil</td></tr><tr><td>11</td><td>Emitir pareceres do CACS e do CAE</td><td>Conselhos</td><td>conforme regulamento local</td><td>Lei 14.113 arts. 31, 33, 34; Lei 11.947 arts. 18 a 20</td><td>notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar em qualquer etapa. Exemplos: determinar abertura de vaga onde a fila de creche cresce, cobrar a notificação ao Conselho Tutelar, autorizar ajuste da despesa para cumprir MDE e Fundeb. O despacho fica ligado à escola ou ao processo e aparece no quadro de despachos. Nunca leva dado nominal de aluno.</p></section>
+<section id="p17"><h2>17 · Assistência social</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph GS[Gestão do SUAS e vigilância]
+    S((Início:&lt;br/&gt;diagnóstico&lt;br/&gt;territorial)) --&gt; CA[Cadastro e atualização&lt;br/&gt;no CadÚnico]
+    RM[RMA mensal]
+    RM --&gt; CE[Censo SUAS]
+    CE --&gt; PA[Plano de Ação&lt;br/&gt;em 60 dias]
+    PA --&gt; DM[Demonstrativo&lt;br/&gt;anual]
+  end
+  subgraph CR[CRAS e CREAS]
+    CA --&gt; VC{Cadastro&lt;br/&gt;atualizado em&lt;br/&gt;até 24 meses?}
+    VC -- não --&gt; AT[Alerta: atualizar&lt;br/&gt;cadastro aos 18 meses]
+    VC -- sim --&gt; AC[Acompanhamento PAIF&lt;br/&gt;e PAEFI com prontuário]
+    AC --&gt; BE[Benefício eventual&lt;br/&gt;conforme lei municipal]
+    AC --&gt; BA[Busca ativa de&lt;br/&gt;descumprimento]
+    BE --&gt; RM
+    BA --&gt; RM
+  end
+  subgraph CM[CMAS]
+    DM --&gt; PR{Parecer do&lt;br/&gt;CMAS no prazo?}
+    PR -- sim --&gt; F((Fim:&lt;br/&gt;repasse regular))
+    PR -- não --&gt; SU[Alerta: risco de&lt;br/&gt;suspensão do repasse]
+  end
+  D1 -.-&gt; AC
+  D1 -.-&gt; BE
+  D1 -.-&gt; PA
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Fazer o diagnóstico territorial</td><td>Gestão do SUAS</td><td>—</td><td>NOB-SUAS arts. 87, 90, 94</td><td>notPaper / CadSUAS</td></tr><tr><td>2</td><td>Cadastrar e atualizar famílias no CadÚnico</td><td>CRAS</td><td>alerta aos 18 meses; cadastro vence aos 24</td><td>Decreto 11.016 arts. 9º-A, 12</td><td>CadÚnico / CECAD</td></tr><tr><td>3</td><td>Acompanhar famílias no PAIF e no PAEFI, com prontuário</td><td>CRAS e CREAS</td><td>—</td><td>Res. CNAS 109/2009; NOB-SUAS art. 6º XVIII</td><td>Prontuário SUAS</td></tr><tr><td>4</td><td>Conceder benefício eventual</td><td>CRAS</td><td>conforme regulamento local (lei municipal)</td><td>LOAS art. 22 §1º; Decreto 6.307</td><td>ERP (FMAS) / notPaper</td></tr><tr><td>5</td><td>Fazer busca ativa de descumprimento de condicionalidade</td><td>CRAS</td><td>—</td><td>Lei 14.601 art. 10</td><td>Sicon</td></tr><tr><td>6</td><td>Enviar o RMA</td><td>Gestão do SUAS</td><td>mensal</td><td>NOB-SUAS art. 102</td><td>Rede SUAS</td></tr><tr><td>7</td><td>Responder o Censo SUAS</td><td>Gestão do SUAS</td><td>—</td><td>NOB-SUAS art. 17 XI</td><td>Rede SUAS</td></tr><tr><td>8</td><td>Preencher o Plano de Ação</td><td>Gestão do SUAS</td><td>60 dias; CMAS em 30 dias</td><td>Portaria MDS 113/2015 art. 4º</td><td>SUASWeb</td></tr><tr><td>9</td><td>Preencher o Demonstrativo Sintético Anual</td><td>Gestão do SUAS</td><td>anual</td><td>LOAS art. 30-C; Decreto 7.788 art. 8º</td><td>SUASWeb</td></tr><tr><td>10</td><td>Emitir parecer do CMAS</td><td>CMAS</td><td>30 dias para o Plano de Ação; fora do prazo, risco de suspensão do repasse</td><td>Portaria MDS 113/2015 art. 4º; LOAS art. 30-C</td><td>SUASWeb / notPaper</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar em qualquer etapa. Exemplos: determinar mutirão de atualização cadastral num território, autorizar benefício eventual fora do padrão previsto na lei municipal, cobrar o Plano de Ação. O despacho fica ligado ao processo ou ao território e aparece no quadro de despachos. Nunca leva nome, NIS ou CPF de família.</p></section>
+<section id="p18"><h2>18 · Captação de recursos</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph P[Planejamento ou escritório de projetos]
+    S((Início:&lt;br/&gt;programa aberto)) --&gt; MO[Monitorar programas&lt;br/&gt;e editais]
+    MO --&gt; EL{Elegível e&lt;br/&gt;prioritário?}
+    EL -- não --&gt; AR[Registrar a decisão&lt;br/&gt;e arquivar]
+    EL -- sim --&gt; HB{Cadastro e CAUC&lt;br/&gt;regulares?}
+    HB -- não --&gt; RG[Regularizar&lt;br/&gt;pendências]
+    RG --&gt; HB
+    EN[Enviar proposta&lt;br/&gt;dentro da janela]
+    EN --&gt; CO{Complementação&lt;br/&gt;pedida?}
+    CO -- sim --&gt; RS[Responder no prazo&lt;br/&gt;silêncio é desistência]
+    CB((Fim: celebração&lt;br/&gt;vira convênio))
+  end
+  subgraph E[Secretarias técnicas]
+    HB -- sim --&gt; PT[Peças técnicas: projeto,&lt;br/&gt;licença, titularidade]
+  end
+  subgraph O[Contabilidade e orçamento]
+    PT --&gt; CP[Contrapartida prevista&lt;br/&gt;no orçamento]
+  end
+  CP --&gt; EN
+  RS --&gt; CB
+  CO -- não --&gt; CB
+  D1 -.-&gt; EL
+  D1 -.-&gt; CP
+  D1 -.-&gt; EN
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Monitorar programas e editais</td><td>Planejamento</td><td>—</td><td>Dec. 11.531 art. 6º; Port. 33 arts. 16 e 17</td><td>Transferegov</td></tr><tr><td>2</td><td>Avaliar elegibilidade e prioridade</td><td>Planejamento</td><td>—</td><td>Port. 33 art. 16 §§1º e 2º</td><td>Transferegov</td></tr><tr><td>3</td><td>Conferir cadastro, CAUC e requisitos da LRF</td><td>Planejamento</td><td>—</td><td>Port. 33 arts. 8º, 29; LRF art. 25 §1º</td><td>Transferegov / CAUC</td></tr><tr><td>4</td><td>Preparar peças técnicas (projeto, licença, titularidade)</td><td>Secretarias técnicas</td><td>—</td><td>Port. 33 art. 24 I e II</td><td>notPaper</td></tr><tr><td>5</td><td>Garantir a contrapartida no orçamento</td><td>Contabilidade e orçamento</td><td>—</td><td>LRF art. 25 §1º IV "d"; Dec. 11.531 art. 9º</td><td>ERP contábil</td></tr><tr><td>6</td><td>Enviar a proposta</td><td>Planejamento</td><td>dentro da janela do programa</td><td>Port. 33 arts. 17 e 18</td><td>Transferegov</td></tr><tr><td>7</td><td>Responder complementações</td><td>Planejamento</td><td>conforme o pedido do concedente; silêncio é desistência</td><td>Port. 33 arts. 19, 23 §§1º e 2º</td><td>Transferegov</td></tr><tr><td>8</td><td>Celebrar (segue no processo 02)</td><td>Planejamento</td><td>—</td><td>Dec. 11.531; Port. 33</td><td>Transferegov</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (adesão ao programa, contrapartida, envio da proposta) em qualquer etapa. O despacho fica ligado à proposta e aparece no quadro de despachos.</p></section>
+<section id="p19"><h2>19 · Prestação de contas</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph C[Contabilidade]
+    S((Início:&lt;br/&gt;período encerrado)) --&gt; MS[MSC mensal até o&lt;br/&gt;fim do mês seguinte]
+    MS --&gt; RR[RREO bimestral&lt;br/&gt;em 30 dias]
+    MS --&gt; RG[RGF quadrimestral ou&lt;br/&gt;semestral em 30 dias]
+    RR --&gt; HO{Homologado&lt;br/&gt;no Siconfi?}
+    RG --&gt; HO
+    HO -- não --&gt; CR[Corrigir e&lt;br/&gt;reenviar]
+    CR --&gt; HO
+    S -- convênio encerrado --&gt; CV[Prestação final do&lt;br/&gt;convênio em 60 dias]
+    ME[MSC de encerramento&lt;br/&gt;até 31/03] --&gt; DC[DCA até 30/04]
+    DC --&gt; PA[Prestação anual&lt;br/&gt;ao Tribunal de Contas]
+  end
+  subgraph I[Controle interno]
+    HO -- sim --&gt; LM{Pessoal, saúde e&lt;br/&gt;educação nos limites?}
+    LM -- não --&gt; AL[Alerta e plano&lt;br/&gt;de recondução]
+  end
+  subgraph P[Planejamento e Saúde]
+    AU[Audiências: metas fiscais&lt;br/&gt;e saúde em fev, mai, set]
+  end
+  subgraph TC[Tribunal de Contas e Câmara]
+    PP[Parecer prévio&lt;br/&gt;do Tribunal de Contas] --&gt; FM((Fim: julgamento&lt;br/&gt;pela Câmara))
+  end
+  LM -- sim --&gt; AU
+  AL --&gt; AU
+  AU -- fim do exercício --&gt; ME
+  PA --&gt; PP
+  D1 -.-&gt; AL
+  D1 -.-&gt; AU
+  D1 -.-&gt; PA
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Enviar a MSC mensal</td><td>Contabilidade</td><td>até o fim do mês seguinte</td><td>Port. STN 642 arts. 7º, 8º §2º</td><td>ERP contábil → Siconfi</td></tr><tr><td>2</td><td>Publicar o RREO</td><td>Contabilidade</td><td>30 dias após o bimestre</td><td>CF art. 165 §3º; LRF arts. 52, 53</td><td>ERP contábil → Siconfi</td></tr><tr><td>3</td><td>Publicar o RGF (Executivo e Câmara)</td><td>Contabilidade</td><td>30 dias após o quadrimestre; semestral por opção abaixo de 50 mil hab.</td><td>LRF arts. 54, 55 §2º, 63 II "b"; Port. 642 art. 6º §3º</td><td>ERP contábil → Siconfi</td></tr><tr><td>4</td><td>Homologar no Siconfi</td><td>Contabilidade</td><td>—</td><td>Port. 642 arts. 3º §1º, 6º, 9º</td><td>Siconfi</td></tr><tr><td>5</td><td>Verificar limites (pessoal, saúde, educação, dívida, Câmara)</td><td>Controle interno</td><td>a cada RGF; excesso de pessoal reconduzido em 2 quadrimestres</td><td>LRF arts. 19 III, 20 III, 22 p.ú., 23, 31, 59 §1º II; CF arts. 29-A, 198 §2º III, 212</td><td>ERP contábil / SIOPE / SIOPS</td></tr><tr><td>6</td><td>Realizar as audiências públicas</td><td>Planejamento e Saúde</td><td>metas fiscais até o fim de maio, setembro e fevereiro; saúde em fev, mai e set</td><td>LRF art. 9º §4º; LC 141 art. 36 §5º</td><td>notPaper (atas)</td></tr><tr><td>7</td><td>Enviar a MSC de encerramento</td><td>Contabilidade</td><td>até 31/03</td><td>Regras MSC 2026 (Port. STN 642)</td><td>Siconfi</td></tr><tr><td>8</td><td>Enviar a DCA</td><td>Contabilidade</td><td>até 30/04</td><td>LRF art. 51 §1º; Port. 642 art. 4º §3º</td><td>Siconfi</td></tr><tr><td>9</td><td>Prestar contas anuais ao Tribunal de Contas</td><td>Contabilidade e controle interno</td><td>SP até 31/03 (AUDESP); MG e CE conforme calendário do tribunal</td><td>Lei 4.320 arts. 101 a 105; calendário AUDESP 2026</td><td>AUDESP / SICOM / SIM</td></tr><tr><td>10</td><td>Emitir o parecer prévio</td><td>Tribunal de Contas</td><td>conforme regulamento local</td><td>CF art. 31 §2º; LRF arts. 56 e 57</td><td>—</td></tr><tr><td>11</td><td>Julgar as contas</td><td>Câmara</td><td>conforme regulamento local; o parecer só deixa de prevalecer por 2/3</td><td>CF art. 31 §2º</td><td>—</td></tr><tr><td>12</td><td>Prestar contas final de cada convênio</td><td>Contabilidade</td><td>60 dias</td><td>Dec. 11.531 art. 20 §2º; Port. 33 arts. 96 a 98</td><td>Transferegov</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (plano de recondução, limitação de empenho, envio ao tribunal) em qualquer etapa. O despacho fica ligado à obrigação e aparece no quadro de despachos.</p></section>
+<section id="p20"><h2>20 · Almoxarifado</h2><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph G[Gabinete / secretário]
+    D1{{Despacho: determinação,&lt;br/&gt;cobrança ou autorização}}
+  end
+  subgraph A[Almoxarifado]
+    S((Início:&lt;br/&gt;material entregue)) --&gt; CF[Conferir quantidade&lt;br/&gt;e qualidade]
+    CF --&gt; AC{Material&lt;br/&gt;aceito?}
+    AC -- não --&gt; DV[Devolver ao&lt;br/&gt;fornecedor]
+    AC -- sim --&gt; EN[Entrada por nota e empenho&lt;br/&gt;a custo médio ponderado]
+    SA[Saída e baixa&lt;br/&gt;do saldo]
+    SA --&gt; VL{Validade e nível&lt;br/&gt;mínimo ok?}
+    VL -- não --&gt; AL[Alerta: repor&lt;br/&gt;ou usar antes]
+    IV[Inventário físico]
+    PA[Apurar diferença e baixar&lt;br/&gt;perdas e avarias]
+    F((Fim: inventário&lt;br/&gt;conciliado))
+  end
+  subgraph U[Unidade requisitante]
+    RQ[Requisição numerada&lt;br/&gt;e recebimento assinado]
+  end
+  subgraph C[Contabilidade]
+    LQ[Liquidar com&lt;br/&gt;comprovante de entrega]
+    CC{Saldo físico igual&lt;br/&gt;ao contábil?}
+  end
+  EN --&gt; LQ
+  EN --&gt; RQ
+  RQ --&gt; SA
+  VL -- sim --&gt; IV
+  AL --&gt; IV
+  IV --&gt; CC
+  CC -- não --&gt; PA
+  PA --&gt; IV
+  CC -- sim --&gt; F
+  D1 -.-&gt; AC
+  D1 -.-&gt; AL
+  D1 -.-&gt; PA
+</pre></div><div class="tw"><table><thead><tr><th>Nº</th><th>Etapa</th><th>Raia</th><th>Prazo legal</th><th>Base</th><th>Sistema</th></tr></thead><tbody><tr><td>1</td><td>Conferir e aceitar o material</td><td>Almoxarifado</td><td>no recebimento</td><td>Manual TCE-SP item 2.12</td><td>ERP de estoque / notPaper (termo de recebimento)</td></tr><tr><td>2</td><td>Dar entrada por nota e empenho</td><td>Almoxarifado</td><td>—</td><td>Lei 4.320 art. 106 III; MCASP item 5.2.2</td><td>ERP de estoque</td></tr><tr><td>3</td><td>Liquidar</td><td>Contabilidade</td><td>na liquidação, com comprovante de entrega</td><td>Lei 4.320 art. 63 §2º III</td><td>ERP contábil</td></tr><tr><td>4</td><td>Requisitar com número sequencial</td><td>Unidade requisitante</td><td>—</td><td>Manual TCE-SP item 2.12</td><td>ERP de estoque / notPaper</td></tr><tr><td>5</td><td>Dar saída e baixar o saldo</td><td>Almoxarifado</td><td>—</td><td>Manual TCE-SP item 2.12; Lei 4.320 art. 106 III</td><td>ERP de estoque</td></tr><tr><td>6</td><td>Controlar validade e níveis</td><td>Almoxarifado</td><td>—</td><td>Manual TCE-SP item 2.12</td><td>ERP de estoque</td></tr><tr><td>7</td><td>Fazer o inventário conciliado</td><td>Almoxarifado e Contabilidade</td><td>conforme regulamento local</td><td>Portaria STN 548/2015 anexo item 3.7.2</td><td>ERP de estoque e contábil</td></tr><tr><td>8</td><td>Baixar perdas e avarias</td><td>Almoxarifado</td><td>—</td><td>MCASP itens 5.2.3, 5.2.4</td><td>ERP de estoque / notPaper (termo de baixa)</td></tr></tbody></table></div><p class="desp"><b>Despachos (D-040):</b> o prefeito ou o secretário pode determinar providência, cobrar prazo, pedir informação ou autorizar (recusa de material, compra de reposição, baixa por perda ou vencimento) em qualquer etapa. O despacho fica ligado ao item ou à requisição e aparece no quadro de despachos.</p></section>
+<footer>Gerado em 2026-11-06 a partir de gestao-unificada/04-cubo-processos. Prazos sem base legal conferida aparecem como "conforme regulamento local".</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral",flowchart:{htmlLabels:true,useMaxWidth:false}});</script></body></html>
