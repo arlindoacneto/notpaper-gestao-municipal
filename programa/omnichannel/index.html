@@ -1,0 +1,166 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex, nofollow"><style>body{margin:0}</style></head><body><title>Omnichannel do Cidadão</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;600&display=swap">
+<style>
+/* Layout: cabeçalho com a meta, três canais lado a lado, tabelas de identificação e catálogo, fluxos de conversa com rolagem própria. Modernist: cantos retos, fios. */
+:root { --bg:#f4f7f8; --surface:#fff; --ink:#162b3c; --muted:#526779; --line:#dce5e9; --strong:#9fb3bf; --navy:#102b40; --teal:#007e80; --wa:#1f7a4d; --amber:#a96a00;
+  --display:"Archivo",Arial,sans-serif; --body:"Inter",Arial,sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c; --navy:#cfe0ea; --teal:#3fc1bd; --wa:#5fcf96; --amber:#e3a94a; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#0d1820; --surface:#13222d; --ink:#e3ecf0; --muted:#9db0bc; --line:#24384a; --strong:#3f5a6c; --navy:#cfe0ea; --teal:#3fc1bd; --wa:#5fcf96; --amber:#e3a94a; color-scheme:dark }
+* { box-sizing:border-box; }
+body { background:var(--bg); color:var(--ink); font:400 15px/1.55 var(--body); }
+.wrap { max-width:1180px; margin:0 auto; padding-block:32px 56px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); display:grid; gap:28px; }
+.wrap > * { min-width:0; }
+header { border-bottom:3px solid var(--navy); padding-bottom:18px; display:grid; gap:10px; }
+.eye { font:600 11px/16px var(--body); letter-spacing:.08em; text-transform:uppercase; color:var(--teal); }
+h1 { margin:0; font:800 clamp(28px,4vw,40px)/1.1 var(--display); color:var(--navy); text-wrap:balance; }
+h2 { margin:0 0 12px; font:700 21px/1.25 var(--display); color:var(--navy); }
+.lede { margin:0; max-width:75ch; color:var(--muted); }
+.meta { display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--line); background:var(--surface); width:fit-content; max-width:100%; }
+.meta div { padding:10px 18px; border-right:1px solid var(--line); }
+.meta b { display:block; font:800 26px/1.1 var(--display); color:var(--navy); font-variant-numeric:tabular-nums; }
+.meta span { font-size:12px; color:var(--muted); }
+.canais { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:16px; }
+.canal { background:var(--surface); border:1px solid var(--line); border-top:4px solid var(--teal); padding:16px; display:grid; gap:6px; }
+.canal.wa { border-top-color:var(--wa); } .canal.tel { border-top-color:var(--amber); }
+.canal h3 { margin:0; font:700 17px/1.2 var(--display); color:var(--navy); }
+.canal p { margin:0; font-size:14px; }
+.canal small { color:var(--muted); font-size:12px; }
+section { display:grid; gap:12px; }
+.tw { overflow-x:auto; border:1px solid var(--line); background:var(--surface); }
+table { width:100%; border-collapse:collapse; font-size:13.5px; }
+th { text-align:left; font:600 11px/15px var(--body); letter-spacing:.05em; text-transform:uppercase; color:var(--muted); padding:9px 11px; border-bottom:2px solid var(--strong); }
+td { padding:9px 11px; border-bottom:1px solid var(--line); vertical-align:top; }
+.fl { background:var(--surface); border:1px solid var(--line); padding:16px; display:grid; gap:10px; }
+.fl h3 { margin:0; font:700 16px/1.25 var(--display); color:var(--navy); }
+.dg { overflow-x:auto; border:1px solid var(--line); padding:10px; background:var(--bg); }
+.dg pre { margin:0; min-width:760px; }
+.dg svg { max-width:none !important; height:auto; }
+.nota { margin:0; font-size:13px; color:var(--muted); }
+footer { font-size:12px; color:var(--muted); }
+@media (max-width:760px) { .canais { grid-template-columns:minmax(0,1fr); } }
+</style>
+<div class="wrap">
+<header><span class="eye">Programa Gestão Unificada · Omnichannel · uso interno</span>
+<h1>Omnichannel do cidadão</h1>
+<p class="lede">WhatsApp, telefone e site com a mesma inteligência e o mesmo histórico. O cidadão resolve sozinho o que for possível. Quando precisa de alguém, a conversa passa para a central da prefeitura sem que ele repita nada.</p>
+<div class="meta"><div><b>70%</b><span>conversas sem atendente (meta)</span></div><div><b>24x7</b><span>canais automáticos · 99%</span></div><div><b>9</b><span>serviços no 1º catálogo</span></div></div></header>
+<section><h2>Três canais, um histórico</h2><div class="canais">
+<div class="canal wa"><h3>WhatsApp</h3><p>Texto, foto, localização e áudio. Avisos de cada etapa do protocolo.</p><small>Identificação: o número + nome completo e CPF</small></div>
+<div class="canal tel"><h3>Telefone</h3><p>Atendimento por voz com menus curtos e pergunta livre. Comprovante falado e, se quiser, por WhatsApp ou SMS.</p><small>Identificação: CPF, data de nascimento e nome da mãe</small></div>
+<div class="canal"><h3>Site</h3><p>Assistente no portal e área do cidadão com todos os protocolos, guias e respostas.</p><small>Identificação: login e senha</small></div>
+</div></section>
+<section><h2>Identificação</h2><div class="tw"><table><thead><tr><th>Canal</th><th>Identificação básica</th><th>Para dado sensível</th></tr></thead><tbody><tr><td>Site</td><td>Login e senha</td><td>+ código de 6 dígitos no celular ou e-mail cadastrado</td></tr><tr><td>Telefone</td><td>CPF, data de nascimento e nome da mãe</td><td>+ código de 6 dígitos no celular cadastrado</td></tr><tr><td>WhatsApp</td><td>O próprio número + nome completo e CPF informados</td><td>+ código de 6 dígitos no e-mail ou em outro celular cadastrado</td></tr></tbody></table></div><p class="nota">Dado sensível: saúde, assistência social e valores de débitos. Três erros seguidos bloqueiam a identificação por um tempo.</p></section>
+<section><h2>Catálogo de serviços</h2><div class="tw"><table><thead><tr><th>Serviço</th><th>O que o cidadão faz</th><th>Identificação</th><th>Prazo e base</th><th>Dados de</th></tr></thead><tbody><tr><td>Solicitação de zeladoria</td><td>Abre pedido de poda, buraco, iluminação, lixo e outros com foto e localização; recebe o número na hora; acompanha e avalia</td><td>básica</td><td>comprovante com número na hora (Lei 13.460 art. 12)</td><td>notPaper; solução Obras e zeladoria</td></tr><tr><td>Andamento de protocolo</td><td>Consulta a situação de qualquer protocolo seu, com etapa, prazo e próxima providência</td><td>básica</td><td>—</td><td>notPaper</td></tr><tr><td>2ª via de IPTU e guias</td><td>Recebe a guia em PDF no canal</td><td>básica; com valores, código</td><td>—</td><td>ERP tributário; solução Tributos</td></tr><tr><td>Certidão negativa de débitos</td><td>Recebe a certidão ou a explicação do que impede a emissão</td><td>básica</td><td>—</td><td>ERP tributário</td></tr><tr><td>Pedido de informação (LAI)</td><td>Faz o pedido; recebe a resposta e pode recorrer</td><td>básica</td><td>20 dias, prorrogáveis por 10 com justificativa; recurso em 10 dias, decidido em 5 (LAI arts. 11 e 15)</td><td>notPaper; solução Administração</td></tr><tr><td>Ouvidoria</td><td>Registra reclamação, denúncia, sugestão ou elogio</td><td>básica; identidade do manifestante com acesso restrito</td><td>30 dias, prorrogáveis por 30 (Lei 13.460 art. 16; art. 10 §7º)</td><td>notPaper; solução Administração</td></tr><tr><td>Fila de saúde</td><td>Consulta a posição no pedido de exame ou consulta e recebe aviso de agendamento</td><td>código</td><td>—</td><td>sistema de regulação; solução Saúde</td></tr><tr><td>Fila de creche</td><td>Consulta a posição na fila e recebe aviso de vaga</td><td>código</td><td>—</td><td>sistema escolar; solução Educação</td></tr><tr><td>Carta de Serviços</td><td>Pergunta como pedir um serviço, documentos e prazos</td><td>nenhuma</td><td>Lei 13.460 art. 7º</td><td>base de respostas</td></tr></tbody></table></div></section>
+<section><h2>Fluxos de conversa</h2><div class="fl"><h3>Arquitetura do Omnichannel</h3><div class="dg"><pre class="mermaid">flowchart LR
+  subgraph CID[Cidadão]
+    WA[WhatsApp&lt;br/&gt;API oficial]
+    TEL[Telefone&lt;br/&gt;URA com voz]
+    WEB[Site&lt;br/&gt;área do cidadão]
+  end
+  subgraph OMN[Omnichannel · construção própria]
+    ORQ[Orquestrador&lt;br/&gt;de conversas]
+    IDN[Identificação&lt;br/&gt;e código de 6 dígitos]
+    IA[IA da Oracle&lt;br/&gt;Select AI]
+    BR[Base de respostas&lt;br/&gt;Carta de Serviços]
+    FIL[Filas e roteamento]
+  end
+  subgraph PRF[Prefeitura]
+    CEN[Central única&lt;br/&gt;de atendimento]
+    SEC[Secretarias&lt;br/&gt;no notPaper]
+    GAB[Gabinete&lt;br/&gt;meta de 70%]
+  end
+  subgraph DADOS[Dados]
+    NP[notPaper&lt;br/&gt;protocolos e documentos]
+    BD[Banco único Oracle&lt;br/&gt;REST ORDS]
+  end
+  WA --&gt; ORQ
+  TEL --&gt; ORQ
+  WEB --&gt; ORQ
+  ORQ --&gt; IDN
+  ORQ --&gt; IA
+  IA --&gt; BR
+  IA --&gt; BD
+  ORQ --&gt; NP
+  ORQ --&gt; FIL
+  FIL --&gt; CEN
+  CEN --&gt; SEC
+  SEC --&gt; NP
+  NP --&gt; BD
+  BD --&gt; GAB
+</pre></div><p class="nota">Os três canais entram no mesmo orquestrador e o cidadão tem um único histórico. A IA responde só com a base de respostas e com os dados que o perfil do cidadão permite. O que precisa de gente vai pela fila para a central, que encaminha à secretaria pelo notPaper. Os indicadores chegam ao Gabinete.</p></div><div class="fl"><h3>Entrada e identificação</h3><div class="dg"><pre class="mermaid">flowchart LR
+  I((Cidadão chega&lt;br/&gt;pelo canal)) --&gt; M[Menu curto ou&lt;br/&gt;pergunta livre]
+  M --&gt; P{Precisa de&lt;br/&gt;dado pessoal?}
+  P -- não --&gt; CS[Responde pela&lt;br/&gt;Carta de Serviços]
+  P -- sim --&gt; ID{Canal}
+  ID -- site --&gt; L[Login e senha]
+  ID -- telefone --&gt; T[CPF, nascimento&lt;br/&gt;e nome da mãe]
+  ID -- WhatsApp --&gt; W[Número + nome&lt;br/&gt;completo e CPF]
+  L --&gt; S{Dado sensível?}
+  T --&gt; S
+  W --&gt; S
+  S -- sim --&gt; C[Código de 6 dígitos&lt;br/&gt;no contato cadastrado]
+  S -- não --&gt; OK((Identificado))
+  C --&gt; OK
+  CS --&gt; AV[Avaliação]
+</pre></div><p class="nota">Depois de 3 erros seguidos, a identificação bloqueia por um tempo e o cidadão é orientado a ir ao site ou a um posto presencial.</p></div><div class="fl"><h3>Solicitação de zeladoria com foto e local</h3><div class="dg"><pre class="mermaid">flowchart LR
+  A((Quero pedir&lt;br/&gt;um serviço)) --&gt; B[Escolhe o tipo:&lt;br/&gt;poda, buraco, luz, lixo]
+  B --&gt; C[Envia foto e&lt;br/&gt;localização]
+  C --&gt; D{Já existe pedido&lt;br/&gt;no mesmo local?}
+  D -- sim --&gt; E[Vincula ao pedido&lt;br/&gt;existente e avisa]
+  D -- não --&gt; F[Cria protocolo&lt;br/&gt;no notPaper]
+  F --&gt; G[Envia número&lt;br/&gt;e prazo na hora]
+  E --&gt; G
+  G --&gt; H[Avisa cada mudança&lt;br/&gt;de etapa]
+  H --&gt; J[Serviço concluído&lt;br/&gt;com foto]
+  J --&gt; K((Avaliação))
+</pre></div><p class="nota">O protocolo entra no mapa da cidade, no Gabinete e na solução Obras e zeladoria, com o local guardado (D-021, D-025).</p></div><div class="fl"><h3>Pedido de informação e ouvidoria</h3><div class="dg"><pre class="mermaid">flowchart LR
+  A((Pedido de informação&lt;br/&gt;ou manifestação)) --&gt; B{Tipo}
+  B -- informação LAI --&gt; C[Registra pedido&lt;br/&gt;prazo 20 dias]
+  B -- ouvidoria --&gt; D[Registra manifestação&lt;br/&gt;prazo 30 dias]
+  C --&gt; E[Área técnica&lt;br/&gt;responde]
+  D --&gt; E
+  E --&gt; F{Respondeu&lt;br/&gt;no prazo?}
+  F -- não --&gt; G[Prorrogação justificada&lt;br/&gt;+10 LAI ou +30 ouvidoria]
+  G --&gt; E
+  F -- sim --&gt; H[Resposta ao cidadão&lt;br/&gt;no canal]
+  H --&gt; R{Cidadão recorre?&lt;br/&gt;só LAI}
+  R -- sim --&gt; S[Recurso em 10 dias&lt;br/&gt;decisão em 5]
+  R -- não --&gt; K((Avaliação))
+  S --&gt; K
+</pre></div><p class="nota">Base: LAI arts. 11 e 15; Lei 13.460 arts. 10 §7º e 16. A identidade do manifestante tem acesso restrito.</p></div><div class="fl"><h3>Consultas: andamento, 2ª via, certidão e filas</h3><div class="dg"><pre class="mermaid">flowchart LR
+  A((Quero consultar)) --&gt; B{Assunto}
+  B -- protocolo --&gt; C[Mostra etapa, prazo&lt;br/&gt;e próxima providência]
+  B -- IPTU ou guia --&gt; D[Código se mostrar&lt;br/&gt;valores]
+  D --&gt; E[Envia guia em PDF]
+  B -- certidão --&gt; F{Há débito?}
+  F -- não --&gt; G[Envia a certidão]
+  F -- sim --&gt; H[Explica o débito&lt;br/&gt;e envia a guia]
+  B -- fila de saúde&lt;br/&gt;ou creche --&gt; I[Código de&lt;br/&gt;confirmação]
+  I --&gt; J[Mostra posição&lt;br/&gt;e avisa mudanças]
+  C --&gt; K((Avaliação))
+  E --&gt; K
+  G --&gt; K
+  H --&gt; K
+  J --&gt; K
+</pre></div></div><div class="fl"><h3>Passagem para atendente</h3><div class="dg"><pre class="mermaid">flowchart LR
+  A((Conversa em curso)) --&gt; B{Motivo}
+  B -- cidadão pediu --&gt; C{Dia útil&lt;br/&gt;no horário?}
+  B -- IA não entendeu 2x --&gt; C
+  B -- fora do catálogo --&gt; C
+  B -- urgência --&gt; U[Orienta números&lt;br/&gt;de emergência]
+  U --&gt; C
+  C -- sim --&gt; D[Central recebe a conversa&lt;br/&gt;com histórico e identificação]
+  C -- não --&gt; E[Vira protocolo com&lt;br/&gt;retorno no próximo dia útil]
+  D --&gt; F{Precisa da&lt;br/&gt;secretaria?}
+  F -- sim --&gt; G[Encaminha pelo notPaper&lt;br/&gt;prazo segue contando]
+  F -- não --&gt; H[Resolve na central]
+  E --&gt; D
+  G --&gt; K((Avaliação))
+  H --&gt; K
+</pre></div><p class="nota">Cada conversa que passa para atendente conta contra a meta de 70% (D-059).</p></div></section>
+<section><h2>Como medimos</h2><div class="tw"><table><thead><tr><th>Indicador</th><th>Cálculo</th><th>Onde aparece</th></tr></thead><tbody><tr><td>Resolução sem atendente</td><td>conversas encerradas sem passar para pessoa ÷ total de conversas</td><td>Gabinete, por canal e por serviço</td></tr><tr><td>Satisfação</td><td>avaliações favoráveis ÷ avaliações</td><td>Gabinete; relatório anual (Lei 13.460 art. 23)</td></tr><tr><td>Tempo até o atendente</td><td>da passagem até a primeira resposta humana</td><td>central de atendimento</td></tr><tr><td>Protocolos abertos pelo cidadão</td><td>por serviço, região e situação</td><td>Gabinete e mapa</td></tr></tbody></table></div></section>
+<footer>2026-11-06 · Decisões D-058 e D-059 · Detalhe em gestao-unificada/03-omnichannel (ESPECIFICACAO.md, canais, fluxos, base de respostas).</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true,securityLevel:"strict",theme:matchMedia("(prefers-color-scheme: dark)").matches?"dark":"neutral",flowchart:{htmlLabels:true,useMaxWidth:false}});</script></body></html>
