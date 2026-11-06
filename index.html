@@ -4271,7 +4271,24 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     lc210:['LC 210/2024', 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp210.htm'],
     p15:['Portaria Conjunta 15/2025', 'https://www.gov.br/transferegov/pt-br/legislacao/portarias/portaria-conjunta-mf-mgi-no-15-de-28-de-julho-de-2025'],
     pncp:['Manual de integração do PNCP', 'https://www.gov.br/pncp/pt-br/acesso-a-informacao/manuais/ManualdeIntegraoPNCPVerso2.2.7.pdf'],
-    simce:['Manual SIM 2026 (TCE-CE)', 'https://www.tce.ce.gov.br/downloads/municipios/sim-documentacao-e-programas/Manual_SIM_2026_-_Municpios_vMAR-1.pdf']
+    simce:['Manual SIM 2026 (TCE-CE)', 'https://www.tce.ce.gov.br/downloads/municipios/sim-documentacao-e-programas/Manual_SIM_2026_-_Municpios_vMAR-1.pdf'],
+    ldb:['Lei 9.394/1996 (LDB)', 'https://www.planalto.gov.br/ccivil_03/leis/l9394compilado.htm'],
+    fundeb:['Lei 14.113/2020 (Fundeb)', 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l14113.htm'],
+    pnae:['Lei 11.947/2009 (PNAE)', 'https://www.planalto.gov.br/ccivil_03/_ato2007-2010/2009/lei/l11947.htm'],
+    pne:['Lei 15.388/2026 (PNE)', 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2026/lei/L15388.htm'],
+    eca:['Lei 8.069/1990 (ECA)', 'https://www.planalto.gov.br/ccivil_03/leis/l8069.htm'],
+    art:['Lei 6.496/1977 (ART)', 'https://www.planalto.gov.br/ccivil_03/leis/l6496.htm'],
+    cipi:['Decreto 10.496/2020 (Obrasgov)', 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/decreto/D10496.htm'],
+    ctn:['CTN (Lei 5.172/1966)', 'https://www.planalto.gov.br/ccivil_03/leis/l5172compilado.htm'],
+    lc116:['LC 116/2003 (ISS)', 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp116.htm'],
+    lef:['Lei 6.830/1980 (execução fiscal)', 'https://www.planalto.gov.br/ccivil_03/leis/l6830.htm'],
+    lc214:['LC 214/2025 (NFS-e nacional)', 'https://www.planalto.gov.br/ccivil_03/leis/lcp/lcp214.htm'],
+    l8080:['Lei 8.080/1990 (SUS)', 'https://www.planalto.gov.br/ccivil_03/leis/l8080.htm'],
+    prc1:['Portaria de Consolidação 1/2017', 'https://bvsms.saude.gov.br/bvs/saudelegis/gm/2017/prc0001_03_10_2017_comp.html'],
+    p9262:['Portaria GM/MS 9.262/2025 (regulação)', 'https://bvsms.saude.gov.br/bvs/saudelegis/gm/2025/prt9262_31_12_2025.html'],
+    loas:['Lei 8.742/1993 (LOAS)', 'https://www.planalto.gov.br/ccivil_03/leis/l8742.htm'],
+    d11016:['Decreto 11.016/2022 (CadÚnico)', 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2022/decreto/D11016.htm'],
+    l14601:['Lei 14.601/2023 (Bolsa Família)', 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14601.htm']
   };
   // situação: t = já na tela · a = acrescentado nesta versão · i = virá da integração (fase 4)
   var C = {
@@ -4328,7 +4345,46 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       ['Programas e editais abertos', 'Decreto 11.531 art. 6º', 't'], ['Critérios de elegibilidade', 'Portaria 33 art. 16', 't'], ['Habilitação (cadastro, CAUC)', 'Portaria 33 arts. 8º, 29', 'a'],
       ['Contrapartida e previsão orçamentária', 'LRF art. 25 §1º IV', 't'], ['Janela da proposta', 'Portaria 33 art. 17', 't'], ['Situação da proposta', 'Portaria 33 arts. 19, 23', 't'], ['Peças técnicas', 'Portaria 33 art. 24', 't']],
       alerts:['Programa novo aderente ao município', 'Fim da janela de proposta', 'Complementação vencendo: silêncio é desistência', 'Contrapartida sem previsão orçamentária'],
-      state:'MG: Sigcon-MG. SP: Decreto 66.173/2021. CE: a conferir.' }
+      state:'MG: Sigcon-MG. SP: Decreto 66.173/2021. CE: a conferir.' },
+    educacao:{ links:['ldb', 'fundeb', 'pnae', 'pne', 'eca'], items:[
+      ['Escolas com código INEP', 'Decreto 6.425/2008 (Censo Escolar)', 'a'], ['Turmas e matrículas por etapa', 'CF art. 208; LDB art. 4º', 't'], ['Recenseamento e chamada pública', 'LDB art. 5º §1º', 'i'],
+      ['Fila de espera de creche publicada', 'LDB art. 5º §1º IV', 't'], ['Vaga perto de casa', 'LDB art. 4º X', 'a'], ['Frequência (75% fundamental; 60% pré-escola)', 'LDB arts. 24 VI, 31 IV', 't'],
+      ['Faltas comunicadas ao Conselho Tutelar', 'LDB art. 12 VIII; ECA art. 56', 'a'], ['Transporte: rotas, alunos, veículos', 'LDB art. 11 VI; Lei 10.880', 'a'], ['Cardápio por nutricionista', 'Lei 11.947 art. 12', 'a'],
+      ['Agricultura familiar ≥ 45% do PNAE', 'Lei 11.947 art. 14 (desde 2026)', 'a'], ['Conselho de Alimentação Escolar e parecer', 'Lei 11.947 arts. 18 a 20', 'i'], ['MDE ≥ 25%', 'CF art. 212; LDB arts. 69 a 71', 'a'],
+      ['Fundeb ≥ 70% em remuneração', 'CF art. 212-A; Lei 14.113 art. 26', 'a'], ['Saldo do Fundeb até 10% no ano seguinte', 'Lei 14.113 art. 25 §3º', 'i'], ['Conselho do Fundeb e parecer', 'Lei 14.113 arts. 33, 34', 'a'],
+      ['SIOPE bimestral (30 dias)', 'Lei 14.113 art. 38', 'a'], ['Prazos do Censo Escolar', 'Decreto 6.425 art. 4º', 'a'], ['Plano Municipal de Educação (15 meses)', 'Lei 15.388/2026 art. 34', 'i']],
+      alerts:['MDE abaixo de 25% — CF art. 212', 'Fundeb abaixo de 70% em remuneração — Lei 14.113 art. 26', 'SIOPE fora do prazo: suspende transferências voluntárias — art. 38', 'Aluno com faltas acima de 30% do permitido: comunicar o Conselho Tutelar', 'Agricultura familiar abaixo de 45% do PNAE', 'Fila de creche não publicada — LDB art. 5º'],
+      state:'SP: AUDESP trimestral (ensino e pareceres do Fundeb) e bimestral (Anexo 8). MG: SICOM. CE: SIM 2026 (leiaute de educação a conferir).' },
+    obras:{ links:['l14133', 'art', 'cipi', 'simce'], items:[
+      ['Identificação, tipo e localização', 'Lei 14.133 art. 6º', 't'], ['Projeto básico e executivo', 'Lei 14.133 art. 6º XXV e XXVI', 'a'], ['ART ou RRT', 'Lei 6.496 art. 1º; Lei 12.378 art. 45', 'a'],
+      ['Orçamento de referência (SINAPI) e data-base', 'Lei 14.133 art. 23 §2º', 'a'], ['Regime de execução', 'Lei 14.133 art. 46', 'a'], ['Contrato vinculado e PNCP', 'Lei 14.133 arts. 94, 174', 't'],
+      ['Medições atestadas pelo fiscal', 'Lei 14.133 art. 117', 't'], ['% físico e financeiro', 'Lei 14.133 art. 117', 't'], ['Aditivos (até 25%)', 'Lei 14.133 art. 125', 'i'],
+      ['Situação e motivo da paralisação', 'Lei 14.133 art. 115 §1º', 't'], ['Placa e aviso de obra paralisada', 'Lei 14.133 art. 115 §6º', 'a'], ['Recebimento provisório e definitivo', 'Lei 14.133 art. 140', 'a'],
+      ['Fonte do recurso e ID Obrasgov (recurso federal)', 'Decreto 10.496 art. 5º §1º', 'a'], ['Zeladoria: ordem de serviço, local, equipe', 'norma municipal', 't']],
+      alerts:['Obra paralisada sem placa e aviso no site — art. 115 §6º', 'Obra sem medição no prazo: retardamento — art. 115 §1º', 'Financeiro acima do físico', 'Recurso federal sem ID no Obrasgov antes do empenho', 'Obra sem ART ou RRT', 'Concluída sem recebimento definitivo — art. 140'],
+      state:'SP: TCESP Cadastro de Obras (paralisadas ou atrasadas). CE: SIM tabelas 901 a 903 (obras, medições, status). MG: a conferir.' },
+    tributos:{ links:['ctn', 'lc116', 'lef', 'lrf', 'lc214'], items:[
+      ['Cadastro imobiliário e mobiliário', 'CTN art. 32; LC 116 art. 3º', 'a'], ['Planta genérica de valores', 'CTN art. 33', 'a'], ['Lançamento', 'CTN art. 142', 't'],
+      ['Arrecadação e metas bimestrais', 'LRF arts. 11, 13', 't'], ['Situação do crédito (suspenso, extinto)', 'CTN arts. 151, 156', 't'], ['Parcelamentos', 'CTN art. 151 VI', 'a'],
+      ['Prescrição (5 anos) e interrupções', 'CTN art. 174', 'a'], ['Inscrição em dívida ativa e CDA', 'CTN arts. 201 a 204; Lei 6.830 art. 2º', 'a'], ['Protesto da CDA', 'Lei 9.492 art. 1º', 'a'],
+      ['Execução fiscal e prescrição intercorrente', 'Lei 6.830 art. 40', 'a'], ['Alíquota mínima de ISS (2%)', 'LC 116 art. 8º-A', 'a'], ['Renúncias com estimativa e compensação', 'LRF art. 14', 'a'],
+      ['NFS-e no padrão nacional (desde 01/01/2026)', 'LC 214/2025 art. 62', 'a']],
+      alerts:['Crédito perto dos 5 anos sem interrupção — CTN art. 174', 'Vencido e não inscrito em dívida ativa', 'CDA sem protesto ou execução', 'ISS efetivo abaixo de 2% — LC 116 art. 8º-A', 'Benefício fiscal sem estimativa de impacto — LRF art. 14', 'NFS-e fora do padrão nacional: suspende transferências voluntárias'],
+      state:'SP: TCESP diagnóstico de dívida ativa (Comunicado GP 07/2026); Audesp. MG e CE: a conferir. Sigilo fiscal: CTN art. 198.' },
+    saude:{ links:['l8080', 'lc141', 'prc1', 'p9262'], items:[
+      ['Unidades com nº CNES (atualização mensal)', 'Portaria de Consolidação 1 arts. 361, 370', 'a'], ['Equipes da atenção primária', 'Portaria de Consolidação 1 art. 311', 'a'], ['Produção agregada (e-SUS APS → Siaps)', 'Portaria de Consolidação 1 arts. 305 a 308', 't'],
+      ['Fila e regulação com critério de prioridade', 'Portaria 9.262/2025 arts. 26, 38', 't'], ['Estoque de medicamentos (envio à BNAFAR)', 'Portaria GM/MS 5.713/2024', 'i'], ['Verbas por bloco e saldo', 'Portaria de Consolidação 6 art. 3º', 't'],
+      ['Fundo Municipal de Saúde', 'Lei 8.080 art. 33; LC 141 art. 14', 't'], ['Aplicação em saúde ≥ 15%', 'LC 141 art. 7º', 'a'], ['SIOPS', 'LC 141 art. 39', 'i'], ['Plano Municipal de Saúde (quadrienal)', 'Lei 8.080 art. 36', 'a'],
+      ['Programação Anual (antes da LDO)', 'LC 141 art. 36 §2º', 'a'], ['RDQA com audiência (fev, mai, set)', 'LC 141 art. 36 §5º', 'a'], ['RAG até 30/03', 'LC 141 art. 36 §1º', 'a'], ['Conselho Municipal de Saúde', 'Lei 8.142 art. 1º', 'a']],
+      alerts:['Aplicação em saúde abaixo de 15% — LC 141 art. 7º', 'RDQA fora do prazo — LC 141 art. 36', 'RAG após 30/03 ou sem parecer do Conselho em 120 dias', 'Unidade sem atualização no CNES há 30 dias', 'Fila acima do tempo-alvo ou sem critério de prioridade', 'Nada nominal em painel: dado de saúde é sensível (LGPD art. 11)'],
+      state:'SP: AUDESP quadrimestral (audiências e parecer do Conselho) e bimestral (Anexo 12). CE: SIM, o Fundo não pode ser unidade gestora autônoma. MG: a conferir.' },
+    social:{ links:['loas', 'd11016', 'l14601'], items:[
+      ['CRAS e CREAS com território', 'LOAS arts. 6º-C, 6º-D', 't'], ['Famílias no CadÚnico e última atualização', 'Decreto 11.016 arts. 9º-A, 12', 'a'], ['Famílias acompanhadas (PAIF e PAEFI)', 'Resolução CNAS 109/2009', 't'],
+      ['Prontuário por família (restrito)', 'NOB-SUAS art. 6º', 't'], ['Descumprimento de condicionalidade e busca ativa', 'Lei 14.601 art. 10', 'a'], ['Benefícios eventuais concedidos', 'LOAS art. 22', 't'],
+      ['Lei municipal dos benefícios eventuais', 'LOAS art. 22 §1º', 'a'], ['RMA mensal', 'NOB-SUAS art. 102', 'a'], ['Censo SUAS', 'NOB-SUAS art. 17', 'i'], ['Conselho (CMAS) e Fundo (FMAS)', 'LOAS art. 30', 'a'],
+      ['Repasses do FNAS por bloco', 'LOAS art. 30-A', 'i'], ['Plano de Ação (60 dias) e Demonstrativo anual', 'Portaria MDS 113/2015', 'a']],
+      alerts:['Cadastro sem atualização há 18 meses (vence aos 24)', 'Família em descumprimento sem acompanhamento', 'RMA do mês não enviado', 'Plano de Ação ou Demonstrativo fora do prazo: suspende repasse', 'Benefício concedido sem regulamentação municipal', 'Nada nominal em painel: CadÚnico é sigiloso'],
+      state:'MG: Piso Mineiro no Sigcon-MG. SP e CE: a conferir. CE: o Fundo não pode ser unidade gestora autônoma no SIM.' }
   };
   var ST = { t:['Na tela', 'np-cf-t'], a:['Acrescentado', 'np-cf-a'], i:['Integração (fase 4)', 'np-cf-i'] };
   // registro de exemplo com os dados acrescentados (fictícios). Contratos mostram os seus na ficha de cada contrato.
@@ -4348,7 +4404,21 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       'Regularidade CAUC':'Regular em 31/10/2026', 'Extrato publicado no site oficial':'Publicado em 05/12/2025' } },
     emendas:{ title:'Emenda 2026 · Transferência especial', v:{ 'Autor (parlamentar, bancada, comissão)':'Deputado(a) federal (fictício)', 'Tipo e modalidade':'Individual · transferência especial', 'Conta específica por transferência':'Conta exclusiva aberta em 10/03/2026',
       'Mínimo de 70% em capital':'82% em investimento (obras e equipamentos)', 'Comunicação à Câmara e ao TC em 30 dias':'Ofício enviado em 28/03/2026', 'Relatório de gestão até 30/06':'Entregue em 26/06/2026' } },
-    captacao:{ title:'Proposta 004/2026 · Equipamento de saúde', v:{ 'Habilitação (cadastro, CAUC)':'Cadastro atualizado · CAUC regular' } }
+    captacao:{ title:'Proposta 004/2026 · Equipamento de saúde', v:{ 'Habilitação (cadastro, CAUC)':'Cadastro atualizado · CAUC regular' } },
+    educacao:{ title:'Rede municipal · posição 31/10/2026', v:{ 'Escolas com código INEP':'EMEF Horizonte · INEP 00000001 (fictício)', 'Vaga perto de casa':'Creche oferecida a 1,2 km da residência', 'Faltas comunicadas ao Conselho Tutelar':'3 alunos comunicados em outubro',
+      'Transporte: rotas, alunos, veículos':'4 rotas · 186 alunos (152 da zona rural) · 5 veículos', 'Cardápio por nutricionista':'Nutricionista RT · CRN 0000 (fictício)', 'Agricultura familiar ≥ 45% do PNAE':'47,2% do repasse em 2026',
+      'MDE ≥ 25%':'Projeção 2026: 26,4%', 'Fundeb ≥ 70% em remuneração':'Projeção 2026: 74,1%', 'Conselho do Fundeb e parecer':'Mandato até 2027 · parecer de 2025 aprovado', 'SIOPE bimestral (30 dias)':'4º bimestre enviado em 28/09/2026', 'Prazos do Censo Escolar':'1ª etapa encerrada em 31/07/2026 · 2ª etapa de 01/02 a 12/03/2027' } },
+    obras:{ title:'OB01 · Reforma da Escola Horizonte', v:{ 'Projeto básico e executivo':'Projeto executivo aprovado em 10/11/2025', 'ART ou RRT':'ART de projeto e de execução (fictícias)', 'Orçamento de referência (SINAPI) e data-base':'SINAPI · data-base 09/2025',
+      'Regime de execução':'Empreitada por preço unitário', 'Placa e aviso de obra paralisada':'Não paralisada · placa de obra instalada', 'Recebimento provisório e definitivo':'Previsto para 02/2027', 'Fonte do recurso e ID Obrasgov (recurso federal)':'Recurso próprio · Obrasgov não se aplica' } },
+    tributos:{ title:'Carteira tributária · posição 31/10/2026', v:{ 'Cadastro imobiliário e mobiliário':'18.420 imóveis · 2.310 inscrições mobiliárias', 'Planta genérica de valores':'Lei Complementar 45/2023 (fictícia)', 'Parcelamentos':'612 acordos ativos · 41 em atraso',
+      'Prescrição (5 anos) e interrupções':'R$ 186 mil vencem em até 12 meses sem interrupção', 'Inscrição em dívida ativa e CDA':'Estoque R$ 12,4 mi · 3.150 CDAs', 'Protesto da CDA':'1.020 CDAs protestadas em 2026', 'Execução fiscal e prescrição intercorrente':'214 execuções ativas · 18 arquivadas há mais de 4 anos',
+      'Alíquota mínima de ISS (2%)':'Menor alíquota efetiva: 2%', 'Renúncias com estimativa e compensação':'3 benefícios com estimativa no anexo da LDO', 'NFS-e no padrão nacional (desde 01/01/2026)':'Integrada ao ambiente nacional desde 02/01/2026' } },
+    saude:{ title:'Rede municipal de saúde · posição 31/10/2026', v:{ 'Unidades com nº CNES (atualização mensal)':'6 unidades · CNES atualizado em 30/10/2026', 'Equipes da atenção primária':'5 eSF · 2 eSB · 1 eMulti',
+      'Aplicação em saúde ≥ 15%':'Projeção 2026: 19,8%', 'Plano Municipal de Saúde (quadrienal)':'Plano 2026–2029 aprovado pelo Conselho', 'Programação Anual (antes da LDO)':'PAS 2027 enviada em 10/04/2026',
+      'RDQA com audiência (fev, mai, set)':'2º quadrimestre apresentado em 29/09/2026', 'RAG até 30/03':'RAG 2025 enviado em 27/03/2026 · parecer em 15/06/2026', 'Conselho Municipal de Saúde':'Paritário · 12 conselheiros · reunião mensal' } },
+    social:{ title:'Assistência social · posição 31/10/2026', v:{ 'Famílias no CadÚnico e última atualização':'4.820 famílias · 612 com atualização há mais de 18 meses', 'Descumprimento de condicionalidade e busca ativa':'38 famílias · 31 com acompanhamento registrado',
+      'Lei municipal dos benefícios eventuais':'Lei 2.044/2022 (fictícia), regulamentada pelo CMAS', 'RMA mensal':'Setembro enviado em 15/10/2026', 'Conselho (CMAS) e Fundo (FMAS)':'CMAS paritário · FMAS como unidade orçamentária',
+      'Plano de Ação (60 dias) e Demonstrativo anual':'Plano de Ação 2026 aprovado · Demonstrativo 2025 com parecer do CMAS' } }
   };
 
   function section(id) {
