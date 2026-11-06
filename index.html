@@ -1376,7 +1376,7 @@ circle.np-d-now + .np-dtask-t, circle.np-d-late + .np-dtask-t { fill:var(--np-in
 .np-drill:focus-visible { outline:2px solid var(--np-teal); outline-offset:3px; }
 div.np-drill { transition:background-color .12s; }
 div.np-drill:hover { background:var(--np-surface-2); }
-div.np-drill:hover .barfill { filter:brightness(1.12); }
+div.np-drill:hover .barfill, div.np-drill:hover i { filter:brightness(1.12); }
 div.np-drill .np-bar-title::after { content:" ↗"; color:var(--np-teal); font-weight:600; }
 .service-scorecard.np-drill:hover { box-shadow:inset 0 0 0 1px var(--np-line-strong); }
 circle.np-drill, rect.np-drill { cursor:pointer; }
@@ -4737,16 +4737,52 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       var h = c.querySelector('h3, h2'); mark(c, b, (h && h.textContent.trim()) || 'esta área');
     });
   }
+  /* ---------- Lista de protocolos da semana (mesma regra do gráfico do Gabinete: 7 dias terminando na data) ---------- */
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function fdate(iso) { return iso ? iso.slice(8, 10) + '/' + iso.slice(5, 7) + '/' + iso.slice(0, 4) : '—'; }
+  function addDays(iso, n) { var d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); }
+  function weekList(kind, endBr) {
+    var D = window.DEMO; if (!D || !endBr) return;
+    var p = endBr.split('/'), end = p[2] + '-' + p[1] + '-' + p[0], start = addDays(end, -6), field = kind === 'incoming' ? 'openedAt' : 'closedAt';
+    var rows = (D.protocols || []).filter(function (r) { return r[field] && r[field] >= start && r[field] <= end; });
+    var d = document.querySelector('dialog.np-drilldlg');
+    if (!d) {
+      d = document.createElement('dialog'); d.className = 'np-askdlg np-drilldlg'; d.setAttribute('aria-label', 'Protocolos da semana');
+      d.addEventListener('click', function (e) {
+        if (e.target.closest('[data-np-drill-x]')) { d.close(); return; }
+        var b = e.target.closest('[data-np-drill-open]');
+        if (b) { d.close(); if (window.NP_SUB) window.NP_SUB.openOver({ gabRecord:b.dataset.npDrillOpen }); }
+      });
+      document.body.appendChild(d);
+    }
+    var tit = (kind === 'incoming' ? 'Entradas' : 'Conclusões') + ' de ' + fdate(start) + ' a ' + fdate(end);
+    d.innerHTML = '<div class="np-mapdlg-bar"><span class="np-geo-eye">Gabinete · ' + esc(tit) + '</span><button type="button" class="np-mapdlg-x" data-np-drill-x aria-label="Fechar">Fechar ✕</button></div>' +
+      '<div class="np-ask-body"><p class="np-ask-note"><b>' + rows.length + ' protocolos</b> formam este ponto do gráfico. Clique em um para abrir a ficha com os documentos.</p>' +
+      '<div class="np-ask-tablewrap"><table class="np-ask-table"><thead><tr><th>Protocolo</th><th>Assunto</th><th>Secretaria</th><th>Entrada</th><th>Conclusão</th><th>Situação</th><th></th></tr></thead><tbody>' +
+      rows.map(function (r) { return '<tr><td>' + esc(r.id) + '</td><td>' + esc(r.subject) + '</td><td>' + esc(r.secretary) + '</td><td>' + fdate(r.openedAt) + '</td><td>' + fdate(r.closedAt) + '</td><td>' + esc(r.stage) + '</td><td><button type="button" class="np-ask-open" data-np-drill-open="' + esc(r.id) + '">Abrir ficha</button></td></tr>'; }).join('') +
+      '</tbody></table></div></div>';
+    if (!d.open) d.showModal();
+  }
   function trend(main) {
     $$('[data-marker]', main).forEach(function (m) {
       if (m.dataset.npDrill) return;
-      var q = m.dataset.marker === 'incoming' ? 'protocolos abertos por semana' : 'protocolos concluídos por semana';
-      mark(m, function () { if (window.NP_ASK) window.NP_ASK.show(q); }, (m.querySelector('title') || {}).textContent || 'esta semana');
+      var t = (m.querySelector('title') || {}).textContent || '', end = (/(\d\d\/\d\d\/\d{4})/.exec(t) || [])[1];
+      mark(m, function () { weekList(m.dataset.marker, end); }, t || 'esta semana');
+    });
+  }
+  /* Turismo: série de ocupação por mês → tabela da coleta amostral de hotéis (só o mês atual tem detalhe por hotel nesta base) */
+  function history(main) {
+    $$('.g360-history > div', main).forEach(function (row, i, all) {
+      var sec = $$('section[data-table]', main).filter(function (s) { return /hotelaria/i.test((s.querySelector('h2') || {}).textContent || ''); })[0];
+      if (!sec) return;
+      var mes = (row.querySelector('span') || {}).textContent || 'mês';
+      mark(row, sec, 'ocupação de ' + mes);
+      if (i < all.length - 1) row.title = 'Abre a coleta amostral por hotel. Nesta base fictícia só ' + ((all[all.length - 1].querySelector('span') || {}).textContent || 'o último mês') + ' tem o detalhe por hotel.';
     });
   }
   function pass() {
     var main = document.getElementById('main'); if (!main) return;
-    bars(main); tiles(main); trend(main);
+    bars(main); tiles(main); trend(main); history(main);
   }
   document.addEventListener('click', function (e) {
     var el = e.target.closest && e.target.closest('[data-np-drill]'); if (!el) return;
