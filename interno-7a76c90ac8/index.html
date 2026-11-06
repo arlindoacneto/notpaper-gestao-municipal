@@ -3355,7 +3355,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     caption('', msg, true);
   }
   function start(m) {
-    if (inFrame) { blocked('Dentro do claude.ai o microfone é bloqueado. Para comandar por voz, use o link publicado no GitHub, no Chrome ou no Edge.'); return; }
+    // dentro de outra página (claude.ai) tenta mesmo assim; o aviso só aparece se o navegador recusar
     if (!Rec) { blocked('Este navegador não reconhece voz. Use o Chrome ou o Edge.'); return; }
     stop(true);
     mode = m; rec = new Rec(); rec.lang = 'pt-BR'; rec.interimResults = true; rec.maxAlternatives = 3; rec.continuous = m === 'cont';
@@ -3372,7 +3372,8 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       }
     };
     rec.onerror = function (e) {
-      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { mode = 'off'; blocked('O microfone não foi autorizado. Clique no cadeado da barra de endereço, permita o microfone e tente de novo.'); }
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { mode = 'off'; blocked(inFrame ? 'Esta página está aberta dentro de outra (link do claude.ai), que bloqueia o microfone. Use o link do GitHub: arlindoacneto.github.io/notpaper-gestao-municipal' : 'O microfone não foi autorizado. Clique no ícone à esquerda do endereço, em Configurações do site, permita o microfone e recarregue a página.'); }
+      else if (e.error === 'audio-capture') { mode = 'off'; blocked('Nenhum microfone encontrado. Confira se o microfone está ligado e escolhido no Windows e no Chrome.'); }
       else if (e.error === 'no-speech' && mode === 'once') caption('', 'Não ouvi nada. Toque em Falar e diga o comando.', false);
       else if (e.error === 'network') caption('', 'A voz precisa de internet.', false);
     };
@@ -3382,7 +3383,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       else if (mode === 'once') mode = 'off';
       setUI();
     };
-    try { rec.start(); } catch (x) { mode = 'off'; setUI(); }
+    try { rec.start(); } catch (x) { mode = 'off'; setUI(); blocked('Não foi possível ligar o microfone neste navegador. Use o Chrome ou o Edge pelo link do GitHub.'); }
   }
   function stop(silent) { var r = rec; rec = null; var was = mode; mode = 'off'; listening = false; if (r) { try { r.onend = null; r.abort(); } catch (x) {} } setUI(); if (!silent && was === 'cont') caption('', 'Escuta contínua desligada.', false); }
   function pauseForSpeech() { if (mode === 'cont' && rec) { try { rec.abort(); } catch (x) {} } }
