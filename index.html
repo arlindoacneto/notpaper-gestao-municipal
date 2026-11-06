@@ -2650,7 +2650,9 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     leaflet().then(function (L) {
       if (!host.isConnected) return;
       if (!gm.map || gm.map.getContainer() !== host) {
-        gm.map = L.map(host, { scrollWheelZoom:false, zoomControl:true }).setView([city.lat, city.lng], city.r > 4 ? 12 : 14); tiles(L, gm.map, host); gm.eqLayer = L.layerGroup().addTo(gm.map); gm.layer = L.layerGroup().addTo(gm.map); gm.city = null;
+        gm.map = L.map(host, { scrollWheelZoom:false, zoomControl:true }).setView([city.lat, city.lng], city.r > 4 ? 12 : 14);
+        gm.map.createPane('npDem').style.zIndex = 650;
+        host.focus = function () { HTMLElement.prototype.focus.call(this, { preventScroll:true }); }; tiles(L, gm.map, host); gm.eqLayer = L.layerGroup().addTo(gm.map); gm.layer = L.layerGroup().addTo(gm.map); gm.city = null;
       }
       gm.layer.clearLayers(); gm.eqLayer.clearLayers();
       var msg = $('.np-gm-eqmsg', box);
@@ -2674,7 +2676,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       }
       rows.forEach(function (r) {
         var unit = r.g.tipo === 'unidade', reg = r.g.precisao === 'região';
-        var m = L.circleMarker([r.g.lat, r.g.lng], { radius:unit ? 6 : reg ? 9 : 6, color:unit ? COLOR[r.st] : '#ffffff', weight:unit ? 2.5 : 1.5, fillColor:COLOR[r.st], fillOpacity:unit ? .15 : reg ? .45 : .9 });
+        var m = L.circleMarker([r.g.lat, r.g.lng], { pane:'npDem', radius:unit ? 6 : reg ? 9 : 6, color:unit ? COLOR[r.st] : '#ffffff', weight:unit ? 2.5 : 1.5, fillColor:COLOR[r.st], fillOpacity:unit ? .15 : reg ? .45 : .9 });
         m.bindPopup('<div class="np-gm-pop"><small>' + esc(r.kind) + ' · ' + esc(r.secretary) + '</small><b>' + esc(r.id) + '</b><span>' + esc(r.title) + '</span><em class="np-st-' + r.st + '">' + ST[r.st] + '</em><small>' + TIPO[r.g.tipo] + ' · ' + esc(r.g.regiao) + '</small>' +
           (r.open ? '<button type="button" data-np-gm-open="' + esc(r.key) + '">Abrir ficha</button>' : '') + '</div>');
         m.npKey = r.key; m.addTo(gm.layer);
