@@ -47,10 +47,10 @@
     <div class="frame" id="frame">
       <div class="fbar">
         <button class="fback" type="button" data-act="fclose"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Voltar ao HUB</button>
-        <div class="ftitle"><b></b><span>Se a página não aparecer, o sistema não permite ser exibido aqui: use "Abrir fora".</span></div>
+        <div class="ftitle"><b></b><span>Página em branco ou login que não avança? Use "Abrir fora".</span></div>
         <a class="fext" target="_blank" rel="noopener" data-act="fext">Abrir fora<svg viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a>
       </div>
-      <iframe title="Sistema" allow="fullscreen; clipboard-read; clipboard-write; camera; microphone; geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <iframe title="Sistema" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation" allow="fullscreen; clipboard-read; clipboard-write; camera; microphone; geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
     </div>
   </div>
   <script src="config.js"></script>

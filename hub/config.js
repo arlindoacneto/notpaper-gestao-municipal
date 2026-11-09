@@ -139,12 +139,11 @@ window.HUB_CONFIG = {
       ],
       casosTitulo: "Soluções em operação",
       casos: [
-        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br", abrirEm: "aba", imagem: "assets/img/athena.jpg" },
+        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br", imagem: "assets/img/athena.jpg" },
         { nome: "Secretaria Municipal de Cultura e Economia Criativa de São Paulo", desc: "Solução customizada para a gestão da secretaria", imagem: "assets/img/smc-sp.jpg" }
       ],
       base: "",
       url: "https://athena.agro.gov.br",
-      abrirEm: "aba", // login gov.br não pode ser exibido dentro de outra página
       rotuloUrl: "Ver o Athena (MAPA)"
     }
   ]
