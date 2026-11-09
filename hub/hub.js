@@ -128,7 +128,7 @@
         "<h2>" + esc(f.nome) + "</h2><h3>" + esc(f.sub) + "</h3></div></div>" +
       '<p class="rs">' + esc(f.resumo) + "</p><ul>" + items + "</ul>" +
       (f.casos && f.casos.length ? '<div class="cases"><div class="ct">' + esc(f.casosTitulo || "Casos") + "</div>" +
-        f.casos.map(function (c) { return '<div class="case' + (c.imagem ? " hasimg" : "") + '"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' : "") + ">" +
+        f.casos.map(function (c) { return '<div class="case' + (c.imagem ? " hasimg" : "") + '"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' + (c.abrirEm ? ' data-abrir="' + esc(c.abrirEm) + '"' : "") : "") + ">" +
           (c.imagem ? '<img class="thumb" data-act="zoom" data-img="' + esc(c.imagem) + '" src="' + esc(c.imagem) + '" alt="Tela do sistema">' : "") +
           '<div class="ctx"><b>' + esc(c.nome) + "</b><span>" + esc(c.desc || "") + "</span>" + (c.imagem ? '<em>Toque na imagem para ampliar</em>' : "") + "</div>" + (c.url ? icon("ext") : "") + "</div>"; }).join("") +
         "</div>" : "") +
@@ -153,15 +153,42 @@
 
   function openSystem() {
     if (!current || !current.url) return;
-    openUrl(current.url);
+    openUrl(current.url, current.abrirEm, current.nome);
   }
-  function openUrl(url) {
+  // abrirEm: "quadro" (padrão: dentro do HUB, com barra "Voltar ao HUB") ou "aba" (sistemas que não aceitam ser exibidos dentro de outra página)
+  function openUrl(url, abrirEm, titulo) {
     if (!url) return;
     var b = bridge();
     goHome(); // ao retornar do sistema, o HUB já está na tela inicial
-    if (b && b.openSystem) b.openSystem(url, String(C.retornoAutomaticoSistema || 0));
-    else window.open(url, "_blank", "noopener");
+    if (b && b.openSystem) { b.openSystem(url, String(C.retornoAutomaticoSistema || 0)); return; } // app Android: botão nativo
+    if (abrirEm === "aba") { window.open(url, "_blank", "noopener"); return; }
+    openFrame(url, titulo);
   }
+
+  // ---- Sistema dentro do HUB ----
+  var frame = document.getElementById("frame"), ifr = frame.querySelector("iframe");
+  // Troca o conteúdo do quadro sem criar entrada no histórico (o "voltar" do navegador volta ao HUB)
+  function frameLoad(url) {
+    try { ifr.contentWindow.location.replace(url); } catch (e) { ifr.src = url; }
+  }
+  function openFrame(url, titulo) {
+    frame.querySelector(".ftitle b").textContent = titulo || url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    frame.querySelector(".fext").href = url;
+    frameLoad(url);
+    frame.classList.add("on");
+    try { history.pushState({ hubFrame: 1 }, ""); } catch (e) {}
+  }
+  function closeFrame(fromHistory) {
+    if (!frame.classList.contains("on")) return;
+    frame.classList.remove("on");
+    frameLoad("about:blank");
+    goHome();
+    if (!fromHistory) { try { if (history.state && history.state.hubFrame) history.back(); } catch (e) {} }
+  }
+  frame.querySelector("[data-act=fclose]").addEventListener("click", function () { closeFrame(false); });
+  frame.querySelector("[data-act=fext]").addEventListener("click", function () { setTimeout(function () { closeFrame(false); }, 300); });
+  // Gesto/botão "voltar" do navegador fecha o sistema e volta ao HUB
+  window.addEventListener("popstate", function () { closeFrame(true); });
 
   function armIdle() {
     clearTimeout(idleTimer);
@@ -185,7 +212,7 @@
     if (!a) { if (e.target === detail) goHome(); else armIdle(); return; }
     var act = a.getAttribute("data-act");
     if (act === "open") openSystem(); else if (act === "video") playVideo();
-    else if (act === "case") openUrl(a.getAttribute("data-url"));
+    else if (act === "case") openUrl(a.getAttribute("data-url"), a.getAttribute("data-abrir"), a.querySelector("b") && a.querySelector("b").textContent);
     else if (act === "zoom") openZoom(a.getAttribute("data-img")); else goHome();
   });
   document.addEventListener("pointerdown", function () { if (detail.classList.contains("on")) armIdle(); }, true);
@@ -216,6 +243,7 @@
 
   // Chamados pela camada Android
   window.hubBack = function () {
+    if (frame.classList.contains("on")) { closeFrame(false); return true; }
     if (player.classList.contains("on")) { closeVideo(); return true; }
     if (zoom.classList.contains("on")) { zoom.classList.remove("on"); return true; }
     if (detail.classList.contains("on")) { goHome(); return true; } return false; };

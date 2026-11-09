@@ -7,7 +7,8 @@
  *
  * Links: NotPaper Gestor = arlindoacneto.github.io/notpaper-gestao-municipal (projeto design modernista, versão PÚBLICA)
  *        NotPaper (workflow, processos, assinatura, IA) e GED = notpaper.notpaper.com.br
- * "url": botão "Acessar o sistema" (vazio = oculto).
+ * "url": botão "Acessar o sistema" (vazio = oculto). Abre DENTRO do HUB com a barra "Voltar ao HUB".
+ * "abrirEm": "aba" para sistemas que se recusam a abrir dentro de outra página (ex.: login gov.br).
  * "video": botão "Assistir ao vídeo" (arquivo dentro de assets/video, funciona offline).
  */
 window.HUB_CONFIG = {
@@ -138,11 +139,12 @@ window.HUB_CONFIG = {
       ],
       casosTitulo: "Soluções em operação",
       casos: [
-        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br", imagem: "assets/img/athena.jpg" },
+        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br", abrirEm: "aba", imagem: "assets/img/athena.jpg" },
         { nome: "Secretaria Municipal de Cultura e Economia Criativa de São Paulo", desc: "Solução customizada para a gestão da secretaria", imagem: "assets/img/smc-sp.jpg" }
       ],
       base: "",
       url: "https://athena.agro.gov.br",
+      abrirEm: "aba", // login gov.br não pode ser exibido dentro de outra página
       rotuloUrl: "Ver o Athena (MAPA)"
     }
   ]
