@@ -1,5 +1,5 @@
 /* NotPaper Hub — funcionamento offline (PWA). Trocar VERSAO a cada publicação. */
-var VERSAO = "notpaper-hub-v1";
+var VERSAO = "notpaper-hub-v2";
 var ARQUIVOS = [
   "./", "index.html", "hub.css", "hub.js", "config.js", "manifest.webmanifest",
   "assets/img/logo-dark.svg", "assets/img/symbol-dark.svg",

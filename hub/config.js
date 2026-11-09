@@ -87,7 +87,7 @@ window.HUB_CONFIG = {
         "Apoio na emissão e instalação"
       ],
       base: "MP nº 2.200-2/2001 — ICP-Brasil",
-      url: "https://www.soluti.com.br" // Soluti — somos AR credenciada (trocar pelo link da loja/AR, se houver)
+      url: "https://arinprint.acsoluti.com.br" // SiloCert: AR Inprint na AC Soluti
     },
     {
       id: "ged",
