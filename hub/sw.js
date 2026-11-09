@@ -1,5 +1,5 @@
 /* NotPaper Hub — funcionamento offline (PWA). Trocar VERSAO a cada publicação. */
-var VERSAO = "notpaper-hub-v4";
+var VERSAO = "notpaper-hub-v5";
 var ARQUIVOS = [
   "./", "index.html", "hub.css", "hub.js", "config.js", "manifest.webmanifest",
   "assets/img/logo-dark.svg", "assets/img/symbol-dark.svg", "assets/img/athena.jpg",
@@ -37,11 +37,24 @@ function respostaParcial(req, resp) {
   });
 }
 
+// Conteúdo (HTML, JS, CSS, config): busca SEMPRE a versão publicada; sem internet, usa a cópia salva.
+// Mídia (vídeo, imagens, fontes): usa a cópia salva (rápido e offline).
+function ehMidia(url) { return /\.(mp4|jpg|jpeg|png|svg|woff2)$/i.test(url.pathname); }
+
 self.addEventListener("fetch", function (e) {
-  var req = e.request;
-  if (req.method !== "GET" || new URL(req.url).origin !== location.origin) return;
-  e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
-    if (hit) return req.headers.get("range") ? respostaParcial(req, hit) : hit;
-    return fetch(req);
+  var req = e.request, url = new URL(req.url);
+  if (req.method !== "GET" || url.origin !== location.origin) return;
+  if (ehMidia(url)) {
+    e.respondWith(caches.match(req, { ignoreSearch: true }).then(function (hit) {
+      if (hit) return req.headers.get("range") ? respostaParcial(req, hit) : hit;
+      return fetch(req);
+    }));
+    return;
+  }
+  e.respondWith(fetch(req, { cache: "no-cache" }).then(function (resp) {
+    if (resp && resp.ok) { var copia = resp.clone(); caches.open(VERSAO).then(function (c) { c.put(req, copia); }); }
+    return resp;
+  }).catch(function () {
+    return caches.match(req, { ignoreSearch: true }).then(function (hit) { return hit || caches.match("index.html"); });
   }));
 });
