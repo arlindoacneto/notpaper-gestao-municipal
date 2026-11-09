@@ -1093,6 +1093,9 @@ dialog.np-mapdlg .np-gm-map, dialog.np-mapdlg .np-gm-body { min-height:max(360px
   dialog.np-mapdlg .np-gm-side { order:8; border-top:1px solid var(--np-line); }
 }
 
+/* D-062: tentar de novo a busca dos equipamentos */
+.np-gm-retry { margin-left:6px; font:600 12px/16px var(--np-sans) !important; padding:3px 10px !important; border:1px solid var(--np-line-strong) !important; background:transparent !important; color:var(--np-teal) !important; cursor:pointer; }
+
 /* notPaper Modernist — navegação por voz (v1, D-037) */
 .np-voice { display:inline-flex; align-items:stretch; gap:0; margin-right:8px; }
 .np-voice button { display:inline-flex; align-items:center; gap:6px; font:600 13px/18px var(--np-sans) !important; padding:7px 12px !important; border:1px solid var(--np-line-strong) !important; background:var(--np-surface) !important; color:var(--np-ink) !important; cursor:pointer; border-radius:0 !important; }
@@ -2870,7 +2873,14 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     lp = new Promise(function (ok, no) { var s = document.createElement('script'); s.src = LURL; s.onload = function () { ok(window.L); }; s.onerror = function () { lp = null; no(new Error('mapa indisponível')); }; document.head.appendChild(s); });
     return lp;
   }
+  // o mapa acompanha qualquer mudança de tamanho da área (filtros que quebram linha, janela, celular girado)
+  function follow(map, host) {
+    if (!window.ResizeObserver) return;
+    var t = 0, ro = new ResizeObserver(function () { clearTimeout(t); t = setTimeout(function () { if (map._loaded && host.isConnected) map.invalidateSize({ pan:false }); }, 60); });
+    ro.observe(host); map.on('unload', function () { ro.disconnect(); });
+  }
   function tiles(L, map, host) {
+    follow(map, host);
     // mapa base aberto e sem chave (D-017); no tema escuro o CSS escurece os blocos do mapa
     map.attributionControl.setPrefix(false);
     var layer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }).addTo(map), fails = 0;
@@ -2953,7 +2963,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     if (cat === 'praca') return t.place === 'square' ? 'Praça' : 'Parque';
     return 'Equipamento social';
   }
-  var eqStore = {};
+  var eqStore = {}, OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
   function equipments() {
     var cid = city.name + '|' + city.uf;
     if (eqStore[cid]) return eqStore[cid];
@@ -2967,8 +2977,15 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       'nwr["leisure"~"^(pitch|park)$"]["name"](' + bb + ');' +
       'nwr["place"="square"]["name"](' + bb + ');' +
       ');out center tags 1500;';
-    var p = fetch('https://overpass-api.de/api/interpreter', { method:'POST', body:'data=' + encodeURIComponent(q), headers:{ 'Content-Type':'application/x-www-form-urlencoded' } })
-      .then(function (r) { if (!r.ok) throw new Error('overpass ' + r.status); return r.json(); })
+    var p = OVERPASS.reduce(function (prev, url) {
+      return prev.catch(function () {
+        // cada servidor tem 20 s; se travar, passa para o próximo
+        var ac = window.AbortController ? new AbortController() : null, tm = ac && setTimeout(function () { ac.abort(); }, 20000);
+        return fetch(url, { method:'POST', body:'data=' + encodeURIComponent(q), headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, signal:ac ? ac.signal : undefined })
+          .then(function (r) { if (!r.ok) throw new Error('overpass ' + r.status); return r.json(); })
+          .then(function (j) { clearTimeout(tm); return j; }, function (e) { clearTimeout(tm); throw e; });
+      });
+    }, Promise.reject(new Error('início')))
       .then(function (j) {
         var seen = {}, list = [];
         (j.elements || []).forEach(function (e) {
@@ -3019,7 +3036,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     dlg.innerHTML = '<div class="np-mapdlg-bar"><span class="np-geo-eye np-mapdlg-name">Mapa</span><button type="button" class="np-mapdlg-x" aria-label="Fechar mapa">Fechar ✕</button></div><section class="np-geomap" id="np-geomap"></section>';
     document.body.appendChild(dlg);
     $('.np-mapdlg-x', dlg).addEventListener('click', function () { dlg.close(); });
-    dlg.addEventListener('close', function () { if (gm.map) { gm.map.remove(); gm.map = null; } });
+    dlg.addEventListener('close', function () { if (!dlg.open && gm.map) { gm.map.remove(); gm.map = null; } });
     wire($('.np-geomap', dlg));
     return dlg;
   }
@@ -3101,7 +3118,10 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
             L.marker([e.lat, e.lng], { icon:icon, title:e.name }).bindPopup('<div class="np-gm-pop"><small>' + esc(c.name) + '</small><b>' + esc(e.name) + '</b><span>' + esc(e.kind) + (e.op ? ' · ' + esc(e.op) : '') + '</span>' + (e.addr ? '<small>' + esc(e.addr) + '</small>' : '') +
               '<small>Atividades e atendimentos deste local: em breve</small><a class="np-gm-poplink" href="' + streetUrl(g) + '" target="_blank" rel="noopener">Ver rua ↗</a></div>').addTo(gm.eqLayer);
           });
-        }).catch(function () { msg.textContent = window.parent !== window ? 'Dentro do claude.ai a página não pode buscar dados de outros sites. Para ver os equipamentos e o mapa de fundo, use o link publicado no GitHub.' : 'Não foi possível buscar os equipamentos agora (sem internet ou serviço ocupado). Tente de novo em instantes.'; });
+        }).catch(function () {
+          if (window.parent !== window) msg.textContent = 'Dentro do claude.ai a página não pode buscar dados de outros sites. Para ver os equipamentos e o mapa de fundo, use o link publicado no GitHub.';
+          else msg.innerHTML = 'Não foi possível buscar os equipamentos agora (sem internet ou serviço ocupado). <button type="button" class="np-gm-retry" data-np-gm-retry="1">Tentar de novo</button>';
+        });
       }
       rows.forEach(function (r) {
         var unit = r.g.tipo === 'unidade', reg = r.g.precisao === 'região';
@@ -3134,6 +3154,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
         if (!EQ.some(function (c) { return gm.cats[c.id]; })) EQ.forEach(function (c) { gm.cats[c.id] = true; });
         draw(box);
       }
+      else if (b.dataset.npGmRetry) { draw(box); }
       else if (b.dataset.npGmOnly) { EQ.forEach(function (c) { gm.cats[c.id] = true; }); draw(box); }
       else if (b.dataset.npGmSt) { gm.filt.st = b.dataset.npGmSt; $$('[data-np-gm-st]', box).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(box); }
       else if (b.dataset.npGmReg) { gm.filt.reg = b.dataset.npGmReg; draw(box); }
@@ -3171,7 +3192,8 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
       // da ficha: o mapa abre por cima e, ao fechar, a ficha continua aberta
       var key = b.dataset.npGeoGo, sol = currentSol();
       var rec = records().filter(function (x) { return x.key === key; })[0];
-      gm.sol = sol; if (rec && !inSol(rec)) sol = 'painel';
+      gm.sol = sol;
+      if (rec && !inSol(rec)) { sol = 'painel'; for (var k in SOL) { if (k === 'painel' || k === 'processos') continue; gm.sol = k; if (inSol(rec) && (!SOL[k].secs || SOL[k].secs.indexOf(rec.secretary) >= 0)) { sol = k; break; } } }
       openMap(sol, key);
     }
   });
