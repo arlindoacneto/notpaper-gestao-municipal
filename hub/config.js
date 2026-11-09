@@ -138,10 +138,9 @@ window.HUB_CONFIG = {
       ],
       casosTitulo: "Soluções em operação",
       casos: [
-        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br" },
+        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br", imagem: "assets/img/athena.jpg" },
         { nome: "Secretaria Municipal de Cultura de São Paulo", desc: "Solução customizada para a gestão da secretaria" }
       ],
-      imagem: "", // opcional: captura de tela do Athena (ex.: "assets/img/athena.png")
       base: "",
       url: "https://athena.agro.gov.br",
       rotuloUrl: "Ver o Athena (MAPA)"

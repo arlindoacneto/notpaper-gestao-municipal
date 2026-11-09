@@ -128,7 +128,9 @@
         "<h2>" + esc(f.nome) + "</h2><h3>" + esc(f.sub) + "</h3></div></div>" +
       '<p class="rs">' + esc(f.resumo) + "</p><ul>" + items + "</ul>" +
       (f.casos && f.casos.length ? '<div class="cases"><div class="ct">' + esc(f.casosTitulo || "Casos") + "</div>" +
-        f.casos.map(function (c) { return '<div class="case"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' : "") + '><b>' + esc(c.nome) + "</b><span>" + esc(c.desc || "") + "</span>" + (c.url ? icon("ext") : "") + "</div>"; }).join("") +
+        f.casos.map(function (c) { return '<div class="case' + (c.imagem ? " hasimg" : "") + '"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' : "") + ">" +
+          (c.imagem ? '<img class="thumb" data-act="zoom" data-img="' + esc(c.imagem) + '" src="' + esc(c.imagem) + '" alt="Tela do sistema">' : "") +
+          '<div class="ctx"><b>' + esc(c.nome) + "</b><span>" + esc(c.desc || "") + "</span>" + (c.imagem ? '<em>Toque na imagem para ampliar</em>' : "") + "</div>" + (c.url ? icon("ext") : "") + "</div>"; }).join("") +
         "</div>" : "") +
       (f.imagem ? '<img class="shot" src="' + esc(f.imagem) + '" alt="">' : "") +
       (f.base ? '<div class="lg">' + '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS.law + "</svg>" + esc(f.base) + "</div>" : "") +
@@ -183,9 +185,15 @@
     if (!a) { if (e.target === detail) goHome(); else armIdle(); return; }
     var act = a.getAttribute("data-act");
     if (act === "open") openSystem(); else if (act === "video") playVideo();
-    else if (act === "case") openUrl(a.getAttribute("data-url")); else goHome();
+    else if (act === "case") openUrl(a.getAttribute("data-url"));
+    else if (act === "zoom") openZoom(a.getAttribute("data-img")); else goHome();
   });
   document.addEventListener("pointerdown", function () { if (detail.classList.contains("on")) armIdle(); }, true);
+
+  // ---- Ampliar imagem (tela cheia) ----
+  var zoom = document.getElementById("zoom");
+  function openZoom(src) { zoom.querySelector("img").src = src; zoom.classList.add("on"); armIdle(); }
+  zoom.addEventListener("click", function () { zoom.classList.remove("on"); armIdle(); });
 
   // ---- Player de vídeo (tela cheia, offline) ----
   var player = document.getElementById("player"), vid = player.querySelector("video");
@@ -209,6 +217,7 @@
   // Chamados pela camada Android
   window.hubBack = function () {
     if (player.classList.contains("on")) { closeVideo(); return true; }
+    if (zoom.classList.contains("on")) { zoom.classList.remove("on"); return true; }
     if (detail.classList.contains("on")) { goHome(); return true; } return false; };
   window.hubHome = goHome;
 })();
