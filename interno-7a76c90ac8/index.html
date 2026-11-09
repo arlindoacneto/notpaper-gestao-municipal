@@ -1827,7 +1827,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
 })();
 
 
-</script><script>window.NP_MODE="interno";window.NP_SHELL=true;
+</script><script>window.NP_MODE="interno";window.NP_SHELL=true;window.NP_EQCOPY={};
 /* notPaper Modernist — ajustes de execução: modo, cor de área por sigla, tema claro/escuro. */
 (function () {
   'use strict';
@@ -2798,13 +2798,14 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
   /* ---------- Cidade da demonstração ---------- */
   var CITIES = [
     { name:'Poá', uf:'SP', lat:-23.5249, lng:-46.3446, r:2.2, cep:'085' },
-    { name:'Uberlândia', uf:'MG', lat:-18.9188, lng:-48.2768, r:6.5, cep:'384' },
+    { name:'Uberaba', uf:'MG', lat:-19.7477, lng:-47.9392, r:4.5, cep:'380' },
     { name:'Monsenhor Paulo', uf:'MG', lat:-21.7578, lng:-45.5411, r:0.9, cep:'37405', noEq:true },
     { name:'São Paulo', uf:'SP', lat:-23.5507, lng:-46.6334, r:9, cep:'01' },
     { name:'Fortaleza', uf:'CE', lat:-3.7319, lng:-38.5267, r:7, cep:'60' }
   ];
   var KEY = 'np-geo-city';
-  function loadCity() { try { var c = JSON.parse(localStorage.getItem(KEY)); if (c && isFinite(c.lat) && isFinite(c.lng)) return CITIES.filter(function (p) { return p.name === c.name && p.uf === c.uf; })[0] || c; } catch (e) {} return CITIES[0]; }
+  function loadCity() { try { var c = JSON.parse(localStorage.getItem(KEY)); if (c && c.name === 'Uberlândia') c = { name:'Uberaba', uf:'MG', lat:0, lng:0 }; // feira é em Uberaba (D-023, corrigido em 2026-11-09)
+    if (c && isFinite(c.lat) && isFinite(c.lng)) return CITIES.filter(function (p) { return p.name === c.name && p.uf === c.uf; })[0] || c; } catch (e) {} return CITIES[0]; }
   var city = loadCity(), cache = {};
   function setCity(c) { city = c; cache = {}; try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} refresh(); if (!c.noEq) equipments().catch(function () {}); }
   function cityLabel(c) { return c.name + (c.uf ? ' (' + c.uf + ')' : ''); }
@@ -2982,6 +2983,9 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
   function equipments() {
     var cid = city.name + '|' + city.uf;
     if (eqStore[cid]) return eqStore[cid];
+    // cidades da lista têm cópia embutida (feiras): abre na hora e não depende do serviço do OpenStreetMap
+    var cp = (window.NP_EQCOPY || {})[cid];
+    if (cp && cp.list && cp.list.length) return (eqStore[cid] = Promise.resolve(cp.list));
     try { var s = JSON.parse(sessionStorage.getItem('np-eq|' + cid)); if (s && s.list) return (eqStore[cid] = Promise.resolve(s.list)); } catch (e) {}
     var d = kmToDeg(city.r * 1.3, city.lat), bb = [city.lat - d.la, city.lng - d.lo, city.lat + d.la, city.lng + d.lo].map(function (x) { return x.toFixed(5); }).join(',');
     var q = '[out:json][timeout:25];(' +
@@ -3124,7 +3128,8 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
           var n = {}; list.forEach(function (e) { n[e.cat] = (n[e.cat] || 0) + 1; });
           EQ.forEach(function (c) { var s = $('[data-np-gm-n="' + c.id + '"]', box); if (s) s.textContent = n[c.id] || 0; });
           var shown = list.filter(function (e) { return gm.cats[e.cat]; });
-          msg.textContent = shown.length + ' de ' + list.length + ' equipamentos no mapa. Fonte: OpenStreetMap, cadastro colaborativo; pode faltar algum local.';
+          var cp = (window.NP_EQCOPY || {})[city.name + '|' + city.uf];
+          msg.textContent = shown.length + ' de ' + list.length + ' equipamentos no mapa. Fonte: OpenStreetMap' + (cp ? ', cópia de ' + cp.data.split('-').reverse().join('/') : '') + ', cadastro colaborativo; pode faltar algum local.';
           gm.eqLayer.clearLayers();
           shown.forEach(function (e) {
             var c = EQ.filter(function (x) { return x.id === e.cat; })[0];
@@ -3433,7 +3438,7 @@ window.MUNICIPAL={data:D,state,go,answer,recognize,procurement:procurement.test,
     })();
   }
   function help() {
-    caption('', 'Você pode dizer: “abrir saúde”, “ir para o gabinete”, “abrir mapa”, “mostrar só escolas”, “mostrar atrasados”, “trocar cidade para Uberlândia”, “abrir protocolo 50”, “abrir contrato 1”, “fechar” ou fazer uma pergunta.', true);
+    caption('', 'Você pode dizer: “abrir saúde”, “ir para o gabinete”, “abrir mapa”, “mostrar só escolas”, “mostrar atrasados”, “trocar cidade para Uberaba”, “abrir protocolo 50”, “abrir contrato 1”, “fechar” ou fazer uma pergunta.', true);
     speak('Você pode dizer, por exemplo: abrir saúde, abrir mapa, mostrar só escolas, ou abrir protocolo cinquenta.');
     return '';
   }
