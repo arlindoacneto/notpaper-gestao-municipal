@@ -13,6 +13,7 @@
     check: '<circle cx="12" cy="12" r="9"/><path d="M8 12.2l2.7 2.7L16.2 9.4"/>',
     ext: '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/>',
     home: '<path d="M3.5 11L12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/>',
+    code: '<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M13.5 4l-3 16"/>',
     play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/>',
     law: '<path d="M12 3v18M5 7h14M7 7l-3 7a3.5 3.5 0 0 0 6 0L7 7zM17 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7zM8 21h8"/>'
   };
@@ -25,7 +26,8 @@
     sign:   { x: 805, y: 352, w: 470, h: 152 },
     ged:    { x: 275, y: 888, w: 470, h: 152 },
     cert:   { x: 805, y: 888, w: 470, h: 152 },
-    omni:   { x: 540, y: 1132, w: 560, h: 152 }
+    omni:   { x: 275, y: 1132, w: 470, h: 152 },
+    dev:    { x: 805, y: 1132, w: 470, h: 152 }
   };
   var CX = 540, CY = 620;
 
@@ -101,7 +103,7 @@
   window.addEventListener("resize", fit); fit();
 
   document.getElementById("bg").innerHTML = background(1080, 1920, 11);
-  document.getElementById("selo").innerHTML = esc(C.selo).replace(/\. /, ".<br>").replace(/(SEIS FRENTES\.) /, "$1<br>");
+  document.getElementById("selo").innerHTML = esc(C.selo).replace(/\. /, ".<br>").replace(/(FRENTES\.) /, "$1<br>");
   var fr = esc(C.frase).split(", ");
   document.getElementById("frase").innerHTML = fr.length > 1 ? fr[0] + ',<br><span class="grad">' + fr.slice(1).join(", ") + "</span>" : esc(C.frase);
   document.getElementById("subfrase").textContent = C.subfrase;
@@ -125,10 +127,14 @@
         (f.destaque ? '<span class="bdg">' + esc(f.destaque) + "</span>" : "") +
         "<h2>" + esc(f.nome) + "</h2><h3>" + esc(f.sub) + "</h3></div></div>" +
       '<p class="rs">' + esc(f.resumo) + "</p><ul>" + items + "</ul>" +
+      (f.casos && f.casos.length ? '<div class="cases"><div class="ct">' + esc(f.casosTitulo || "Casos") + "</div>" +
+        f.casos.map(function (c) { return '<div class="case"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' : "") + '><b>' + esc(c.nome) + "</b><span>" + esc(c.desc || "") + "</span>" + (c.url ? icon("ext") : "") + "</div>"; }).join("") +
+        "</div>" : "") +
+      (f.imagem ? '<img class="shot" src="' + esc(f.imagem) + '" alt="">' : "") +
       (f.base ? '<div class="lg">' + '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS.law + "</svg>" + esc(f.base) + "</div>" : "") +
       '<div class="act">' +
         (f.video ? '<div class="btn pri" data-act="video">' + icon("play") + "Assistir ao vídeo</div>" : "") +
-        (f.url ? '<div class="btn pri" data-act="open">' + icon("ext") + "Acessar o sistema</div>" : "") +
+        (f.url ? '<div class="btn pri" data-act="open">' + icon("ext") + esc(f.rotuloUrl || "Acessar o sistema") + "</div>" : "") +
         '<div class="btn sec" data-act="home">' + icon("home") + "Voltar ao HUB</div>" +
       "</div>" +
       '<div class="timer"><i></i></div>';
@@ -145,7 +151,11 @@
 
   function openSystem() {
     if (!current || !current.url) return;
-    var url = current.url, b = bridge();
+    openUrl(current.url);
+  }
+  function openUrl(url) {
+    if (!url) return;
+    var b = bridge();
     goHome(); // ao retornar do sistema, o HUB já está na tela inicial
     if (b && b.openSystem) b.openSystem(url, String(C.retornoAutomaticoSistema || 0));
     else window.open(url, "_blank", "noopener");
@@ -172,7 +182,8 @@
     var a = e.target.closest("[data-act]");
     if (!a) { if (e.target === detail) goHome(); else armIdle(); return; }
     var act = a.getAttribute("data-act");
-    if (act === "open") openSystem(); else if (act === "video") playVideo(); else goHome();
+    if (act === "open") openSystem(); else if (act === "video") playVideo();
+    else if (act === "case") openUrl(a.getAttribute("data-url")); else goHome();
   });
   document.addEventListener("pointerdown", function () { if (detail.classList.contains("on")) armIdle(); }, true);
 

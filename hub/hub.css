@@ -148,3 +148,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--np-i
 .player video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
 .player .vback { position: absolute; left: 50%; bottom: 60px; transform: translateX(-50%); width: 420px; background: rgba(3, 10, 38, 0.82);
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+
+/* ---------- Casos (Desenvolvimento Sob Medida) ---------- */
+.panel .cases { margin-top: 34px; display: grid; gap: 14px; }
+.panel .cases .ct { font-family: "Poppins"; font-weight: 600; font-size: 20px; letter-spacing: 4px; text-transform: uppercase; color: var(--np-cyan); }
+.panel .case { position: relative; padding: 20px 70px 20px 24px; border-radius: 18px; background: rgba(255,255,255,.05); border: 1.5px solid rgba(110,160,255,.35); }
+.panel .case[data-url] { cursor: pointer; }
+.panel .case b { display: block; font-family: "Poppins"; font-weight: 600; font-size: 27px; }
+.panel .case span { display: block; font-size: 22px; color: var(--np-muted); margin-top: 4px; }
+.panel .case svg { position: absolute; right: 24px; top: 50%; width: 30px; height: 30px; margin-top: -15px; stroke: var(--np-cyan); fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.panel .shot { display: block; width: 100%; margin-top: 26px; border-radius: 16px; border: 1.5px solid rgba(110,160,255,.35); }

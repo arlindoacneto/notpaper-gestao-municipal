@@ -12,7 +12,7 @@
  */
 window.HUB_CONFIG = {
   marca: "NotPaper Hub",
-  selo: "UM HUB. SEIS FRENTES. ZERO PAPEL.",
+  selo: "UM HUB. SETE FRENTES. ZERO PAPEL.",
   frase: "Onde o papel termina, a gestão inteligente começa.",
   subfrase: "IA, automação e validade jurídica integradas — o que há de mais moderno em gestão pública.",
   rodape: "notpaper.com.br · assinador.silosign.com.br",
@@ -122,6 +122,29 @@ window.HUB_CONFIG = {
       url: "",
       video: "assets/video/omnichannel.mp4",
       poster: "assets/video/omnichannel-poster.jpg"
+    },
+    {
+      id: "dev",
+      nome: "Desenvolvimento Sob Medida",
+      sub: "Aplicações para desafios específicos",
+      icone: "code",
+      resumo:
+        "Quando nenhuma solução padrão atende, nós desenvolvemos. Criamos aplicações específicas para resolver problemas particulares da gestão pública, integradas à plataforma NotPaper e com a mesma governança de processo, assinatura e documento.",
+      itens: [
+        "Diagnóstico do problema e desenho da solução junto à equipe do órgão",
+        "Aplicação web e mobile feita para a realidade de cada gestão",
+        "Integração com sistemas legados, bases de dados e a plataforma NotPaper",
+        "Implantação, treinamento e sustentação pela mesma equipe"
+      ],
+      casosTitulo: "Soluções em operação",
+      casos: [
+        { nome: "Ministério da Agricultura e Pecuária", desc: "Athena: solução desenvolvida sob medida para o ministério", url: "https://athena.agro.gov.br" },
+        { nome: "Secretaria Municipal de Cultura de São Paulo", desc: "Solução customizada para a gestão da secretaria" }
+      ],
+      imagem: "", // opcional: captura de tela do Athena (ex.: "assets/img/athena.png")
+      base: "",
+      url: "https://athena.agro.gov.br",
+      rotuloUrl: "Ver o Athena (MAPA)"
     }
   ]
 };
