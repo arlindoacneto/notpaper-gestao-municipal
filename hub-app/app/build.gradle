@@ -1,0 +1,52 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'br.com.notpaper.hub'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'br.com.notpaper.hub'
+        minSdk 24
+        targetSdk 35
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    // O conteúdo do HUB vem da pasta hub/ do site
+    sourceSets {
+        main {
+            assets.srcDirs = ['../build-assets'] // preenchido pelo workflow a partir de ../hub (sem a pasta arquivos)
+        }
+    }
+
+    signingConfigs {
+        release {
+            // Preenchido pelo GitHub Actions quando os secrets existem
+            def ks = System.getenv('HUB_KEYSTORE_FILE')
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv('HUB_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('HUB_KEY_ALIAS')
+                keyPassword System.getenv('HUB_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (System.getenv('HUB_KEYSTORE_FILE')) {
+                signingConfig signingConfigs.release
+            } else {
+                signingConfig signingConfigs.debug
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

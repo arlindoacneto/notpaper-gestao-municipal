@@ -1,0 +1,150 @@
+/* NotPaper Hub — estilos compartilhados (totem/app e banner) */
+@font-face { font-family: "Poppins"; font-weight: 400; src: url("assets/fonts/poppins-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 500; src: url("assets/fonts/poppins-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 600; src: url("assets/fonts/poppins-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 700; src: url("assets/fonts/poppins-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Poppins"; font-weight: 800; src: url("assets/fonts/poppins-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 400; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/inter-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  --np-blue: #1052ff;
+  --np-blue-2: #2f6bff;
+  --np-cyan: #49c6ff;
+  --np-ink: #030a26;
+  --np-navy: #071548;
+  --np-text: #ffffff;
+  --np-muted: #a9bdf2;
+  --np-card: rgba(10, 28, 92, 0.72);
+  --np-line: rgba(96, 150, 255, 0.38);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--np-ink); color: var(--np-text);
+  font-family: "Inter", system-ui, sans-serif; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+
+/* ---------- Fundo tecnológico ---------- */
+.bg { position: absolute; inset: 0; overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 47%, rgba(16, 82, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(25, 70, 220, 0.55), transparent 75%),
+    radial-gradient(ellipse 80% 30% at 50% 100%, rgba(16, 60, 210, 0.5), transparent 75%),
+    linear-gradient(180deg, #06124a 0%, #040c33 45%, #061654 100%); }
+.bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ---------- Diagrama do HUB (caixa 1080 x 1240) ---------- */
+.hub { position: absolute; width: 1080px; height: 1240px; }
+.hub-lines { position: absolute; inset: 0; width: 1080px; height: 1240px; overflow: visible; }
+.hub-lines .base { stroke: var(--np-line); stroke-width: 2.5; }
+.hub-lines .flow { stroke: #7fd3ff; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 26 520;
+  filter: drop-shadow(0 0 6px #49c6ff); animation: flow 3.2s linear infinite; }
+.hub-lines .dot { fill: var(--np-cyan); filter: drop-shadow(0 0 8px #49c6ff); }
+@keyframes flow { from { stroke-dashoffset: 546; } to { stroke-dashoffset: 0; } }
+
+.core { position: absolute; left: 540px; top: 620px; width: 0; height: 0; }
+.core .ring { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); }
+.core .r1 { width: 410px; height: 410px; border: 2px dashed rgba(90, 150, 255, 0.55); animation: spin 40s linear infinite; }
+.core .r2 { width: 520px; height: 520px; border: 1.5px dotted rgba(90, 150, 255, 0.35); animation: spin 70s linear infinite reverse; }
+.core .r3 { width: 360px; height: 360px; border: 6px solid rgba(16, 82, 255, 0.35);
+  border-top-color: var(--np-cyan); border-right-color: rgba(73, 198, 255, 0.0); animation: spin 9s linear infinite; }
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.core .disc { position: absolute; width: 330px; height: 330px; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4f8bff 0%, #1052ff 45%, #0a2bb8 100%);
+  box-shadow: 0 0 0 10px rgba(16, 82, 255, 0.18), 0 0 90px rgba(47, 107, 255, 0.85), inset 0 -18px 40px rgba(0, 10, 60, 0.45);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.core .disc img { height: 112px; filter: drop-shadow(0 6px 14px rgba(0, 0, 40, 0.45)); }
+.core .disc .t1 { font-family: "Poppins"; font-weight: 700; font-size: 44px; line-height: 1; letter-spacing: -0.5px; margin-top: 8px; }
+.core .disc .t2 { font-family: "Poppins"; font-weight: 600; font-size: 22px; letter-spacing: 12px; padding-left: 12px; color: #cfe0ff; }
+
+.card { position: absolute; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 22px;
+  padding: 0 28px; border-radius: 24px; background: var(--np-card);
+  border: 1.5px solid rgba(110, 160, 255, 0.42);
+  box-shadow: 0 18px 40px rgba(0, 6, 40, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.card .ic { flex: 0 0 auto; width: 72px; height: 72px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #2f6bff, #0b34c9); box-shadow: 0 6px 18px rgba(16, 82, 255, 0.55), inset 0 1px 0 rgba(255,255,255,.25); }
+.card .ic svg { width: 40px; height: 40px; stroke: #fff; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.card .nm { font-family: "Poppins"; font-weight: 700; font-size: 33px; line-height: 1.1; letter-spacing: -0.3px; }
+.card .sb { font-size: 20px; color: var(--np-muted); margin-top: 6px; line-height: 1.25; }
+.card.feat { border: none; background:
+    linear-gradient(var(--np-card), var(--np-card)) padding-box,
+    linear-gradient(120deg, #49c6ff, #1052ff 45%, #8a5bff) border-box;
+  border: 3px solid transparent; box-shadow: 0 0 60px rgba(47, 107, 255, 0.55), 0 18px 40px rgba(0, 6, 40, 0.55); }
+.card.feat .ic { width: 96px; height: 96px; border-radius: 24px; background: linear-gradient(145deg, #49c6ff, #1052ff 60%); }
+.card.feat .ic svg { width: 54px; height: 54px; }
+.card.feat .nm { font-size: 42px; }
+.card.feat .sb { font-size: 23px; color: #d6e4ff; }
+.card .badge { position: absolute; top: -20px; right: 26px; padding: 7px 18px; border-radius: 999px;
+  font-family: "Poppins"; font-weight: 700; font-size: 17px; letter-spacing: 3px; color: #031040;
+  background: linear-gradient(90deg, #7fe0ff, #49c6ff); box-shadow: 0 0 22px rgba(73, 198, 255, 0.8); }
+
+/* ---------- Totem / App ---------- */
+#viewport { position: fixed; inset: 0; background: var(--np-ink); }
+#stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 0 0; overflow: hidden; }
+
+.top { position: absolute; left: 70px; right: 70px; top: 96px; height: 110px; display: flex; align-items: center; }
+.top .logo { height: 92px; }
+.top .div { width: 2px; height: 70px; background: rgba(150, 185, 255, 0.45); margin: 0 30px; }
+.top .hubtag { font-family: "Poppins"; font-weight: 600; font-size: 30px; letter-spacing: 12px; color: #cfe0ff; }
+.top .selo { margin-left: auto; text-align: right; font-family: "Poppins"; font-weight: 700; font-style: italic;
+  font-size: 22px; letter-spacing: 3px; line-height: 1.45; color: var(--np-cyan); }
+
+#stage .hub { left: 0; top: 285px; }
+.card.tap { cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+.card.tap:active { transform: translate(-50%, -50%) scale(0.96); box-shadow: 0 0 70px rgba(73, 198, 255, 0.9); }
+
+.claim { position: absolute; left: 70px; right: 70px; top: 1572px; text-align: center; }
+.claim .f { font-family: "Poppins"; font-weight: 700; font-size: 50px; line-height: 1.18; letter-spacing: -0.6px; }
+.grad { background: linear-gradient(90deg, #7fe0ff, #49a6ff 50%, #8fb2ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.claim .s { font-size: 25px; color: var(--np-muted); margin-top: 16px; line-height: 1.4; }
+
+.hint { position: absolute; left: 50%; top: 1792px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px;
+  padding: 14px 30px; border-radius: 999px; border: 1.5px solid rgba(110, 160, 255, 0.45); background: rgba(16, 82, 255, 0.18);
+  font-family: "Poppins"; font-weight: 500; font-size: 22px; color: #dbe7ff; white-space: nowrap; animation: breathe 2.6s ease-in-out infinite; }
+.hint i { width: 14px; height: 14px; border-radius: 50%; background: var(--np-cyan); box-shadow: 0 0 14px var(--np-cyan); }
+@keyframes breathe { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+.foot { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; font-size: 18px; letter-spacing: 1px; color: rgba(169, 189, 242, 0.7); }
+
+/* ---------- Painel de detalhe ---------- */
+.detail { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 0 60px;
+  background: rgba(2, 8, 34, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+.detail.on { opacity: 1; pointer-events: auto; }
+.panel { position: relative; width: 100%; padding: 70px 64px 60px; border-radius: 36px;
+  background: linear-gradient(180deg, rgba(14, 38, 120, 0.96), rgba(6, 20, 74, 0.97));
+  border: 2px solid rgba(110, 160, 255, 0.45); box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6), 0 0 80px rgba(16, 82, 255, 0.35);
+  transform: translateY(40px) scale(0.98); transition: transform 0.3s cubic-bezier(.2,.8,.2,1); }
+.detail.on .panel { transform: none; }
+.panel .x { position: absolute; top: 26px; right: 26px; width: 74px; height: 74px; border-radius: 50%; border: 1.5px solid rgba(150,185,255,.45);
+  background: rgba(255,255,255,.06); color: #fff; font-size: 40px; line-height: 70px; text-align: center; cursor: pointer; }
+.panel .hd { display: flex; align-items: center; gap: 30px; }
+.panel .hd .ic { width: 128px; height: 128px; border-radius: 32px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  background: linear-gradient(145deg, #49c6ff, #1052ff 60%); box-shadow: 0 10px 30px rgba(16, 82, 255, 0.6); }
+.panel .hd .ic svg { width: 70px; height: 70px; stroke: #fff; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.panel .bdg { display: inline-block; margin-bottom: 10px; padding: 6px 16px; border-radius: 999px; font-family: "Poppins"; font-weight: 700;
+  font-size: 18px; letter-spacing: 3px; color: #031040; background: linear-gradient(90deg, #7fe0ff, #49c6ff); }
+.panel h2 { font-family: "Poppins"; font-weight: 700; font-size: 58px; line-height: 1.05; letter-spacing: -0.8px; }
+.panel h3 { font-family: "Poppins"; font-weight: 500; font-size: 28px; color: var(--np-cyan); margin-top: 8px; }
+.panel .rs { font-size: 31px; line-height: 1.5; color: #e4ecff; margin: 44px 0 34px; }
+.panel ul { list-style: none; display: grid; gap: 20px; }
+.panel li { display: flex; gap: 18px; align-items: flex-start; font-size: 27px; line-height: 1.35; color: #dbe6ff; }
+.panel li svg { flex: 0 0 auto; width: 36px; height: 36px; margin-top: 1px; stroke: var(--np-cyan); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.panel .lg { margin-top: 34px; display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px; border-radius: 14px;
+  background: rgba(73, 198, 255, 0.12); border: 1px solid rgba(73, 198, 255, 0.4); font-size: 22px; color: #bfe9ff; }
+.panel .act { display: grid; gap: 22px; margin-top: 54px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 16px; height: 104px; border-radius: 26px; cursor: pointer;
+  font-family: "Poppins"; font-weight: 600; font-size: 32px; border: none; color: #fff; transition: transform .15s ease; }
+.btn:active { transform: scale(0.97); }
+.btn svg { width: 34px; height: 34px; stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.btn.pri { background: linear-gradient(90deg, #2f6bff, #1052ff 60%, #0a3fe0); box-shadow: 0 12px 34px rgba(16, 82, 255, 0.6); }
+.btn.sec { background: rgba(255, 255, 255, 0.06); border: 2px solid rgba(150, 185, 255, 0.5); color: #dbe7ff; }
+.timer { position: absolute; left: 64px; right: 64px; bottom: 22px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden; }
+.timer i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #49c6ff, #1052ff); transform-origin: 0 0; }
+
+/* ---------- Player de vídeo ---------- */
+.player { position: absolute; inset: 0; background: #000; display: none; z-index: 5; }
+.player.on { display: block; }
+.player video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.player .vback { position: absolute; left: 50%; bottom: 60px; transform: translateX(-50%); width: 420px; background: rgba(3, 10, 38, 0.82);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }

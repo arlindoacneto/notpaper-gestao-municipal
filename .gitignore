@@ -1,0 +1,5 @@
+hub-app/build-assets/
+hub-app/.gradle/
+hub-app/app/build/
+hub-app/build/
+hub-app/dist/

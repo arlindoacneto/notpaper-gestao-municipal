@@ -1,0 +1,57 @@
+name: NotPaper Hub - APK
+
+# Gera o APK do NotPaper Hub (pasta hub/) e publica como release pública "hub-latest".
+# Link fixo: https://github.com/arlindoacneto/notpaper-gestao-municipal/releases/download/hub-latest/NotPaperHub.apk
+on:
+  push:
+    branches: [main]
+    paths: ["hub/**", "hub-app/**", ".github/workflows/notpaper-hub-apk.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notpaper-hub-apk
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK (plataforma 35)
+        run: |
+          SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          SM=$(ls -d "$SDK"/cmdline-tools/*/bin/sdkmanager | sort -V | tail -1)
+          yes | "$SM" --licenses > /dev/null || true
+          "$SM" "platforms;android-35" "build-tools;35.0.0" "platform-tools" > /dev/null
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Copiar conteúdo do HUB para o app
+        run: |
+          mkdir -p hub-app/build-assets
+          rsync -a --exclude arquivos --exclude downloads.html --exclude sw.js --exclude manifest.webmanifest hub/ hub-app/build-assets/
+
+      - name: Gerar APK
+        working-directory: hub-app
+        run: |
+          gradle --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/*.apk ../NotPaperHub.apk
+
+      - name: Publicar release hub-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete hub-latest --yes --cleanup-tag || true
+          gh release create hub-latest NotPaperHub.apk --title "NotPaper Hub (APK)" \
+            --notes "APK do NotPaper Hub gerado em $(date -u +'%Y-%m-%d %H:%M UTC') a partir de ${GITHUB_SHA::7}." --latest=false
