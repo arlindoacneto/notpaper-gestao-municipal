@@ -42,7 +42,8 @@ window.HUB_CONFIG = {
         "O prefeito pergunta, a base responde: consultas em linguagem natural por secretaria"
       ],
       base: "",
-      url: "https://arlindoacneto.github.io/notpaper-gestao-municipal/" // projeto design modernista (versão pública)
+      url: "https://arlindoacneto.github.io/notpaper-gestao-municipal/", // projeto design modernista (versão pública)
+      abrirEm: "aba" // página principal: dentro de quadro o Gestor desliga o microfone do assistente de voz
     },
     {
       id: "ecm",
