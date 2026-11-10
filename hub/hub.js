@@ -96,13 +96,15 @@
   var stage = document.getElementById("stage");
   if (!stage) return;
 
+  // Retrato (totem/celular) 1080x1920 · Paisagem (projetor) 1920x1080
+  var LAND = document.body.classList.contains("land"), SW = LAND ? 1920 : 1080, SH = LAND ? 1080 : 1920;
   function fit() {
-    var vw = window.innerWidth, vh = window.innerHeight, s = Math.min(vw / 1080, vh / 1920);
-    stage.style.transform = "translate(" + (vw - 1080 * s) / 2 + "px," + (vh - 1920 * s) / 2 + "px) scale(" + s + ")";
+    var vw = window.innerWidth, vh = window.innerHeight, s = Math.min(vw / SW, vh / SH);
+    stage.style.transform = "translate(" + (vw - SW * s) / 2 + "px," + (vh - SH * s) / 2 + "px) scale(" + s + ")";
   }
   window.addEventListener("resize", fit); fit();
 
-  document.getElementById("bg").innerHTML = background(1080, 1920, 11);
+  document.getElementById("bg").innerHTML = background(SW, SH, 11);
   document.getElementById("selo").innerHTML = esc(C.selo).replace(/\. /, ".<br>").replace(/(FRENTES\.) /, "$1<br>");
   var fr = esc(C.frase).split(", ");
   document.getElementById("frase").innerHTML = fr.length > 1 ? fr[0] + ',<br><span class="grad">' + fr.slice(1).join(", ") + "</span>" : esc(C.frase);
@@ -123,10 +125,12 @@
     var items = f.itens.map(function (t) { return "<li>" + icon("check") + "<span>" + esc(t) + "</span></li>"; }).join("");
     panel.innerHTML =
       '<div class="x" data-act="home" aria-label="Fechar">×</div>' +
+      (LAND ? '<div class="c1">' : "") +
       '<div class="hd"><div class="ic">' + icon(f.icone) + "</div><div>" +
         (f.destaque ? '<span class="bdg">' + esc(f.destaque) + "</span>" : "") +
         "<h2>" + esc(f.nome) + "</h2><h3>" + esc(f.sub) + "</h3></div></div>" +
       '<p class="rs">' + esc(f.resumo) + "</p><ul>" + items + "</ul>" +
+      (LAND ? '</div><div class="c2">' : "") +
       (f.casos && f.casos.length ? '<div class="cases"><div class="ct">' + esc(f.casosTitulo || "Casos") + "</div>" +
         f.casos.map(function (c) { return '<div class="case' + (c.imagem ? " hasimg" : "") + '"' + (c.url ? ' data-act="case" data-url="' + esc(c.url) + '"' + (c.abrirEm ? ' data-abrir="' + esc(c.abrirEm) + '"' : "") : "") + ">" +
           (c.imagem ? '<img class="thumb" data-act="zoom" data-img="' + esc(c.imagem) + '" src="' + esc(c.imagem) + '" alt="Tela do sistema">' : "") +
@@ -139,6 +143,7 @@
         (f.url ? '<div class="btn pri" data-act="open">' + icon("ext") + esc(f.rotuloUrl || "Acessar o sistema") + "</div>" : "") +
         '<div class="btn sec" data-act="home">' + icon("home") + "Voltar ao HUB</div>" +
       "</div>" +
+      (LAND ? "</div>" : "") +
       '<div class="timer"><i></i></div>';
     timerBar = panel.querySelector(".timer i");
     detail.classList.add("on");

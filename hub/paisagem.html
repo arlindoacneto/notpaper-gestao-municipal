@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="googlebot" content="noindex, nofollow, noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>NotPaper Hub · Paisagem</title>
+  <meta name="theme-color" content="#030a26">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NotPaper Hub Paisagem">
+  <link rel="manifest" href="manifest-paisagem.webmanifest">
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <link rel="stylesheet" href="hub.css">
+</head>
+<body class="land">
+  <div id="viewport">
+    <div id="stage">
+      <div class="bg" id="bg"></div>
+
+      <header class="top">
+        <img class="logo" src="assets/img/logo-dark.svg" alt="notpaper">
+        <span class="div"></span>
+        <span class="hubtag">HUB</span>
+        <div class="selo" id="selo"></div>
+      </header>
+
+      <div class="hub" id="hub"></div>
+
+      <section class="claim">
+        <div class="f" id="frase"></div>
+        <div class="s" id="subfrase"></div>
+      </section>
+
+      <div class="hint" id="dica"><i></i><span></span></div>
+      <div class="foot" id="foot"></div>
+
+      <div class="detail" id="detail"><div class="panel" id="panel"></div></div>
+      <div class="zoom" id="zoom"><img alt=""><div class="zhint">Toque para fechar</div></div>
+      <div class="player" id="player">
+        <video playsinline preload="none"></video>
+        <div class="btn sec vback" data-act="close"><svg viewBox="0 0 24 24"><path d="M3.5 11L12 4l8.5 7"/><path d="M6 9.5V20h12V9.5"/></svg>Voltar ao HUB</div>
+      </div>
+    </div>
+    <!-- Sistema aberto dentro do HUB (navegador/iPhone/Windows). Fica fora do #stage para usar o tamanho real da tela. -->
+    <div class="frame" id="frame">
+      <div class="fbar">
+        <button class="fback" type="button" data-act="fclose"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Voltar ao HUB</button>
+        <div class="ftitle"><b></b><span>Página em branco ou login que não avança? Use "Abrir fora".</span></div>
+        <a class="fext" target="_blank" rel="noopener" data-act="fext">Abrir fora<svg viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg></a>
+      </div>
+      <iframe title="Sistema" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads allow-storage-access-by-user-activation" allow="fullscreen; clipboard-read; clipboard-write; camera; microphone; geolocation" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script src="hub.js"></script>
+  <script>
+    // Instalação/offline só quando servido por http(s) (no app Android e no ZIP local é ignorado)
+    if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register("sw.js");
+  </script>
+</body>
+</html>

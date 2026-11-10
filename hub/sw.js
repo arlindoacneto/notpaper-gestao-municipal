@@ -1,7 +1,7 @@
 /* NotPaper Hub — funcionamento offline (PWA). Trocar VERSAO a cada publicação. */
-var VERSAO = "notpaper-hub-v11";
+var VERSAO = "notpaper-hub-v12";
 var ARQUIVOS = [
-  "./", "index.html", "hub.css", "hub.js", "config.js", "manifest.webmanifest",
+  "./", "index.html", "paisagem.html", "manifest-paisagem.webmanifest", "hub.css", "hub.js", "config.js", "manifest.webmanifest",
   "assets/img/logo-dark.svg", "assets/img/symbol-dark.svg", "assets/img/athena.jpg", "assets/img/smc-sp.jpg",
   "assets/icons/icon-180.png", "assets/icons/icon-192.png", "assets/icons/icon-512.png",
   "assets/fonts/poppins-latin-400-normal.woff2", "assets/fonts/poppins-latin-500-normal.woff2",

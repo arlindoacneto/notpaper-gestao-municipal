@@ -22,6 +22,7 @@
     h1 b { color: var(--cy); }
     p.lead { color: var(--mu); margin: 12px 0 30px; line-height: 1.5; }
     .grid { display: grid; gap: 16px; }
+    .sec { margin: 18px 0 2px; font-family: "Poppins"; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--cy); }
     a.item { display: flex; gap: 18px; align-items: center; padding: 20px 22px; border-radius: 18px; background: var(--card);
       border: 1.5px solid var(--line); color: var(--tx); text-decoration: none; transition: transform .15s, border-color .15s; }
     a.item:hover, a.item:focus-visible { transform: translateY(-2px); border-color: var(--cy); outline: none; }
@@ -41,29 +42,29 @@
   <p class="lead">Apresentação interativa do ecossistema NotPaper Hub: aplicativo para totem/tablet Android, versão web e arte do banner.</p>
 
   <div class="grid">
+    <div class="sec">1 · Android — retrato (totem, tablet, celular)</div>
     <a class="item" href="https://github.com/arlindoacneto/notpaper-gestao-municipal/releases/download/hub-latest/NotPaperHub.apk">
       <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div>
-      <div><div class="t">Aplicativo Android (APK)</div><div class="d">Para totem, tablet ou celular Android 7 ou superior. Funciona offline.</div></div>
+      <div><div class="t">Baixar APK Android</div><div class="d">Instale no aparelho. Vídeo e imagens já vêm dentro do app: funciona sem internet.</div></div>
     </a>
+    <div class="sec">2 · iPhone, iPad e Windows — retrato</div>
     <a class="item" href="index.html">
       <div class="ic"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
-      <div><div class="t">iPhone / iPad: abrir e instalar</div><div class="d">Abra no Safari → botão Compartilhar → "Adicionar à Tela de Início". Abre em tela cheia e funciona offline.</div></div>
+      <div><div class="t">Abrir versão retrato</div><div class="d">iPhone/iPad: Compartilhar → "Adicionar à Tela de Início". Windows: Edge/Chrome → "Instalar aplicativo".</div></div>
     </a>
-    <a class="item" href="index.html">
-      <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
-      <div><div class="t">Windows / Mac: abrir e instalar</div><div class="d">Abra no Edge ou Chrome → ícone "Instalar aplicativo" na barra de endereço. Vira um app com ícone próprio.</div></div>
+    <div class="sec">3 · Windows, Mac e iPad — paisagem (projetor)</div>
+    <a class="item" href="paisagem.html">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M8 21h8"/></svg></div>
+      <div><div class="t">Abrir versão paisagem</div><div class="d">Para projetor e TV 16:9. Abra em tela cheia (F11 no Windows) e instale como app se quiser.</div></div>
     </a>
+    <div class="sec">Outros arquivos</div>
     <a class="item" href="arquivos/NotPaperHub-web.zip" download>
       <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></div>
-      <div><div class="t">Versão offline para Windows (ZIP)</div><div class="d">Descompacte e dê dois cliques em index.html. Para notebook de stand sem internet.</div></div>
+      <div><div class="t">Versão offline para Windows (ZIP)</div><div class="d">Descompacte e abra index.html (retrato) ou paisagem.html (projetor). Sem internet.</div></div>
     </a>
     <a class="item" href="arquivos/notpaper-hub-banner-85x200.pdf" download>
       <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg></div>
       <div><div class="t">Banner roll-up 85 x 200 cm (PDF)</div><div class="d">Arquivo para a gráfica, em tamanho real.</div></div>
-    </a>
-    <a class="item" href="arquivos/notpaper-hub-banner-85x200-120dpi.jpg" download>
-      <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg></div>
-      <div><div class="t">Banner em imagem (JPG 120 dpi)</div><div class="d">Alternativa para gráficas que preferem imagem.</div></div>
     </a>
   </div>
 
@@ -72,7 +73,7 @@
     Para atualizar uma versão já instalada, desinstale a anterior primeiro.<br>
     <b>Totem Android:</b> use a fixação de tela (Configurações → Segurança → Fixar app) para manter o HUB sempre aberto.<br>
     <b>iPad em quiosque:</b> Ajustes → Acessibilidade → Acesso Guiado.<br>
-    <b>Windows em tela cheia:</b> tecla F11. A apresentação foi desenhada para tela vertical; em tela deitada ela aparece centralizada.
+    <b>Windows em tela cheia:</b> tecla F11. Em projetor ou TV, use a versão paisagem.
   </div>
   <footer>notpaper.com.br · assinador.silosign.com.br</footer>
 </main>
