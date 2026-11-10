@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NotPaper Hub · Teste do microfone</title>
+<style>
+  @font-face { font-family: "Poppins"; font-weight: 700; src: url("assets/fonts/poppins-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 400; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Inter"; font-weight: 600; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { min-height: 100vh; background: #040c33; color: #fff; font: 400 18px/1.5 "Inter", system-ui, sans-serif; padding: 28px 16px 60px; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font: 700 30px/1.2 "Poppins"; margin-bottom: 6px; }
+  p.sub { color: #a9bdf2; margin-bottom: 22px; }
+  button { display: block; width: 100%; padding: 20px; border: 0; border-radius: 18px; cursor: pointer; font: 700 22px/1 "Poppins"; color: #fff;
+    background: linear-gradient(90deg, #2f6bff, #1052ff); margin-bottom: 22px; }
+  button:disabled { opacity: .5; }
+  .row { display: flex; gap: 14px; align-items: flex-start; padding: 16px 18px; margin-bottom: 12px; border-radius: 14px; background: #0b2266; border: 1.5px solid rgba(110,160,255,.4); }
+  .row .st { flex: 0 0 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: #33416b; }
+  .row.ok .st { background: #1a9c5b; } .row.err .st { background: #c7334a; } .row.warn .st { background: #c98a12; }
+  .row b { display: block; font-weight: 600; }
+  .row span { color: #cfe0ff; font-size: 16px; }
+  .meter { height: 18px; border-radius: 9px; background: #1b2a5c; overflow: hidden; margin-top: 8px; }
+  .meter i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #49c6ff, #1aff9c); transition: width .08s; }
+  .fala { margin-top: 8px; font: 600 20px/1.4 "Inter"; color: #7fe0ff; }
+  .tec { margin-top: 18px; font-size: 13px; color: #8193c4; word-break: break-all; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Teste do microfone</h1>
+  <p class="sub">Toque no botão, permita o microfone e fale "olá, prefeitura". Depois tire um print desta tela.</p>
+  <button id="go">Iniciar teste</button>
+  <div id="res"></div>
+  <div class="tec" id="tec"></div>
+</main>
+<script>
+(function () {
+  var res = document.getElementById("res");
+  function linha(id, titulo, txt, cls) {
+    var el = document.getElementById(id);
+    if (!el) { el = document.createElement("div"); el.id = id; res.appendChild(el); }
+    el.className = "row " + (cls || "");
+    el.innerHTML = '<div class="st">' + ({ ok: "✓", err: "✕", warn: "!" }[cls] || "…") + "</div><div><b>" + titulo + "</b><span>" + txt + "</span></div>";
+    return el;
+  }
+  var standalone = matchMedia("(display-mode: standalone), (display-mode: fullscreen)").matches || navigator.standalone;
+  document.getElementById("tec").textContent = "Navegador: " + navigator.userAgent + " · App instalado: " + (standalone ? "sim" : "não") + " · Conexão segura: " + (window.isSecureContext ? "sim" : "não");
+
+  document.getElementById("go").onclick = async function () {
+    this.disabled = true; res.innerHTML = "";
+    // 1. Microfone físico
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      linha("m1", "1. Acesso ao microfone", "Este navegador não permite acesso ao microfone.", "err"); return;
+    }
+    var stream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      linha("m1", "1. Microfone encontrado e permitido", "O aparelho tem microfone e a permissão foi concedida.", "ok");
+    } catch (e) {
+      var msg = { NotFoundError: "Nenhum microfone encontrado: o aparelho não tem microfone ou ele está desconectado.",
+        NotAllowedError: "Permissão negada. Libere em: Configurações do Android → Apps → Chrome → Permissões → Microfone, e no Chrome: cadeado na barra de endereço → Microfone → Permitir.",
+        NotReadableError: "O microfone existe, mas está em uso por outro app ou travado pelo sistema." }[e.name] || ("Erro: " + e.name + " " + e.message);
+      linha("m1", "1. Microfone", msg, "err"); return;
+    }
+    // 2. Nível do som
+    var el2 = linha("m2", "2. Fale agora: o nível deve subir", '<div class="meter"><i id="lv"></i></div>', "");
+    var max = 0;
+    try {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)(), src = ctx.createMediaStreamSource(stream), an = ctx.createAnalyser();
+      an.fftSize = 512; src.connect(an); var buf = new Uint8Array(an.fftSize), t0 = performance.now();
+      await new Promise(function (ok) {
+        (function loop() {
+          an.getByteTimeDomainData(buf); var pk = 0; for (var i = 0; i < buf.length; i++) pk = Math.max(pk, Math.abs(buf[i] - 128));
+          max = Math.max(max, pk); var lv = document.getElementById("lv"); if (lv) lv.style.width = Math.min(100, pk / 64 * 100) + "%";
+          if (performance.now() - t0 < 5000) requestAnimationFrame(loop); else ok();
+        })();
+      });
+      ctx.close();
+    } catch (e) {}
+    stream.getTracks().forEach(function (t) { t.stop(); });
+    if (max > 10) linha("m2", "2. Som captado", "O microfone está captando a voz.", "ok");
+    else linha("m2", "2. Som muito baixo ou nenhum", "O microfone não captou voz. Verifique se está mudo, desconectado ou se há outro microfone selecionado.", "warn");
+    // 3. Reconhecimento de voz (o que o Gestor usa)
+    var R = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!R) { linha("m3", "3. Reconhecimento de voz", "Este navegador não tem reconhecimento de voz. O Gestor só aceita perguntas digitadas aqui.", "err"); return; }
+    linha("m3", "3. Reconhecimento de voz: fale \"olá, prefeitura\"", "Ouvindo…", "");
+    try {
+      var r = new R(); r.lang = "pt-BR"; r.interimResults = false; r.maxAlternatives = 1;
+      var feito = false;
+      r.onresult = function (e) { feito = true; linha("m3", "3. Reconhecimento de voz funcionando", 'Entendido: <div class="fala">"' + e.results[0][0].transcript + '"</div>', "ok"); };
+      r.onerror = function (e) {
+        feito = true;
+        var m = { "not-allowed": "Permissão de voz negada pelo navegador ou pelo sistema.",
+          "service-not-allowed": "O aparelho não tem o serviço de reconhecimento de voz do Google (comum em totens sem Google Play). O microfone funciona, mas o Android não converte fala em texto.",
+          "network": "Sem internet ou sem acesso aos servidores de voz do Google. O reconhecimento precisa de internet.",
+          "no-speech": "Nenhuma fala detectada. Toque em Iniciar teste de novo e fale mais perto.",
+          "audio-capture": "O reconhecimento de voz não conseguiu usar o microfone.",
+          "language-not-supported": "Português não está disponível no serviço de voz deste aparelho." }[e.error] || ("Erro: " + e.error);
+        linha("m3", "3. Reconhecimento de voz", m, e.error === "no-speech" ? "warn" : "err");
+      };
+      r.onend = function () { if (!feito) linha("m3", "3. Reconhecimento de voz", "Terminou sem resultado. Toque em Iniciar teste de novo.", "warn"); document.getElementById("go").disabled = false; };
+      r.start();
+    } catch (e) { linha("m3", "3. Reconhecimento de voz", "Não iniciou: " + e.message, "err"); }
+    document.getElementById("go").disabled = false;
+  };
+})();
+</script>
+</body>
+</html>
