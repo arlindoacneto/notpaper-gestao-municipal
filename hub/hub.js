@@ -161,7 +161,14 @@
     var b = bridge();
     goHome(); // ao retornar do sistema, o HUB já está na tela inicial
     if (b && b.openSystem) { b.openSystem(url, String(C.retornoAutomaticoSistema || 0)); return; } // app Android: botão nativo
-    if (abrirEm === "aba") { window.open(url, "_blank", "noopener"); return; }
+    if (abrirEm === "aba") {
+      // Sistemas que não aceitam quadro (ECM, gov.br): abrem na MESMA janela.
+      // App instalado no iPhone/Android: o sistema mostra o site com botão "OK"/"X" que volta ao HUB.
+      // No navegador comum: o botão/gesto "voltar" retorna ao HUB.
+      try { sessionStorage.setItem("hubVoltou", "1"); } catch (e) {}
+      location.href = url;
+      return;
+    }
     openFrame(url, titulo);
   }
 

@@ -8,7 +8,8 @@
  * Links: NotPaper Gestor = arlindoacneto.github.io/notpaper-gestao-municipal (projeto design modernista, versão PÚBLICA)
  *        NotPaper (workflow, processos, assinatura, IA) e GED = notpaper.notpaper.com.br
  * "url": botão "Acessar o sistema" (vazio = oculto). Abre DENTRO do HUB com a barra "Voltar ao HUB".
- * "abrirEm": "aba" para sistemas que se recusam a abrir dentro de outra página (ex.: login gov.br).
+ * "abrirEm": "aba" para sistemas que se recusam a abrir dentro de outra página (ECM, gov.br): abrem na mesma janela;
+ *   no app instalado (iPhone/Android) aparece o botão "OK"/"X" do sistema para voltar ao HUB.
  * "video": botão "Assistir ao vídeo" (arquivo dentro de assets/video, funciona offline).
  */
 window.HUB_CONFIG = {
