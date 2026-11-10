@@ -58,7 +58,10 @@
     var stream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      linha("m1", "1. Microfone encontrado e permitido", "O aparelho tem microfone e a permissão foi concedida.", "ok");
+      var nomes = [];
+      try { nomes = (await navigator.mediaDevices.enumerateDevices()).filter(function (d) { return d.kind === "audioinput"; }).map(function (d) { return d.label || "(sem nome)"; }); } catch (e) {}
+      var usado = (stream.getAudioTracks()[0] || {}).label || "";
+      linha("m1", "1. Microfone encontrado e permitido", "Entradas de som que o aparelho enxerga (" + nomes.length + "): <b>" + (nomes.join(" · ") || "nenhuma listada") + "</b>" + (usado ? "<br>Em uso no teste: <b>" + usado + "</b>" : ""), "ok");
     } catch (e) {
       var msg = { NotFoundError: "Nenhum microfone encontrado: o aparelho não tem microfone ou ele está desconectado.",
         NotAllowedError: "Permissão negada. Libere em: Configurações do Android → Apps → Chrome → Permissões → Microfone, e no Chrome: cadeado na barra de endereço → Microfone → Permitir.",
