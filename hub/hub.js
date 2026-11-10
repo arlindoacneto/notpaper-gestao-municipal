@@ -108,7 +108,7 @@
   document.getElementById("frase").innerHTML = fr.length > 1 ? fr[0] + ',<br><span class="grad">' + fr.slice(1).join(", ") + "</span>" : esc(C.frase);
   document.getElementById("subfrase").textContent = C.subfrase;
   document.getElementById("dica").lastChild.textContent = C.dica;
-  document.getElementById("foot").textContent = C.rodape;
+  document.getElementById("foot").textContent = C.rodape + (C.versao ? " · v" + C.versao : "");
   var hubEl = document.getElementById("hub");
   renderHub(hubEl, true);
 

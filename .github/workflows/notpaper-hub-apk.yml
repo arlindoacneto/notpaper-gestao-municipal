@@ -53,5 +53,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete hub-latest --yes --cleanup-tag || true
-          gh release create hub-latest NotPaperHub.apk --title "NotPaper Hub (APK)" \
-            --notes "APK do NotPaper Hub gerado em $(date -u +'%Y-%m-%d %H:%M UTC') a partir de ${GITHUB_SHA::7}." --latest=false
+          cp hub/arquivos/NotPaperHub-web.zip NotPaperHub-Windows-offline.zip
+          cat > notas.md <<NOTAS
+          ## NotPaper Hub 1.0 (build ${GITHUB_RUN_NUMBER})
+
+          **Android (totem, tablet, celular):** baixe \`NotPaperHub.apk\` abaixo e instale. Android 7+.
+
+          **iPhone / iPad:** abra https://arlindoacneto.github.io/notpaper-gestao-municipal/hub/ no Safari ou Chrome → Compartilhar → "Adicionar à Tela de Início".
+
+          **Windows / Mac:** abra o mesmo link no Edge ou Chrome → ícone "Instalar aplicativo". Sem internet: \`NotPaperHub-Windows-offline.zip\` (descompacte e abra \`index.html\`).
+
+          Gerado em $(date -u +'%Y-%m-%d %H:%M UTC') a partir de ${GITHUB_SHA::7}.
+          NOTAS
+          sed -i 's/^          //' notas.md
+          gh release create hub-latest NotPaperHub.apk NotPaperHub-Windows-offline.zip --title "NotPaper Hub 1.0" --notes-file notas.md --latest=false

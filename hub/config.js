@@ -14,6 +14,7 @@
  */
 window.HUB_CONFIG = {
   marca: "NotPaper Hub",
+  versao: "1.0",
   selo: "UM HUB. SETE FRENTES. ZERO PAPEL.",
   frase: "Onde o papel termina, a gestão inteligente começa.",
   subfrase: "IA, automação e validade jurídica integradas — o que há de mais moderno em gestão pública.",

@@ -10,8 +10,9 @@ android {
         applicationId 'br.com.notpaper.hub'
         minSdk 24
         targetSdk 35
-        versionCode 1
-        versionName '1.0.0'
+        // número da versão cresce a cada build (permite instalar por cima com a mesma chave)
+        versionCode Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '1')
+        versionName '1.0.' + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
     }
 
     // O conteúdo do HUB vem da pasta hub/ do site
