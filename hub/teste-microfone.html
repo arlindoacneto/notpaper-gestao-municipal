@@ -30,7 +30,7 @@
 </head>
 <body>
 <main>
-  <h1>Teste do microfone</h1>
+  <h1>Teste do microfone <small style="font:600 14px Inter;color:#49c6ff">v2</small></h1>
   <p class="sub">Toque no botão, permita o microfone e fale "olá, prefeitura". Depois tire um print desta tela.</p>
   <button id="go">Iniciar teste</button>
   <div id="res"></div>
@@ -101,7 +101,8 @@
           "network": "Sem internet ou sem acesso aos servidores de voz do Google. O reconhecimento precisa de internet.",
           "no-speech": "Nenhuma fala detectada. Toque em Iniciar teste de novo e fale mais perto.",
           "audio-capture": "O reconhecimento de voz não conseguiu usar o microfone.",
-          "language-not-supported": "Português não está disponível no serviço de voz deste aparelho." }[e.error] || ("Erro: " + e.error);
+          "language-not-supported": "Português não está disponível no serviço de voz deste aparelho.",
+          "aborted": "O Android interrompeu o reconhecimento de voz. Normalmente é porque não chega som do microfone (veja o item 2) ou porque o serviço de voz do Google não está disponível neste aparelho." }[e.error] || ("Erro: " + e.error);
         linha("m3", "3. Reconhecimento de voz", m, e.error === "no-speech" ? "warn" : "err");
       };
       r.onend = function () { if (!feito) linha("m3", "3. Reconhecimento de voz", "Terminou sem resultado. Toque em Iniciar teste de novo.", "warn"); document.getElementById("go").disabled = false; };
