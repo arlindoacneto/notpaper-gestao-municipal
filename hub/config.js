@@ -56,7 +56,8 @@ window.HUB_CONFIG = {
         "App do Cidadão: serviços, agendamentos e acompanhamento — pediu, acompanhou, resolveu"
       ],
       base: "Lei nº 14.129/2021 — Governo Digital",
-      url: "https://notpaper.notpaper.com.br"
+      url: "https://notpaper.notpaper.com.br",
+      abrirEm: "aba", // ECM bloqueia exibição em quadro; ver 06_INSTALACAO/configurando_exibicao_no_hub.md
     },
     {
       id: "sign",
@@ -104,7 +105,8 @@ window.HUB_CONFIG = {
         "Temporalidade e destinação conforme a tabela do órgão"
       ],
       base: "Decreto nº 10.278/2020 · Lei nº 12.682/2012",
-      url: "https://notpaper.notpaper.com.br"
+      url: "https://notpaper.notpaper.com.br",
+      abrirEm: "aba", // ECM bloqueia exibição em quadro; ver 06_INSTALACAO/configurando_exibicao_no_hub.md
     },
     {
       id: "omni",
