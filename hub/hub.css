@@ -207,3 +207,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--np-i
 .land .panel .case .thumb { width: 130px; height: 160px; }
 .land .zoom img { max-height: 960px; }
 .land .player .vback { bottom: 44px; }
+
+/* ================= TOTEM (HTML leve para aparelhos de exposição) ================= */
+/* Sem desfoques de transparência e sem sombras animadas: pesados para o processador gráfico dos totens */
+.totem .card, .totem .detail, .totem .player .vback, .totem .zoom { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.totem .card { background: #0b2266; }
+.totem .card.feat { background: linear-gradient(#0b2266, #0b2266) padding-box, linear-gradient(120deg, #49c6ff, #1052ff 45%, #8a5bff) border-box; box-shadow: 0 0 40px rgba(47, 107, 255, 0.45); }
+.totem .detail { background: rgba(2, 8, 34, 0.92); }
+.totem .hub-lines .flow, .totem .hub-lines .dot { filter: none; }
+.totem .core .r1, .totem .core .r2 { animation: none; }
+.totem .core .disc { box-shadow: 0 0 0 10px rgba(16, 82, 255, 0.18), 0 0 60px rgba(47, 107, 255, 0.7); }

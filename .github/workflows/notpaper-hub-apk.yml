@@ -40,7 +40,7 @@ jobs:
       - name: Copiar conteúdo do HUB para o app
         run: |
           mkdir -p hub-app/build-assets
-          rsync -a --exclude arquivos --exclude downloads.html --exclude sw.js --exclude manifest.webmanifest --exclude manifest-paisagem.webmanifest --exclude paisagem.html hub/ hub-app/build-assets/
+          rsync -a --exclude arquivos --exclude downloads.html --exclude sw.js --exclude manifest.webmanifest --exclude manifest-paisagem.webmanifest --exclude paisagem.html --exclude totem.html --exclude manifest-totem.webmanifest hub/ hub-app/build-assets/
 
       - name: Gerar APK
         working-directory: hub-app

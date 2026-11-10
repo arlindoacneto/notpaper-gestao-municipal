@@ -253,6 +253,15 @@
   player.querySelector("[data-act=close]").addEventListener("click", closeVideo);
   vid.addEventListener("click", function () { if (vid.paused) vid.play(); else vid.pause(); });
 
+  // ---- Modo totem: tela sempre ligada (substitui o recurso do APK) ----
+  if (document.body.classList.contains("totem") && "wakeLock" in navigator) {
+    var lock = null;
+    var pedir = function () { navigator.wakeLock.request("screen").then(function (l) { lock = l; }).catch(function () {}); };
+    pedir();
+    document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") pedir(); });
+    document.addEventListener("pointerdown", function () { if (!lock || lock.released) pedir(); }, true);
+  }
+
   // Chamados pela camada Android
   window.hubBack = function () {
     if (frame.classList.contains("on")) { closeFrame(false); return true; }
