@@ -39,7 +39,7 @@ window.HUB_CONFIG = {
         "Banco consolidado com os dados de todas as secretarias",
         "Data lake dos documentos, com origem e responsável identificados",
         "Uma base para dois usos: Omnichannel para o munícipe e painel para a gestão",
-        "O prefeito pergunta, a base responde: consultas em linguagem natural por secretaria"
+        "Inteligência Artificial: o prefeito pergunta, a base responde, por voz ou texto"
       ],
       base: "",
       url: "https://arlindoacneto.github.io/notpaper-gestao-municipal/", // projeto design modernista (versão pública)
@@ -103,7 +103,7 @@ window.HUB_CONFIG = {
         "Do arquivo morto ao acervo vivo. Digitalização conforme o Decreto nº 10.278/2020, que garante ao documento digitalizado o mesmo valor legal do original em papel.",
       itens: [
         "Metadados e conferência por assinatura ICP-Brasil",
-        "Extração de conteúdo (OCR) e busca instantânea",
+        "Inteligência Artificial na leitura (OCR), indexação e busca",
         "Controle de acesso, versões e trilha de auditoria",
         "Temporalidade e destinação conforme a tabela do órgão"
       ],
