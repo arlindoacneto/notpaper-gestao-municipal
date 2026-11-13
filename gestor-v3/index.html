@@ -262,6 +262,7 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .m-k-eq { border-radius: 50%; background: #3B82F6; } .m-k-ob { background: var(--accent); transform: rotate(45deg) scale(.85); } .m-k-ze { border-radius: 3px; background: var(--warn); opacity: .45; } .m-k-lc { background: #F5B031; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 .kpi strong.kpi-txt { white-space: normal; font-size: clamp(20px, 1.7vw, 24px); line-height: 1.2; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+@media (max-width: 520px) { th, td { padding-left: 6px; padding-right: 6px; } table { font-size: 13.5px; } .top .btn { padding: 0 11px; } .top { gap: 6px; } .perfil select { max-width: 112px; padding: 0 8px; } }
 @media (max-width: 1100px) { .grid2 { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 860px) {
   .app { grid-template-columns: minmax(0,1fr); }
