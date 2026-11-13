@@ -177,6 +177,16 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .perfis button:hover { border-color: var(--accent); color: var(--accent); }
 .nota { margin: 28px 0 0; padding: 14px 16px; border-radius: 12px; background: var(--surface2); border: 1px solid var(--line); font-size: 14px; line-height: 1.5; color: var(--muted); }
 .nota b { color: var(--ink); }
+.mp { display: grid; gap: 8px; }
+.mp-it { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 6px; align-items: stretch; }
+.mp-it > button:first-child { text-align: left; padding: 12px 14px; border-radius: 11px; border: 1px solid var(--accent); background: var(--accent-soft); font-size: 15px; line-height: 1.35; font-weight: 600; }
+.mp-it .mini { min-width: 44px; min-height: 44px; font-size: 16px; }
+.mp-it .mini.del-ok { background: var(--bad); border-color: var(--bad); color: #fff; font-size: 13px; }
+.mp-form { display: flex; gap: 6px; flex-wrap: wrap; }
+.mp-form input { flex: 1 1 220px; min-height: 44px; padding: 0 12px; border-radius: 11px; border: 1px solid var(--accent); background: var(--surface); color: var(--ink); font: 400 15px var(--f-body); }
+.mp-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.q-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px; }
+.q-row .mini { min-width: 44px; min-height: 44px; font-size: 18px; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 @media (max-width: 1100px) { .grid2 { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 860px) {
@@ -902,7 +912,7 @@ var PRONTAS_SEC = {
 };
 function prontasDe(sig) {
   if (sig === "geral") return ehPref() ? PRONTAS.geral : PRONTAS_SEC.geral;
-  if (!ehPref() && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome.toLowerCase() + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + ".", g: { tipo: "regua", dados: [Object.assign({}, l, { det: detLim(l) })] } }; }); });
+  if (!ehPref() && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + ".", g: { tipo: "regua", dados: [Object.assign({}, l, { det: detLim(l) })] } }; }); });
   if (!ehPref() && PRONTAS_SEC[sig]) return PRONTAS_SEC[sig];
   return PRONTAS[sig] || [];
 }
@@ -977,7 +987,7 @@ try { aplicarPerfil(localStorage.getItem("np-gestor-perfil") || "PREF"); } catch
 var selP = document.getElementById("perfilSel");
 selP.innerHTML = '<option value="PREF">Prefeito(a)</option>' + PERFIS.map(function (pf) { return '<option value="' + pf + '">' + esc(nomeSec(pf)) + "</option>"; }).join("");
 selP.value = PERFIL;
-function trocarPerfil(pf) { aplicarPerfil(pf); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} go("inicio"); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + ". Só os dados desta secretaria."); }
+function trocarPerfil(pf) { aplicarPerfil(pf); mpCarregar(); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} go("inicio"); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + ". Só os dados desta secretaria."); }
 selP.onchange = function () { trocarPerfil(selP.value); };
 function cat(sig) { return CATALOGO.filter(function (c) { return c.sigla === sig; })[0]; }
 function nome(sig) { return NOME_CURTO[sig] || cat(sig).nome; }
@@ -1081,6 +1091,7 @@ if (window.claude && window.claude.use) {
   window.claude.use("sample").then(function (s) { IA.sample = s; });
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
   window.claude.use("tts").then(function (t) { IA.tts = t; });
+  window.claude.use("db").then(function (d) { if (d) { MP.db = d; mpCarregar(); mpRedesenha(); } });
 }
 function abrirDeIA(det) {
   if (!det) return;
@@ -1098,14 +1109,17 @@ function abrirIA(aba, pre) {
   var b = document.getElementById("iaBody");
   if (IA.aba === "prontas") {
     var gTit = ehPref() ? "Visão geral" : nomeSec(PERFIL), grupos = sig === "geral" ? [[gTit, prontasDe("geral")]] : [[nome(sig), prontasDe(sig)], [gTit, prontasDe("geral")]];
-    b.innerHTML = '<p class="lead">Respostas calculadas na hora a partir da base. Escolha uma para demonstrar.</p><div class="qlist">' + grupos.map(function (g, gi) { return "<h4>" + esc(g[0]) + "</h4>" + g[1].map(function (p, i) { return '<button data-g="' + gi + '" data-i="' + i + '">' + esc(p.q) + "</button>"; }).join(""); }).join("") + '</div><div id="iaOut"></div>';
-    b.querySelectorAll(".qlist button").forEach(function (x) { x.onclick = function () { var p = grupos[+x.dataset.g][1][+x.dataset.i], r = p.a(); mostra(p.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração"); }; });
+    if (MP.perfil !== PERFIL) mpCarregar();
+    b.innerHTML = '<p class="lead">Respostas calculadas na hora a partir da base. Comece pelas suas perguntas padrão.</p><div class="qlist"><div id="mpBox">' + mpHtml() + "</div>" + grupos.map(function (g, gi) { return "<h4>Planejadas · " + esc(g[0]) + "</h4>" + g[1].map(function (p, i) { return '<div class="q-row"><button data-g="' + gi + '" data-i="' + i + '">' + esc(p.q) + '</button><button class="mini" data-add-g="' + gi + '" data-add-i="' + i + '" aria-label="Tornar padrão" title="Tornar padrão">+</button></div>'; }).join(""); }).join("") + '</div><div id="iaOut"></div>' + mpNota();
+    mpBind();
+    b.querySelectorAll("[data-add-g]").forEach(function (x) { x.onclick = function () { var q = grupos[+x.dataset.addG][1][+x.dataset.addI].q; if (MP.itens.some(function (y) { return y.q === q; })) { toast("Essa pergunta já é padrão."); return; } mpSalvar(MP.itens.concat([{ id: "q" + Date.now().toString(36), q: q }])); toast("Pergunta incluída como padrão."); }; });
+    b.querySelectorAll(".qlist [data-g]").forEach(function (x) { x.onclick = function () { var p = grupos[+x.dataset.g][1][+x.dataset.i], r = p.a(); mostra(p.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração"); }; });
   } else {
     var micOk = !!IA.dict || (!!(window.SpeechRecognition || window.webkitSpeechRecognition) && window.top === window);
     b.innerHTML = '<p class="lead">Pergunte com suas palavras sobre orçamento, receitas, limites, licitações, contratos, obras, filas da saúde ou zeladoria.</p>' +
       '<div class="ask"><textarea id="qIn" aria-label="Sua pergunta" placeholder="Ex.: Quanto a Educação já pagou este ano? Compare com a Saúde.">' + esc(pre || "") + '</textarea>' +
       '<div style="display:flex;flex-direction:column;gap:8px">' + (micOk ? '<button class="btn mic" id="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Falar</button>' : "") + '<button class="btn pri" id="qGo">Perguntar</button></div></div>' +
-      '<p class="note" id="iaNote">' + (IA.sample ? "A resposta usa somente os dados desta base de demonstração." : "Nesta versão, a pergunta digitada ou falada é ligada à pergunta planejada mais próxima e respondida com os dados da base. A IA livre funciona no claude.ai.") + "</p>" + (IOS ? '<p class="note">No iPhone, se o botão Falar não funcionar, toque no campo de texto e use o microfone 🎤 do teclado.</p>' : "") + '<div id="iaOut"></div>';
+      '<p class="note" id="iaNote">' + (IA.sample ? "A resposta usa somente os dados desta base de demonstração." : "Nesta versão, a pergunta digitada ou falada é ligada à pergunta planejada mais próxima e respondida com os dados da base. A IA livre funciona no claude.ai.") + "</p>" + (IOS ? '<p class="note">No iPhone, se o botão Falar não funcionar, toque no campo de texto e use o microfone 🎤 do teclado.</p>' : "") + '<div id="iaOut"></div>' + mpNota();
     document.getElementById("qGo").onclick = perguntar;
     document.getElementById("qIn").onkeydown = function (ev) { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); perguntar(); } };
     var m = document.getElementById("mic"); if (m) m.onclick = falar;
@@ -1136,9 +1150,76 @@ function responderLocal(q) {
     '<div class="qlist" style="margin-top:12px">' + sug.map(function (y, i) { return '<button data-sug="' + i + '">' + esc(y.x.p.q) + "</button>"; }).join("") + "</div>");
   document.querySelectorAll("#iaOut [data-sug]").forEach(function (b) { b.onclick = function () { var y = sug[+b.dataset.sug].x.p, r = y.a(); mostra(y.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração"); }; });
 }
+/* ---------- perguntas padrão por perfil (incluir, editar, excluir) ---------- */
+var PADROES = {
+  PREF: ["Como está o município hoje?", "O que está atrasado e precisa da minha decisão?", "Estamos cumprindo os limites legais?", "A arrecadação do IPTU está abaixo do previsto?", "Quais obras estão paralisadas e há quanto tempo?"],
+  SAU: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Qual especialidade tem a maior espera?", "Quantas vagas perdemos por falta do paciente?", "Como está o índice: Aplicação em saúde?"],
+  EDU: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Como está o índice: Aplicação em educação?", "Como está o índice: FUNDEB na remuneração dos profissionais?", "Quais contratos vencem nos próximos 60 dias?"],
+  OBR: ["Como está a minha secretaria?", "Quais obras estão paralisadas e há quanto tempo?", "Qual tipo de pedido mais passou do prazo?", "Qual bairro tem mais pedidos vencidos?", "Quais processos estão parados?"],
+  ADM: ["Como está a minha secretaria?", "Como está o índice: Despesa com pessoal (Executivo)?", "Quanto a secretaria já executou do orçamento?", "Quais contratos vencem nos próximos 60 dias?", "O que está atrasado e precisa da minha decisão?"],
+  ASS: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Quanto falta pagar de despesa já liquidada?", "Quais obras estão paralisadas e há quanto tempo?", "O que está atrasado e precisa da minha decisão?"],
+  FIN: ["A arrecadação do IPTU está abaixo do previsto?", "Quais receitas estão acima do previsto?", "Como está o índice: Despesa com pessoal (Executivo)?", "Quanto falta pagar de despesa já liquidada?", "O que está atrasado e precisa da minha decisão?"],
+  SEG: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Quais contratos vencem nos próximos 60 dias?", "Quais processos estão parados?", "O que está atrasado e precisa da minha decisão?"],
+  MAM: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Qual tipo de pedido mais passou do prazo?", "Quais contratos vencem nos próximos 60 dias?", "O que está atrasado e precisa da minha decisão?"],
+  CUL: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Quanto economizamos nas licitações do ano?", "Quais processos estão parados?", "Quanto foi empenhado e ainda não foi liquidado?"]
+};
+var MP = { db: null, unsub: null, itens: [], perfil: null, local: false, editando: null, apagar: null, fila: Promise.resolve() };
+function mpChave() { return "np-perguntas-" + PERFIL; }
+function mpPadrao() { return (PADROES[PERFIL] || []).map(function (q, i) { return { id: "p" + i, q: q }; }); }
+function mpLimpa(arr) { return (Array.isArray(arr) ? arr : []).filter(function (x) { return x && typeof x.q === "string" && x.q.trim(); }).slice(0, 30).map(function (x, i) { return { id: String(x.id || "q" + i), q: x.q.trim().slice(0, 200) }; }); }
+function mpCarregar() {
+  if (MP.unsub) { try { MP.unsub(); } catch (x) {} MP.unsub = null; }
+  MP.perfil = PERFIL; MP.editando = null; MP.apagar = null;
+  var loc = null; try { loc = JSON.parse(localStorage.getItem(mpChave()) || "null"); } catch (x) {}
+  MP.itens = loc ? mpLimpa(loc) : mpPadrao();
+  if (MP.db) { var pf = PERFIL; MP.unsub = MP.db.doc("perguntas/" + pf).onSnapshot(function (sn) { if (MP.perfil !== pf || !sn.exists) return; MP.itens = mpLimpa((sn.data() || {}).itens); mpRedesenha(); }, function () {}); }
+}
+function mpSalvar(itens) {
+  MP.itens = mpLimpa(itens); MP.editando = null; MP.apagar = null;
+  try { localStorage.setItem(mpChave(), JSON.stringify(MP.itens)); } catch (x) {}
+  mpRedesenha();
+  if (MP.db && !MP.local) { var doc = MP.db.doc("perguntas/" + PERFIL), dados = { itens: MP.itens.map(function (x) { return { id: x.id, q: x.q }; }), atualizado: Date.now() };
+    MP.fila = MP.fila.then(function () { return doc.set(dados); }).catch(function () { MP.local = true; toast("Sem permissão para salvar para todos: a lista ficou salva só neste aparelho."); mpRedesenha(); }); }
+}
+function acharPlanejada(q) { var c = candidatas(); for (var i = 0; i < c.length; i++) if (c[i].p.q === q) return c[i].p; return null; }
+function mpPerguntar(q) {
+  var pl = acharPlanejada(q);
+  if (pl) { var r = pl.a(); mostra(q, r.t || "Nada a apontar nesta base.", r.g, "Pergunta padrão · calculada da base de demonstração"); return; }
+  if (IA.sample) perguntar(q); else responderLocal(q);
+}
+function mpTitulo() { return ehPref() ? "do prefeito(a)" : "da " + nomeSec(PERFIL); }
+function mpHtml() {
+  var h = "<h4>Perguntas padrão " + esc(mpTitulo()) + '</h4><div class="mp">';
+  if (!MP.itens.length && MP.editando !== "novo") h += '<p class="note">Nenhuma pergunta padrão. Toque em “+ Nova pergunta padrão”.</p>';
+  MP.itens.forEach(function (x, i) {
+    if (MP.editando === i) h += '<div class="mp-form"><input id="mpIn" maxlength="200" value="' + esc(x.q) + '" aria-label="Editar pergunta"><button class="btn pri" data-mpok="1">Salvar</button><button class="btn" data-mpcan="1">Cancelar</button></div>';
+    else h += '<div class="mp-it"><button data-mpq="' + i + '">' + esc(x.q) + '</button><button class="mini" data-mped="' + i + '" aria-label="Editar pergunta" title="Editar">✎</button><button class="mini' + (MP.apagar === i ? " del-ok" : "") + '" data-mpdel="' + i + '" aria-label="Excluir pergunta" title="Excluir">' + (MP.apagar === i ? "Excluir?" : "🗑") + "</button></div>";
+  });
+  if (MP.editando === "novo") h += '<div class="mp-form"><input id="mpIn" maxlength="200" placeholder="Ex.: Quanto falta pagar das obras da secretaria?" aria-label="Nova pergunta"><button class="btn pri" data-mpok="1">Incluir</button><button class="btn" data-mpcan="1">Cancelar</button></div>';
+  h += '</div><div class="mp-acts"><button class="btn" data-mpadd="1">+ Nova pergunta padrão</button><button class="mini" data-mpres="1">Restaurar sugeridas</button></div>';
+  return h;
+}
+function mpBind() {
+  var box = document.getElementById("mpBox"); if (!box) return;
+  box.querySelectorAll("[data-mpq]").forEach(function (b) { b.onclick = function () { mpPerguntar(MP.itens[+b.dataset.mpq].q); }; });
+  box.querySelectorAll("[data-mped]").forEach(function (b) { b.onclick = function () { MP.editando = +b.dataset.mped; MP.apagar = null; mpRedesenha(); var i = document.getElementById("mpIn"); if (i) i.focus(); }; });
+  box.querySelectorAll("[data-mpdel]").forEach(function (b) { b.onclick = function () { var i = +b.dataset.mpdel; if (MP.apagar === i) { var n = MP.itens.slice(); n.splice(i, 1); mpSalvar(n); toast("Pergunta excluída."); } else { MP.apagar = i; mpRedesenha(); } }; });
+  box.querySelectorAll("[data-mpadd]").forEach(function (b) { b.onclick = function () { MP.editando = "novo"; MP.apagar = null; mpRedesenha(); var i = document.getElementById("mpIn"); if (i) i.focus(); }; });
+  box.querySelectorAll("[data-mpres]").forEach(function (b) { b.onclick = function () { mpSalvar(mpPadrao()); toast("Perguntas sugeridas restauradas."); }; });
+  box.querySelectorAll("[data-mpcan]").forEach(function (b) { b.onclick = function () { MP.editando = null; mpRedesenha(); }; });
+  var ok = box.querySelector("[data-mpok]"), inp = document.getElementById("mpIn");
+  function confirma() { var q = (inp.value || "").trim(); if (!q) { inp.focus(); return; } var n = MP.itens.slice();
+    if (MP.editando === "novo") n.push({ id: "q" + Date.now().toString(36), q: q }); else n[MP.editando] = { id: n[MP.editando].id, q: q };
+    var novo = MP.editando === "novo"; mpSalvar(n); toast(novo ? "Pergunta incluída como padrão." : "Pergunta atualizada."); }
+  if (ok) ok.onclick = confirma;
+  if (inp) inp.onkeydown = function (ev) { if (ev.key === "Enter") { ev.preventDefault(); confirma(); } else if (ev.key === "Escape") { ev.stopPropagation(); MP.editando = null; mpRedesenha(); } };
+}
+function mpRedesenha() { var box = document.getElementById("mpBox"); if (box) { box.innerHTML = mpHtml(); mpBind(); } var nt = document.getElementById("mpNota"); if (nt) nt.outerHTML = mpNota(); }
+function mpNota() { return '<p class="nota" id="mpNota"><b>Orientação:</b> cada perfil (prefeito e cada secretaria) tem a sua lista de <b>perguntas padrão</b>, que aparece primeiro sempre que o Assessor IA é aberto. Toque em <b>+ Nova pergunta padrão</b> para incluir as perguntas que você mais usa, em <b>✎</b> para editar e em <b>🗑</b> para excluir (toque de novo para confirmar). O <b>+</b> ao lado de uma pergunta planejada também a torna padrão. ' +
+  (MP.db && !MP.local ? "A lista fica salva no Gestor para todos que usam este perfil." : "Nesta versão a lista fica salva somente neste aparelho.") + " Uma secretaria não vê as perguntas de outra.</p>"; }
 var ctl = null;
-function perguntar() {
-  var inp = document.getElementById("qIn"), q = (inp.value || "").trim(); if (!q) return;
+function perguntar(qx) {
+  var inp = document.getElementById("qIn"), q = (typeof qx === "string" ? qx : (inp && inp.value) || "").trim(); if (!q) return;
   var nt = document.getElementById("iaNote"); if (nt && /^(Entendi|Ouvindo)/.test(nt.textContent)) nt.textContent = "";
   if (!IA.sample) { responderLocal(q); return; }
   var out = document.getElementById("iaOut"); out.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">Pensando… (lendo a base de ' + MUN.nome + ')</div><div class="ra"><button class="mini" id="parar">Parar</button></div></div>';
@@ -1197,6 +1278,7 @@ document.getElementById("prontasB").onclick = function () { abrirIA("prontas"); 
 document.getElementById("menuB").onclick = function () { side.classList.toggle("open"); };
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (pilha.length > 1) voltarDet(); else fecharTudo(); } });
 window.addEventListener("hashchange", function () { fecharTudo(); var h = location.hash.slice(1); if (h && cat(h)) renderSol(h); else renderInicio(); });
+mpCarregar();
 var h0 = location.hash.slice(1); if (h0 && cat(h0)) renderSol(h0); else renderInicio();
 })();
 </script>
