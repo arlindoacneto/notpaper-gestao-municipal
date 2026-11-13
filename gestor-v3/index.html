@@ -515,35 +515,46 @@ var ZAB = ZEL.filter(function (z) { return !z.concl; }), ZCON = ZEL.filter(funct
 
 /* ======================= PERFIL (prefeito × secretário) ======================= */
 /* Prefeito vê o município inteiro. Secretário vê só as soluções aderentes à mesa e só os dados da própria secretaria. */
-var PERFIS = ["SAU", "EDU", "OBR", "ADM", "ASS", "FIN", "SEG", "MAM", "CUL"];
+var PERFIS = ["SAU", "EDU", "OBR", "ADM", "ASS", "FIN", "SEG", "MAM", "CUL", "CGM", "PGM"];
+/* órgãos de controle sem orçamento próprio nesta base */
+SECN.CGM = { id: "CGM", nome: "Controladoria-Geral do Município", orgao: true }; SECN.PGM = { id: "PGM", nome: "Procuradoria-Geral do Município", orgao: true };
+/* REGRA TRANSVERSAL (diretoria, 13/11/2026): secretarias-meio têm LEITURA COMPLETA, de todas as secretarias, dos temas da sua atribuição.
+   orc = orçamento e execução financeira · lic = licitações · ct = contratos · ob = obras · pes = despesa com pessoal · lim = limites legais.
+   Decidir e despachar sobre o processo continua com a secretaria dona; os demais temas seguem restritos à própria secretaria. */
+var TRANSV = { FIN: ["orc", "lic", "ct"], ADM: ["lic", "ct", "pes"], CGM: ["orc", "lim", "lic", "ct", "ob", "pes"], PGM: ["lic", "ct"] };
+var TEMAS = { orc: "orçamento e execução financeira", lic: "licitações", ct: "contratos", ob: "obras", pes: "despesa com pessoal", lim: "limites legais" };
+function veTodos(tema) { return PERFIL === "PREF" || (TRANSV[PERFIL] || []).indexOf(tema) >= 0; }
+function ehTransv() { return !!TRANSV[PERFIL]; }
+function temasTransv(pf) { return (TRANSV[pf || PERFIL] || []).map(function (t) { return TEMAS[t]; }); }
 var TODO = { SEC: SEC, LIC: LIC, CT: CT, OB: OB, ZEL: ZEL, FS: FS, PESSOAL: PESSOAL, LIM: LIM };
 var LIM_POR_SEC = { FIN: ["pes", "sau", "edu", "fun", "div"], SAU: ["sau"], EDU: ["edu", "fun"], ADM: ["pes"] };
 var ZEL_POR_SEC = { OBR: function (z) { return z.tipo !== "Poda de árvore"; }, MAM: function (z) { return z.tipo === "Poda de árvore"; } };
-var MESA = { PL: ["ADM"], GE: "*", CO: "*", EM: ["FIN"], CV: ["FIN", "SAU", "EDU", "ASS"], CR: ["FIN"], PC: ["FIN"], FP: ["ADM"], RP: ["ADM", "FIN"], DA: ["FIN"], PR: ["FIN"], RG: ["FIN"], TR: ["ADM"], OU: "*", CI: ["FIN"], FR: "*", PA: ["ADM"], AL: ["ADM", "SAU", "EDU"], SA: ["SAU"], ED: ["EDU"], AS: ["ASS"], TU: ["CUL"], ME: ["EDU"], TE: ["EDU"], VS: ["SAU"], CU: ["CUL"], SG: ["SEG"], RS: ["MAM"], HB: ["OBR", "ASS"], DC: ["SEG", "OBR"] };
-var NOTA = "no perfil de secretário(a), ao escolher uma secretaria, o Gestor mostra somente as soluções aderentes à mesa daquela secretaria e somente os seus dados. Uma secretaria não vê processos ou valores de outra secretaria.";
+var MESA = { PL: ["ADM"], GE: "*", CO: "*", EM: ["FIN"], CV: ["FIN", "SAU", "EDU", "ASS"], CR: ["FIN"], PC: ["FIN", "CGM"], FP: ["ADM", "CGM"], RP: ["ADM", "FIN"], DA: ["FIN", "PGM"], PR: ["FIN", "PGM"], RG: ["FIN", "CGM"], TR: ["ADM", "CGM"], OU: "*", CI: ["FIN", "CGM"], FR: "*", PA: ["ADM"], AL: ["ADM", "SAU", "EDU"], SA: ["SAU"], ED: ["EDU"], AS: ["ASS"], TU: ["CUL"], ME: ["EDU"], TE: ["EDU"], VS: ["SAU"], CU: ["CUL"], SG: ["SEG"], RS: ["MAM"], HB: ["OBR", "ASS"], DC: ["SEG", "OBR"] };
+var NOTA = "no perfil de secretário(a), ao escolher uma secretaria, o Gestor mostra somente as soluções aderentes à mesa daquela secretaria e somente os seus dados. Uma secretaria não vê processos ou valores de outra secretaria. Exceção por atribuição: Finanças (orçamento, execução financeira, licitações e contratos), Administração (licitações, contratos e despesa com pessoal), Controladoria (orçamento, execução, limites legais, licitações, contratos, obras e pessoal) e Procuradoria (licitações e contratos) têm leitura completa desses temas em todas as secretarias. Decidir e despachar sobre cada processo continua com a secretaria dona.";
 var PERFIL = "PREF";
 function ehPref() { return PERFIL === "PREF"; }
 function minhaSec() { return SECN[PERFIL]; }
-function nomeSec(id) { return "Secretaria de " + SECN[id].nome; }
+function nomeSec(id) { return SECN[id] && SECN[id].orgao ? SECN[id].nome : "Secretaria de " + SECN[id].nome; }
 function qt(n, s1, s2) { return nf(n) + " " + (n === 1 ? s1 : s2); }
 function aplicarPerfil(pf) {
   PERFIL = PERFIS.indexOf(pf) >= 0 ? pf : "PREF";
   var pref = ehPref(), da = function (x) { return pref || x.sec === PERFIL; };
-  SEC = pref ? TODO.SEC : TODO.SEC.filter(function (x) { return x.id === PERFIL; });
+  var tem = function (t) { return function (x) { return veTodos(t) || x.sec === PERFIL; }; };
+  SEC = veTodos("orc") ? TODO.SEC : TODO.SEC.filter(function (x) { return x.id === PERFIL; });
   DESP = { ini: soma(SEC, "ini"), sup: soma(SEC, "sup"), anu: soma(SEC, "anu"), atu: soma(SEC, "atu"), emp: soma(SEC, "emp"), liq: soma(SEC, "liq"), pag: soma(SEC, "pag") };
   DESP.aPag = DESP.liq - DESP.pag; DESP.aLiq = DESP.emp - DESP.liq;
-  LIC = TODO.LIC.filter(da); LIC_HOM = LIC.filter(ehCompraHom);
+  LIC = TODO.LIC.filter(tem("lic")); LIC_HOM = LIC.filter(ehCompraHom);
   ECON = soma(LIC_HOM, function (l) { return l.est - l.contr; }); EST_HOM = soma(LIC_HOM, "est");
-  CT = TODO.CT.filter(da); OB = TODO.OB.filter(da);
+  CT = TODO.CT.filter(tem("ct")); OB = TODO.OB.filter(tem("ob"));
   ZEL = pref ? TODO.ZEL : (ZEL_POR_SEC[PERFIL] ? TODO.ZEL.filter(ZEL_POR_SEC[PERFIL]) : []);
   ZAB = ZEL.filter(function (z) { return !z.concl; }); ZCON = ZEL.filter(function (z) { return z.concl; });
   FS = pref || PERFIL === "SAU" ? TODO.FS : [];
   FS_T = soma(FS, "total"); FS_180 = soma(FS, function (f) { return f.faixas[3]; }); FS_FALTAS = soma(FS, "faltas"); FS_OFERTA = soma(FS, "oferta");
   FS_MEDIA = FS_T ? Math.round(soma(FS, function (f) { return f.faixas[0] * 15 + f.faixas[1] * 60 + f.faixas[2] * 135 + f.faixas[3] * 240; }) / FS_T) : 0;
-  PESSOAL = pref ? TODO.PESSOAL : TODO.PESSOAL.filter(function (x) { return x.id === PERFIL; });
-  LIM = pref ? TODO.LIM : TODO.LIM.filter(function (l) { return (LIM_POR_SEC[PERFIL] || []).indexOf(l.id) >= 0; });
+  PESSOAL = veTodos("pes") ? TODO.PESSOAL : TODO.PESSOAL.filter(function (x) { return x.id === PERFIL; });
+  LIM = veTodos("lim") ? TODO.LIM : TODO.LIM.filter(function (l) { return (LIM_POR_SEC[PERFIL] || []).indexOf(l.id) >= 0; });
 }
-var SOL_SEC = { PE: 0, OR: 1, FI: 1, GT: function () { return PERFIL === "FIN"; }, LL: function () { return LIM.length; }, LC: function () { return LIC.length; }, CT: function () { return CT.length; }, OB: function () { return OB.length; }, FS: function () { return FS.length; }, ZU: function () { return ZEL.length; } };
+var SOL_SEC = { PE: 0, OR: function () { return SEC.length; }, FI: function () { return SEC.length; }, GT: function () { return PERFIL === "FIN"; }, LL: function () { return LIM.length; }, LC: function () { return LIC.length; }, CT: function () { return CT.length; }, OB: function () { return OB.length; }, FS: function () { return FS.length; }, ZU: function () { return ZEL.length; } };
 function aderente(sig) {
   if (ehPref()) return true;
   if (sig in SOL_SEC) { var r = SOL_SEC[sig]; return !!(typeof r === "function" ? r() : r); }
@@ -671,7 +682,7 @@ function detRCL() { return detConta("Receita Corrente Líquida (12 meses)", "RCL
 function detNum(l) {
   if (l.id === "pes") {
     var nat = function (titulo, v) { return detParte(titulo, "Natureza da despesa com pessoal. As partes somam " + mi(v) + ".", partes(v, NAT_PES), v); };
-    if (!ehPref()) return nat("Despesa com pessoal: composição", l.valor);
+    if (!veTodos("pes")) return nat("Despesa com pessoal: composição", l.valor);
     return detParte("Despesa com pessoal por secretaria (12 meses)", "Toque numa secretaria para ver a natureza da despesa.", TODO.PESSOAL.slice().sort(function (a, b) { return b.valor - a.valor; }).map(function (x) { return { nome: x.nome, valor: x.valor }; }), l.valor, function (x) { return nat(x.nome + ": pessoal", x.valor); });
   }
   if (l.id === "div") return detConta("Dívida consolidada líquida", "DCL = dívida consolidada − disponibilidade de caixa e haveres financeiros.", [
@@ -695,7 +706,7 @@ function detLim(l) {
     onRow: function (r) { return r.semClique ? null : r.det; } };
 }
 SOL.LL = function () {
-  if (!ehPref()) return llSec();
+  if (!veTodos("lim")) return llSec();
   var p = LIMN.pes, folga = (p.prudencial / 100 * RCL.valor) - p.valor;
   return {
     sintese: { n: "warn", t: "Saúde (" + pc(LIMN.sau.pct) + "), educação (" + pc(LIMN.edu.pct) + ") e FUNDEB (" + pc(LIMN.fun.pct) + ") cumprem o mínimo. A <b>despesa com pessoal está em " + pc(p.pct) + "</b>, acima do alerta: restam <b>" + mi(folga) + "</b> até o limite prudencial." },
@@ -710,7 +721,7 @@ SOL.LL = function () {
   };
 };
 SOL.OR = function () {
-  if (!ehPref()) return orSec();
+  if (!veTodos("orc")) return orSec();
   var funcs = {}; SEC.forEach(function (s) { (funcs[s.funcao] = funcs[s.funcao] || { nome: s.funcao, atu: 0, liq: 0, secs: [] }); funcs[s.funcao].atu += s.atu; funcs[s.funcao].liq += s.liq; funcs[s.funcao].secs.push(s); });
   var F = Object.keys(funcs).map(function (k) { return funcs[k]; }).sort(function (a, b) { return b.atu - a.atu; });
   var usado = DESP.sup, pu = usado / LIMITE_SUPLEMENTACAO * 100;
@@ -731,7 +742,7 @@ SOL.OR = function () {
   };
 };
 SOL.FI = function () {
-  if (!ehPref()) return fiSec();
+  if (!veTodos("orc")) return fiSec();
   var baixa = SEC.filter(function (s) { return s.id !== "ENC"; }).sort(function (a, b) { return a.liq / a.atu - b.liq / b.atu; })[0];
   return {
     sintese: { n: "warn", t: "Até outubro foram liquidados <b>" + mi(DESP.liq) + "</b> (" + pc(DESP.liq / DESP.atu * 100) + " do orçamento). Há <b>" + mi(DESP.aPag) + "</b> liquidados aguardando pagamento. A menor execução é em " + baixa.nome + " (" + pc(baixa.liq / baixa.atu * 100) + ")." },
@@ -782,7 +793,7 @@ function recortesLic() {
     { id: "mes", nome: "Mês de abertura", grupos: MES.slice(0, NMES).map(function (m) { return m + "/2026"; }), de: function (l) { return MES[l.ab.getMonth()] + "/2026"; } },
     { id: "crit", nome: "Critério de julgamento", grupos: null, de: function (l) { return l.crit; } },
     { id: "mepp", nome: "ME/EPP e agricultura familiar", grupos: null, de: function (l) { return l.mepp; } }
-  ].filter(function (d) { return !d.so || ehPref(); });
+  ].filter(function (d) { return !d.so || veTodos("lic"); });
   return { dims: dims, mets: [{ id: "qtd", nome: "Quantidade" }, { id: "val", nome: "Valor estimado (compras)" }],
     desenha: function (dimId, metId) {
       var d = dims.filter(function (x) { return x.id === dimId; })[0] || dims[0], base = metId === "val" ? LIC.filter(function (l) { return l.compra; }) : LIC;
@@ -800,7 +811,7 @@ function detTempo() { var hs = LIC.filter(function (l) { return l.tempoHom !== n
   var ls = MODS.map(function (m) { var a = hs.filter(function (l) { return l.mod === m; }); return { mod: m, n: a.length, t: a.length ? Math.round(soma(a, "tempoHom") / a.length) : null, ls: a }; }).filter(function (x) { return x.n; });
   return { titulo: "Tempo da abertura até a homologação", lead: "Média em dias corridos, por modalidade. Toque numa linha para ver os processos.", cols: [{ t: "Modalidade", k: "mod" }, { t: "Homologados", k: "n", n: 1 }, { t: "Tempo médio", k: function (x) { return x.t + " dias"; }, n: 1 }], linhas: ls, onRow: function (x) { return detLic(x.ls, "Homologados por " + x.mod.toLowerCase()); } }; }
 SOL.LC = function () {
-  var pref = ehPref(), quem = pref ? "Compras" : minhaSec().nome;
+  var pref = veTodos("lic"), quem = pref ? "Compras" : minhaSec().nome;
   var compras = LIC.filter(function (l) { return l.compra; }), andam = LIC.filter(function (l) { return l.fi < 4; }), parados = andam.filter(function (l) { return l.dias > 30; }).sort(function (a, b) { return b.dias - a.dias; });
   var AL = todosAlertas(), procAl = LIC.filter(function (l) { return l.alertas.some(function (a) { return a.nivel !== "info"; }); }), graves = AL.filter(function (x) { return x.a.nivel === "bad"; });
   var hs = LIC.filter(function (l) { return l.tempoHom !== null; }), tMed = hs.length ? Math.round(soma(hs, "tempoHom") / hs.length) : 0;
@@ -821,7 +832,7 @@ SOL.LC = function () {
     .filter(function (a, i, arr) { return arr.map(function (y) { return y.t; }).indexOf(a.t) === i; });
   if (!acoes.length) acoes.push(pref ? { t: "Publicar o plano de contratações anual de 2027 no PNCP", r: "Compras", p: "dezembro" } : { t: "Enviar a demanda de 2027 para o plano anual de contratações", r: quem, p: "novembro" });
   return {
-    sintese: { n: graves.length ? "bad" : procAl.length ? "warn" : "ok", t: (pref ? "A prefeitura tem " : "A secretaria tem ") + "<b>" + qt(LIC.length, "processo", "processos") + "</b> de contratação em 2026, somando " + mi(soma(compras, "est")) + " em compras estimadas: " + econ + ". " +
+    sintese: { n: graves.length ? "bad" : procAl.length ? "warn" : "ok", t: (ehPref() ? "A prefeitura tem " : pref ? "As secretarias têm " : "A secretaria tem ") + "<b>" + qt(LIC.length, "processo", "processos") + "</b> de contratação em 2026, somando " + mi(soma(compras, "est")) + " em compras estimadas: " + econ + ". " +
       (procAl.length ? "<b>" + qt(procAl.length, "processo tem", "processos têm") + " pontos de atenção</b>" + (graves.length ? ", " + qt(graves.length, "deles grave", "deles graves").replace(/^(\d+) /, "$1 ") + " (" + graves[0].a.tipo.toLowerCase() + ")" : "") + "." : "Nenhum ponto de atenção.") },
     kpis: [
       { r: "Processos em 2026", v: nf(LIC.length), c: mi(soma(compras, "est")) + " estimados em compras", n: "info", det: detLic(LIC, "Todos os processos de 2026") },
@@ -850,7 +861,7 @@ function fichaLic(l) { var ct = l.ct ? CTN[l.ct] : null, fd = function (d) { ret
     conta: l.receita ? "Ágio = arrematado − avaliação." : "Economia = estimado − contratado. Prazo do edital em dias úteis entre a publicação e a sessão.",
     links: ct ? [{ t: "Abrir contrato " + ct.id, det: function () { return fichaCT(ct); } }] : [] }; }
 SOL.CT = function () {
-  var pref = ehPref();
+  var pref = veTodos("ct");
   var venc = CT.filter(function (c) { return c.diasFim >= 0 && c.diasFim <= 60; }), adit = CT.filter(function (c) { return c.aditPct > 25; });
   var T = { total: soma(CT, "total"), med: soma(CT, "med"), pago: soma(CT, "pago") };
   var t1 = venc.length ? "<b>" + qt(venc.length, "contrato vence", "contratos vencem") + " em até 60 dias</b> e " + (venc.length === 1 ? "precisa" : "precisam") + " de decisão (renovar ou licitar)." : "Nenhum contrato vence nos próximos 60 dias.";
@@ -877,7 +888,7 @@ SOL.CT = function () {
 function detCT(ls, t) { return { titulo: t, cols: [{ t: "Contrato", k: "objeto" }, { t: "Fornecedor", k: "forn" }, { t: "Valor com aditivos", k: "total", n: 1, f: mil }, { t: "Medido", k: "med", n: 1, f: mil }, { t: "Pago", k: "pago", n: 1, f: mil }], linhas: ls, total: { total: soma(ls, "total"), med: soma(ls, "med"), pago: soma(ls, "pago") }, onRow: fichaCT }; }
 function fichaCT(c) { var lo = c.lic ? LICN[c.lic] : null; return { links: lo ? [{ t: "Abrir licitação " + lo.id, det: function () { return fichaLic(lo); } }] : [], ficha: true, titulo: c.objeto, pares: [["Contrato", c.id], ["Licitação de origem", lo ? lo.id + " · " + lo.mod : "Anterior a 2026"], ["Fornecedor (fictício)", c.forn], ["Secretaria", SECN[c.sec].nome], ["Valor inicial", real(c.ini)], ["Aditivos", real(c.adit) + " (" + pc(c.aditPct) + ")"], ["Valor com aditivos", real(c.total)], ["Medido", real(c.med)], ["Pago", real(c.pago)], ["A medir (saldo)", real(c.saldo)], ["Vencimento", fdata(c.fim) + (c.diasFim < 0 ? " (vencido)" : " (" + c.diasFim + " dias)")]], conta: "Valor com aditivos = inicial + aditivos. Saldo = valor com aditivos − medido. Pago ≤ medido." }; }
 SOL.OB = function () {
-  var pref = ehPref(), quem = pref ? "Obras" : minhaSec().nome;
+  var pref = veTodos("ob"), quem = pref ? "Obras" : minhaSec().nome;
   var par = OB.filter(function (o) { return o.sit === "Paralisada"; }), at = OB.filter(function (o) { return o.sit === "Atenção"; }), and = OB.filter(function (o) { return o.sit !== "Concluída"; });
   var acoes = par.map(function (o) { return { t: "Plano de retomada: " + o.nome + " (" + o.semMed + " dias sem medição)", r: quem, p: "15 dias" }; }).concat(at.map(function (o) { return { t: "Conferir a medição de " + o.nome + " antes do próximo pagamento", r: quem, p: "7 dias" }; })).slice(0, 3);
   if (!acoes.length) acoes.push({ t: "Manter as medições mensais em dia e publicar o andamento no portal", r: quem, p: "contínuo" });
@@ -1053,7 +1064,8 @@ function pendencias() {
 var PRONTAS_SEC = {
   geral: [
     pr("Como está a minha secretaria?", function () { return { t: ATIVAS.filter(aderente).map(function (x) { return "• " + nome(x) + ": " + SOL[x]().sintese.t.replace(/<[^>]+>/g, ""); }).join("\n") }; }),
-    pr("Quanto a secretaria já executou do orçamento?", function () { var s = minhaSec(); return { t: "Até outubro a secretaria liquidou " + mi(s.liq) + " de " + mi(s.atu) + " (" + pc(s.liq / s.atu * 100) + ") e pagou " + mi(s.pag) + ".", g: { tipo: "colunas", f: mi, rotulos: MES.slice(0, NMES), series: [{ nome: "Liquidado no mês", cor: "var(--accent)", valores: s.liqMes }] } }; }),
+    pr("Quanto a secretaria já executou do orçamento?", function () { if (!SEC.length) return { t: "Este perfil não tem orçamento próprio nesta base." }; var liq = soma(SEC, "liq"), atu = soma(SEC, "atu"), pag = soma(SEC, "pag"), meses = MES.slice(0, NMES).map(function (m, i) { return soma(SEC, function (x) { return x.liqMes[i]; }); });
+      return { t: "Até outubro " + (SEC.length > 1 ? "as secretarias liquidaram " : "a secretaria liquidou ") + mi(liq) + " de " + mi(atu) + " (" + pc(liq / atu * 100) + ") e " + (SEC.length > 1 ? "pagaram " : "pagou ") + mi(pag) + ".", g: { tipo: "colunas", f: mi, rotulos: MES.slice(0, NMES), series: [{ nome: "Liquidado no mês", cor: "var(--accent)", valores: meses }] } }; }),
     pr("O que está atrasado e precisa da minha decisão?", function () { var l = pendencias(); return { t: l.length ? l.map(function (x, i) { return (i + 1) + ") " + x + "."; }).join("\n") : "Não há pendências vencidas nesta secretaria." }; })
   ],
   OR: [pr("Quanto o orçamento da secretaria mudou desde a aprovação?", function () { var s = minhaSec(); return { t: "A dotação passou de " + mi(s.ini) + " para " + mi(s.atu) + ": +" + mi(s.sup) + " em suplementações e −" + mi(s.anu) + " em anulações." }; })],
@@ -1064,17 +1076,18 @@ var PRONTAS_SEC = {
 };
 function prontasDe(sig) {
   if (sig === "geral") return ehPref() ? PRONTAS.geral : PRONTAS_SEC.geral;
-  if (!ehPref() && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + ".", g: { tipo: "regua", dados: [Object.assign({}, l, { det: detLim(l) })] } }; }); });
-  if (!ehPref() && PRONTAS_SEC[sig]) return PRONTAS_SEC[sig];
+  var dom = { OR: "orc", FI: "orc", LL: "lim" }[sig];
+  if (!veTodos("lim") && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + ".", g: { tipo: "regua", dados: [Object.assign({}, l, { det: detLim(l) })] } }; }); });
+  if (!ehPref() && !(dom && veTodos(dom)) && PRONTAS_SEC[sig]) return PRONTAS_SEC[sig];
   return PRONTAS[sig] || [];
 }
 
 /* ======================= RESUMO DA BASE PARA A IA ======================= */
 function baseIA() {
   return {
-    municipio: MUN.nome + " (fictício), " + nf(MUN.hab) + " habitantes", perfil: ehPref() ? "Prefeito(a): todo o município" : nomeSec(PERFIL) + ": somente dados desta secretaria", posicao: POS_TXT, unidade_valores: "reais",
+    municipio: MUN.nome + " (fictício), " + nf(MUN.hab) + " habitantes", perfil: ehPref() ? "Prefeito(a): todo o município" : nomeSec(PERFIL) + (ehTransv() ? ": por atribuição, leitura de " + temasTransv().join(", ") + " de todas as secretarias; demais temas só da própria" : ": somente dados desta secretaria"), posicao: POS_TXT, unidade_valores: "reais",
     despesa_por_secretaria: SEC.map(function (s) { return { secretaria: s.nome, dotacao_inicial: s.ini, suplementacoes: s.sup, anulacoes: s.anu, dotacao_atualizada: s.atu, empenhado: s.emp, liquidado: s.liq, pago: s.pag, liquidado_a_pagar: s.aPag, liquidado_por_mes_jan_out: s.liqMes }; }),
-    despesa_total: DESP, limite_suplementacao_loa: ehPref() ? LIMITE_SUPLEMENTACAO : undefined,
+    despesa_total: DESP, limite_suplementacao_loa: veTodos("orc") ? LIMITE_SUPLEMENTACAO : undefined,
     receitas: (ehPref() || PERFIL === "FIN" ? REC : []).map(function (r) { return { receita: r.nome, previsto_anual: r.prev, previsto_ate_out: r.prevAte, arrecadado_ate_out: r.arr, arrecadado_por_mes_jan_out: r.arrMes, previsto_por_mes_jan_out: r.prevMes }; }),
     rcl_12_meses: LIM.length ? RCL : undefined, limites_legais: LIM.map(function (l) { return { limite: l.nome, valor: l.valor, base: l.base, base_nome: l.baseNome, percentual: l.pct, limite_legal: l.limite, tipo: l.tipo, alerta: l.alerta, prudencial: l.prudencial, lei: l.lei }; }),
     pessoal_12_meses_por_secretaria: PESSOAL,
@@ -1108,7 +1121,7 @@ function fechamento1() {
   LIC.forEach(function (l) { chk(l.receita || !l.contr || l.contr <= l.est, l.id + ": contratado ≤ estimado"); chk(!l.receita || !l.contr || l.contr >= l.est, l.id + ": leilão arrematado ≥ avaliação"); chk((l.fase === "Homologado") === (l.contr > 0), l.id + ": contratado só se homologado");
     var seq = [l.ab, l.pub, l.ses, l.hom].filter(Boolean); chk(seq.every(function (d, i) { return !i || d >= seq[i - 1]; }), l.id + ": datas em ordem"); chk(!l.hom || l.hom <= POS, l.id + ": homologação até a posição");
     chk(l.fi < 4 || l.fi > 4 || l.lic >= 1, l.id + ": homologado com licitante"); chk(l.fi !== 4 || !l.compra || (l.ct && CTN[l.ct] && CTN[l.ct].ini === l.contr && CTN[l.ct].sec === l.sec), l.id + ": contrato gerado com o mesmo valor");
-    if (l.ob) { var o = OB.filter(function (x) { return x.nome === l.ob; })[0]; chk(o && o.valor === l.contr, l.id + ": obra com o mesmo valor do contrato"); } });
+    if (l.ob) { var o = TODO.OB.filter(function (x) { return x.nome === l.ob; })[0]; chk(o && o.valor === l.contr, l.id + ": obra com o mesmo valor do contrato"); } });
   if (ehPref()) { var RL = recortesLic(); RL.dims.forEach(function (d) { ["qtd", "val"].forEach(function (m) { var g = RL.desenha(d.id, m), tot = soma(g.dados, "valor"), esp = m === "val" ? soma(LIC.filter(function (l) { return l.compra; }), "est") : LIC.length; chk(Math.abs(tot - esp) < 1, "recorte " + d.id + "/" + m + ": soma = total"); }); }); }
   CT.forEach(function (c) { chk(c.pago <= c.med && c.med <= c.total, c.id + ": pago ≤ medido ≤ total"); });
   OB.forEach(function (o) { chk(o.pago <= o.valor, o.id + ": pago ≤ valor"); });
@@ -1125,8 +1138,11 @@ window.verificarFechamento = function () {
     aplicarPerfil(pf); tot.perfis++;
     var r = fechamento1(); tot.verificacoes += r.verificacoes; tot.ok += r.ok; r.erros.forEach(function (e) { tot.erros.push(pf + ": " + e); });
     if (pf === "PREF") return;
-    [LIC, CT, OB].forEach(function (arr) { arr.forEach(function (x) { c(x.sec === pf, pf + ": registro de outra secretaria " + x.id); }); });
-    c(SEC.length === 1 && SEC[0].id === pf, pf + ": despesa de outra secretaria");
+    [[LIC, "lic"], [CT, "ct"], [OB, "ob"]].forEach(function (par) { if (veTodos(par[1])) c(par[0].length === { lic: TODO.LIC, ct: TODO.CT, ob: TODO.OB }[par[1]].length, pf + ": tema transversal " + par[1] + " completo"); else par[0].forEach(function (x) { c(x.sec === pf, pf + ": registro de outra secretaria " + x.id); }); });
+    c(veTodos("orc") ? SEC.length === TODO.SEC.length : SEC.every(function (x) { return x.id === pf; }), pf + ": despesa conforme a regra");
+    c(veTodos("pes") ? PESSOAL.length === TODO.PESSOAL.length : PESSOAL.every(function (x) { return x.id === pf; }), pf + ": pessoal conforme a regra");
+    c(FS.length === 0 || pf === "SAU", pf + ": filas da saúde só na Saúde"); c(ZEL.length === 0 || pf === "OBR" || pf === "MAM", pf + ": zeladoria só na mesa");
+    if (ehTransv()) return;
     var j = JSON.stringify(baseIA());
     TODO.SEC.forEach(function (o) { if (o.id !== pf && o.id !== "ENC") c(j.indexOf(o.nome) < 0, pf + ": a base da IA contém " + o.nome); });
   });
@@ -1144,7 +1160,7 @@ try { aplicarPerfil(localStorage.getItem("np-gestor-perfil") || "PREF"); } catch
 var selP = document.getElementById("perfilSel");
 selP.innerHTML = '<option value="PREF">Prefeito(a)</option>' + PERFIS.map(function (pf) { return '<option value="' + pf + '">' + esc(nomeSec(pf)) + "</option>"; }).join("");
 selP.value = PERFIL;
-function trocarPerfil(pf) { aplicarPerfil(pf); mpCarregar(); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} go("inicio"); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + ". Só os dados desta secretaria."); }
+function trocarPerfil(pf) { aplicarPerfil(pf); mpCarregar(); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} go("inicio"); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + (ehTransv() ? ". Leitura de " + temasTransv().join(", ") + " de todas as secretarias." : ". Só os dados desta secretaria.")); }
 selP.onchange = function () { trocarPerfil(selP.value); };
 function cat(sig) { return CATALOGO.filter(function (c) { return c.sigla === sig; })[0]; }
 function nome(sig) { var c = cat(sig); return NOME_CURTO[sig] || (c ? c.nome : ""); }
@@ -1173,7 +1189,7 @@ function renderInicio() {
   crumb("<b>" + (pref ? "Visão do prefeito" : "Visão da secretaria") + "</b>");
   var hora = new Date().getHours(), saud = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
   var h = '<section class="hello"><h1>' + saud + ".</h1><p>" + (pref ? "Prefeitura de " + MUN.nome + " · situação em " + POS_TXT + ". Toque em qualquer linha para abrir a solução."
-    : esc(nomeSec(PERFIL)) + " · situação em " + POS_TXT + ". Você vê somente as soluções e os dados desta secretaria.") + "</p>";
+    : esc(nomeSec(PERFIL)) + " · situação em " + POS_TXT + ". " + (ehTransv() ? "Por atribuição, você tem leitura de <b>" + esc(temasTransv().join(", ")) + "</b> de todas as secretarias. Decidir e despachar sobre cada processo continua com a secretaria dona." : "Você vê somente as soluções e os dados desta secretaria.")) + "</p>";
   if (pref) h += '<div class="perfis"><span>Ver como secretário(a):</span>' + PERFIS.map(function (pf) { return '<button data-perfil="' + pf + '">' + esc(SECN[pf].nome) + "</button>"; }).join("") + "</div>";
   else h += '<div class="perfis"><button data-perfil="PREF">‹ Voltar à visão do prefeito</button></div>';
   h += "</section>";
@@ -1285,7 +1301,7 @@ function prazoDe(t) { var x = semAcento(t || ""), m;
   return maisDias(/mensal|continuo/.test(x) ? 30 : 15); }
 function tipoDe(t) { var x = semAcento(t || "");
   if (/^(cobrar|cobranca)/.test(x)) return "cobranca"; if (/^(decidir|autorizar)/.test(x)) return "autorizacao"; if (/^(projetar|indicar|informar|levantar|conferir a reserva)/.test(x)) return "informacao"; return "determinacao"; }
-function destinos() { return ehPref() ? PERFIS.map(function (id) { return [id, nomeSec(id)]; }).concat(Object.keys(ORGAOS).map(function (k) { return [k, ORGAOS[k]]; }))
+function destinos() { return ehPref() ? PERFIS.filter(function (id) { return !ORGAOS[id]; }).map(function (id) { return [id, nomeSec(id)]; }).concat(Object.keys(ORGAOS).map(function (k) { return [k, ORGAOS[k]]; }))
   : EQUIPES.map(function (e) { return ["EQ:" + e, e + " · " + nomeSec(PERFIL)]; }); }
 function destDe(r) { if (!ehPref()) return "EQ:" + EQUIPES[0]; var x = semAcento(r || "");
   var M = [["procuradoria", "PGM"], ["controle interno", "CGM"], ["controladoria", "CGM"], ["gabinete", "GAB"], ["obras", "OBR"], ["administracao", "ADM"], ["financas", "FIN"], ["saude", "SAU"], ["educacao", "EDU"], ["assistencia", "ASS"], ["seguranca", "SEG"], ["meio ambiente", "MAM"], ["cultura", "CUL"], ["compras", "ADM"], ["planejamento", "FIN"], ["omnichannel", "ADM"]];
@@ -1465,6 +1481,8 @@ var PADROES = {
   OBR: ["Como está a minha secretaria?", "Quais obras estão paralisadas e há quanto tempo?", "Qual tipo de pedido mais passou do prazo?", "Qual bairro tem mais pedidos vencidos?", "Quais processos estão parados?"],
   ADM: ["Como está a minha secretaria?", "Como está o índice: Despesa com pessoal (Executivo)?", "Quanto a secretaria já executou do orçamento?", "Quais contratos vencem nos próximos 60 dias?", "O que está atrasado e precisa da minha decisão?"],
   ASS: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Quanto falta pagar de despesa já liquidada?", "Quais obras estão paralisadas e há quanto tempo?", "O que está atrasado e precisa da minha decisão?"],
+  CGM: ["Quais pontos de atenção existem nas licitações?", "Há risco de fracionamento de despesa?", "Estamos cumprindo os limites legais?", "Há aditivo acima do limite legal?", "Quais obras estão paralisadas e há quanto tempo?"],
+  PGM: ["Quais pontos de atenção existem nas licitações?", "Quais licitações tiveram só um licitante?", "Há aditivo acima do limite legal?", "Quais contratos vencem nos próximos 60 dias?", "Quais processos estão parados?"],
   FIN: ["A arrecadação do IPTU está abaixo do previsto?", "Quais receitas estão acima do previsto?", "Como está o índice: Despesa com pessoal (Executivo)?", "Quanto falta pagar de despesa já liquidada?", "O que está atrasado e precisa da minha decisão?"],
   SEG: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Quais contratos vencem nos próximos 60 dias?", "Quais processos estão parados?", "O que está atrasado e precisa da minha decisão?"],
   MAM: ["Como está a minha secretaria?", "Quanto a secretaria já executou do orçamento?", "Qual tipo de pedido mais passou do prazo?", "Quais contratos vencem nos próximos 60 dias?", "O que está atrasado e precisa da minha decisão?"],
@@ -1533,7 +1551,7 @@ function perguntar(qx) {
   telaResposta(q, '<div class="resp"><div class="rt">Pensando… lendo a base de ' + MUN.nome + ' para responder.</div><div class="ra"><button class="mini" id="parar">Parar</button></div></div>');
   ctl = new AbortController(); document.getElementById("parar").onclick = function () { ctl.abort(); };
   var prompt = "Você é o Assessor IA do NotPaper Gestor, falando com um prefeito ou secretário que nem sempre tem facilidade com sistemas.\n" +
-    (ehPref() ? "Perfil: prefeito(a), com acesso a todo o município.\n" : "Perfil: " + nomeSec(PERFIL) + ". Os dados abaixo são só desta secretaria. Se perguntarem sobre outra secretaria ou sobre o município como um todo, responda que este perfil só tem acesso aos dados da " + nomeSec(PERFIL) + ".\n") +
+    (ehPref() ? "Perfil: prefeito(a), com acesso a todo o município.\n" : ehTransv() ? "Perfil: " + nomeSec(PERFIL) + ". Por atribuição, este perfil tem leitura de " + temasTransv().join(", ") + " de todas as secretarias; os demais temas são só da própria. Se perguntarem algo fora disso, diga que este perfil não tem acesso.\n" : "Perfil: " + nomeSec(PERFIL) + ". Os dados abaixo são só desta secretaria. Se perguntarem sobre outra secretaria ou sobre o município como um todo, responda que este perfil só tem acesso aos dados da " + nomeSec(PERFIL) + ".\n") +
     "Responda SOMENTE com base nos dados JSON abaixo (demonstração fictícia do município de " + MUN.nome + ", posição " + POS_TXT + "). Valores em reais.\n" +
     "Regras: 1) Responda em português do Brasil, de forma dissertativa e simples: a primeira frase traz a resposta direta com o número que importa; depois explique em 1 a 3 parágrafos curtos o que o número significa, de onde vem e o que merece atenção (use R$ x,x mi; percentuais com 1 casa; separe os parágrafos com uma linha em branco). 2) Faça as contas com cuidado a partir dos dados (some, compare, calcule percentuais) e confira antes de responder. 3) Se a pergunta pedir comparação, ranking ou evolução, inclua um gráfico. 4) Se o dado não existir na base, diga claramente que essa informação não está na base de demonstração e sugira o que ela contém; nunca invente números. 5) Indique a fonte (qual tabela da base).\n" +
     'Responda apenas com um JSON: {"resposta": string, "grafico": null ou {"tipo": "barras" ou "colunas", "titulo": string, "rotulos": [strings], "valores": [números], "unidade": "reais" | "percentual" | "quantidade"}, "fonte": string, "fora_da_base": boolean}\n\n' +
