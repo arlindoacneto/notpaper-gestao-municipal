@@ -823,7 +823,8 @@ SOL.LC = function () {
   var AL = todosAlertas(), procAl = LIC.filter(function (l) { return l.alertas.some(function (a) { return a.nivel !== "info"; }); }), graves = AL.filter(function (x) { return x.a.nivel === "bad"; });
   var hs = LIC.filter(function (l) { return l.tempoHom !== null; }), tMed = hs.length ? Math.round(soma(hs, "tempoHom") / hs.length) : 0;
   var tm = function (m) { var a = hs.filter(function (l) { return l.mod === m; }); return a.length ? Math.round(soma(a, "tempoHom") / a.length) + " dias" : "—"; };
-  var econ = LIC_HOM.length ? "<b>" + qt(LIC_HOM.length, "foi homologada", "foram homologadas") + "</b> com economia de <b>" + mil(ECON) + "</b> (" + pc(ECON / EST_HOM * 100) + ")" : "nenhuma foi homologada ainda";
+  var homT = LIC.filter(function (l) { return l.fase === "Homologado"; }).length, homV = homT - LIC_HOM.length;
+  var econ = LIC_HOM.length ? "<b>" + qt(homT, "foi homologada", "foram homologadas") + "</b>" + (homV ? " (" + qt(LIC_HOM.length, "compra", "compras") + " e " + qt(homV, "venda em leilão", "vendas em leilão") + ")" : "") + ", com economia de <b>" + mil(ECON) + "</b> nas compras (" + pc(ECON / EST_HOM * 100) + ")" : "nenhuma foi homologada ainda";
   var acoes = AL.filter(function (x) { return x.a.nivel !== "info"; }).slice(0, 3).map(function (x) { var l = x.l, t = {
       "Estimativa acima do mercado": "Rever a estimativa de preço de \"" + l.objeto + "\" antes de seguir",
       "Prazo do edital abaixo do mínimo": "Republicar o edital de \"" + l.objeto + "\" com o prazo mínimo legal",
@@ -845,7 +846,7 @@ SOL.LC = function () {
       { r: "Processos em 2026", v: nf(LIC.length), c: mi(soma(compras, "est")) + " estimados em compras", n: "info", det: detLic(LIC, "Todos os processos de 2026") },
       { r: "Em andamento", v: nf(andam.length), c: mi(soma(andam, "est")) + " em preparação ou disputa", n: "info", det: detLic(andam, "Em andamento") },
       { r: "Economia nas homologadas", v: LIC_HOM.length ? mil(ECON) : "—", c: LIC_HOM.length ? pc(ECON / EST_HOM * 100) + " abaixo do estimado" : "nenhuma homologada ainda", n: LIC_HOM.length ? "ok" : "info", det: LIC_HOM.length ? detLic(LIC_HOM, "Compras homologadas") : null },
-      { r: "Pontos de atenção", v: nf(AL.filter(function (x) { return x.a.nivel !== "info"; }).length), c: "em " + qt(procAl.length, "processo", "processos") + (graves.length ? " · " + nf(graves.length) + " graves" : ""), n: graves.length ? "bad" : procAl.length ? "warn" : "ok", det: detAlertas(AL) },
+      { r: "Pontos de atenção", v: nf(AL.filter(function (x) { return x.a.nivel !== "info"; }).length), c: "em " + qt(procAl.length, "processo", "processos") + (graves.length ? " · " + nf(graves.length) + " graves" : ""), n: graves.length ? "bad" : procAl.length ? "warn" : "ok", det: detAlertas(AL.filter(function (x) { return x.a.nivel !== "info"; })) },
       { r: "Tempo médio até homologar", v: tMed ? tMed + " dias" : "—", c: "pregão " + tm("Pregão eletrônico") + " · concorrência " + tm("Concorrência"), n: "info", det: detTempo() }
     ],
     grafico: null, recortes: recortesLic(),
