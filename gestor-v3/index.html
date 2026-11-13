@@ -165,6 +165,13 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .resp .rt { font-size: 16.5px; line-height: 1.5; white-space: pre-wrap; }
 .resp .rs { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
 .resp .ra { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.recx { margin-top: 16px; padding: 16px 18px; border-radius: 13px; background: var(--side); color: #FFFFFF; }
+.recx h4 { margin: 0 0 8px; font-family: var(--f-display); font-size: 16px; color: #FFFFFF; }
+.recx p { margin: 0; font-size: 15px; line-height: 1.55; color: #DFE8FF; }
+.recx .rbases { margin-top: 10px; font-size: 12.5px; color: #A9BDF2; }
+.recx .racts { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.recx .btn { border-color: rgba(127,211,255,.6); }
+.recx .btn:not(.pri) { background: transparent; color: #CFEAFF; }
 .note { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
 .btn, .pill { white-space: nowrap; flex: 0 0 auto; }
 .card .big strong { white-space: nowrap; }
@@ -1009,7 +1016,7 @@ var PRONTAS = {
   geral: [
     pr("Como está o município hoje?", function () { var s = SOL.PE(); return { t: s.sintese.t.replace(/<[^>]+>/g, ""), g: s.grafico }; }),
     pr("Estamos cumprindo os limites legais?", function () { return { t: LIM.map(function (l) { return l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + ")"; }).join("\n"), g: { tipo: "regua", dados: LIM.map(function (l) { return Object.assign({}, l, { det: detLim(l) }); }) } }; }),
-    pr("O que está atrasado e precisa da minha decisão?", function () { return { t: "1) Despesa com pessoal acima do alerta (" + pc(LIMN.pes.pct) + ").\n2) " + OB.filter(function (o) { return o.sit === "Paralisada"; }).length + " obras paralisadas.\n3) " + nf(ZAB.filter(function (z) { return z.venc; }).length) + " pedidos de zeladoria vencidos.\n4) " + LIC.filter(function (l) { return l.fi < 4 && l.dias > 30; }).length + " licitações paradas há mais de 30 dias.\n5) " + nf(FS_180) + " pessoas há mais de 180 dias na fila da saúde." }; })
+    pr("O que está atrasado e precisa da minha decisão?", function () { return { t: "1) Despesa com pessoal acima do alerta (" + pc(LIMN.pes.pct) + ").\n2) " + OB.filter(function (o) { return o.sit === "Paralisada"; }).length + " obras paralisadas.\n3) " + nf(ZAB.filter(function (z) { return z.venc; }).length) + " pedidos de zeladoria vencidos.\n4) " + LIC.filter(function (l) { return l.fi < 4 && l.dias > 30; }).length + " licitações paradas há mais de 30 dias.\n5) " + nf(FS_180) + " pessoas há mais de 180 dias na fila da saúde.", rec: recomendacaoCruzada() }; })
   ],
   PE: [],
   OR: [pr("Quanto ainda posso suplementar sem lei?", function () { return { t: "Ainda é possível suplementar " + mi(LIMITE_SUPLEMENTACAO - DESP.sup) + " por decreto. A LOA autoriza 20% (" + mi(LIMITE_SUPLEMENTACAO) + ") e já foram usados " + mi(DESP.sup) + "." }; }),
@@ -1041,6 +1048,36 @@ var PRONTAS = {
        pr("Qual bairro mais pede tapa-buraco?", function () { var l = ZBAI.map(function (b) { return { rotulo: b, valor: ZEL.filter(function (z) { return z.tipo === "Tapa-buraco" && z.bairro === b; }).length }; }).sort(function (a, b) { return b.valor - a.valor; }); return { t: l[0].rotulo + " fez " + l[0].valor + " pedidos de tapa-buraco desde agosto.", g: { tipo: "barras", f: nf, lw: 170, dados: l } }; })]
 };
 PRONTAS.PE = PRONTAS.geral;
+/* ---- recomendação cruzada: o mesmo bairro com obra paralisada e pedidos de zeladoria vencidos ---- */
+function recomendacaoCruzada() {
+  var bs = ZBAI.map(function (b) {
+    return { b: b, obs: OB.filter(function (o) { return o.bairro === b && o.sit === "Paralisada"; }), venc: ZAB.filter(function (z) { return z.bairro === b && z.venc; }) };
+  });
+  var maxV = Math.max.apply(null, bs.map(function (x) { return x.venc.length; }));
+  var cand = bs.filter(function (x) { return x.obs.length && x.venc.length; }).sort(function (a, b) { return b.venc.length - a.venc.length || b.obs.length - a.obs.length; });
+  if (!cand.length) return null;
+  var c = cand[0], ob = c.obs.slice().sort(function (a, b) { return b.semMed - a.semMed; })[0];
+  var secOb = SECN[ob.sec] ? SECN[ob.sec].nome : "Obras e Serviços Urbanos", nv = c.venc.length, topo = nv === maxV;
+  var tipos = ZTIP.map(function (t) { return [t[0], c.venc.filter(function (z) { return z.tipo === t[0]; }).length]; }).filter(function (x) { return x[1]; }).sort(function (a, b) { return b[1] - a[1]; });
+  var bases = ["Obras"]; if (ob.sec !== "OBR") bases.push(secOb); bases.push("Zeladoria");
+  var texto = "O bairro " + c.b + " tem " + (ob.sec === "SAU" ? "a obra da " : "a obra ") + ob.nome + " parada há " + ob.semMed + " dias e " + qt(nv, "pedido de zeladoria vencido", "pedidos de zeladoria vencidos") + (topo ? ", o maior número da cidade" : "") + ". Uma ação conjunta de Obras no bairro ataca os dois problemas de uma vez e é a que o morador mais vai notar.";
+  return { bairro: c.b, obra: ob, venc: c.venc, bases: bases, texto: texto,
+    providencia: "Ação conjunta no " + c.b + ": plano de retomada da obra " + (ob.sec === "SAU" ? "da " : "") + ob.nome + " e mutirão dos " + nv + " pedidos de zeladoria vencidos",
+    contexto: texto.split(". Uma ação")[0] + ".",
+    dados: [["Bairro", c.b, ""], [ob.nome, ob.semMed + " dias sem medição", pc(ob.fis, 0) + " executada, " + pc(ob.fin) + " paga"], ["Valor contratado da obra", real(ob.valor), "obra da " + secOb], ["Pedidos de zeladoria vencidos no bairro", nf(nv), topo ? "maior número da cidade" : ""], ["Tipos dos pedidos vencidos", tipos.map(function (x) { return x[0] + " (" + x[1] + ")"; }).join(", "), ""]] };
+}
+function recHtml(rec) {
+  IA.rec = rec || null;
+  if (!rec) return "";
+  return '<div class="recx"><h4>Recomendação do Assessor</h4><p>' + esc(rec.texto) + '</p><p class="rbases">Cruzamento de ' + rec.bases.length + " bases: " + esc(rec.bases.join(", ")) + '.</p><div class="racts"><button class="btn pri" id="recDesp">Despachar para Obras</button><button class="btn" id="recObra">Ver a obra</button><button class="btn" id="recZel">Ver os ' + rec.venc.length + " pedidos</button></div></div>";
+}
+function ligaRec() {
+  var rec = IA.rec; if (!rec) return;
+  var d = document.getElementById("recDesp"), o = document.getElementById("recObra"), z = document.getElementById("recZel");
+  if (d) d.onclick = function () { abrirDespacho({ providencia: rec.providencia, resp: "Obras e Serviços Urbanos", prazo: "15 dias", contexto: rec.contexto, lei: "Lei 14.133/2021 (obras) · Lei 13.460/2017 (prazo ao usuário)", origem: rec.bases.join(", ").replace(/, ([^,]*)$/, " e $1"), fonte: "Obras públicas e Zeladoria urbana (Assessor IA, recomendação cruzada)", dados: rec.dados }); };
+  if (o) o.onclick = function () { abrirDeIA(fichaOB(rec.obra)); };
+  if (z) z.onclick = function () { abrirDeIA(detZ(rec.venc, "Vencidos em " + rec.bairro)); };
+}
 function pendencias() {
   var out = [], n;
   n = LIC.filter(function (l) { return l.fi < 4 && l.dias > 30; }).length; if (n) out.push(qt(n, "licitação parada", "licitações paradas") + " há mais de 30 dias");
@@ -1413,7 +1450,7 @@ function abrirIA(aba, pre) {
     b.innerHTML = '<p class="lead">Respostas calculadas na hora a partir da base. Comece pelas suas perguntas padrão.</p><div class="qlist"><div id="mpBox">' + mpHtml() + "</div>" + grupos.map(function (g, gi) { return "<h4>Planejadas · " + esc(g[0]) + "</h4>" + g[1].map(function (p, i) { return '<div class="q-row"><button data-g="' + gi + '" data-i="' + i + '">' + esc(p.q) + '</button><button class="mini" data-add-g="' + gi + '" data-add-i="' + i + '" aria-label="Tornar padrão" title="Tornar padrão">+</button></div>'; }).join(""); }).join("") + '</div><div id="iaOut"></div>' + mpNota();
     mpBind();
     b.querySelectorAll("[data-add-g]").forEach(function (x) { x.onclick = function () { var q = grupos[+x.dataset.addG][1][+x.dataset.addI].q; if (MP.itens.some(function (y) { return y.q === q; })) { toast("Essa pergunta já é padrão."); return; } mpSalvar(MP.itens.concat([{ id: "q" + Date.now().toString(36), q: q }])); toast("Pergunta incluída como padrão."); }; });
-    b.querySelectorAll(".qlist [data-g]").forEach(function (x) { x.onclick = function () { var p = grupos[+x.dataset.g][1][+x.dataset.i], r = p.a(); mostra(p.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração"); }; });
+    b.querySelectorAll(".qlist [data-g]").forEach(function (x) { x.onclick = function () { var p = grupos[+x.dataset.g][1][+x.dataset.i], r = p.a(); mostra(p.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração", recHtml(r.rec)); }; });
   } else {
     var micOk = !!IA.dict || (!!(window.SpeechRecognition || window.webkitSpeechRecognition) && window.top === window);
     b.innerHTML = '<p class="lead">Pergunte com suas palavras sobre orçamento, receitas, limites, licitações, contratos, obras, filas da saúde ou zeladoria.</p>' +
@@ -1441,6 +1478,7 @@ function mostra(q, t, g, fonte, extra) {
   if (!o) return;
   o.querySelectorAll("[data-ch]").forEach(function (el) { var d = CH[+el.dataset.ch]; if (!d) return; el.onclick = function () { abrirDeIA(typeof d === "function" ? d() : d); }; el.onkeydown = function (ev) { if (ev.key === "Enter") el.onclick(); }; });
   var ou = document.getElementById("ouvir"); if (ou) ou.onclick = function () { IA.tts.speak(t.slice(0, 1900), { language: "pt-BR" }).catch(function () {}); };
+  if (extra && extra.indexOf('class="recx"') >= 0) ligaRec();
 }
 var IOS = /iPhone|iPad|iPod|CriOS|FxiOS|EdgiOS/.test(navigator.userAgent) || /iPhone|iPad|iPod/.test(navigator.platform || "") || (/Mac/.test(navigator.platform || "") && navigator.maxTouchPoints > 1);
 function semAcento(t) { return String(t).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
@@ -1452,11 +1490,11 @@ function candidatas() { var out = [], vistos = {};
   return out; }
 function responderLocal(q) {
   var qs = stems(q), c = candidatas().map(function (x) { var n = 0, h = 0; qs.forEach(function (st) { if (x.st.indexOf(st) >= 0) { n += 10; h++; } else if (x.sn.indexOf(st) >= 0) n += 1; }); return { x: x, n: qs.length && h / qs.length >= .5 ? n : 0 }; }).sort(function (a, b) { return b.n - a.n; });
-  if (c.length && c[0].n >= 1 && (c.length < 2 || c[0].n > c[1].n)) { var r = c[0].x.p.a(); mostra(q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada mais próxima: «" + c[0].x.p.q + "» · calculada da base de demonstração"); return; }
+  if (c.length && c[0].n >= 1 && (c.length < 2 || c[0].n > c[1].n)) { var r = c[0].x.p.a(); mostra(q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada mais próxima: «" + c[0].x.p.q + "» · calculada da base de demonstração", recHtml(r.rec)); return; }
   var sug = (c[0] && c[0].n ? c.filter(function (y) { return y.n === c[0].n; }) : c).slice(0, 4);
   mostra(q, c[0] && c[0].n ? "Entendi o assunto, mas há mais de uma resposta possível. Escolha:" : "Nesta versão eu respondo às perguntas planejadas e não encontrei uma parecida. Tente com outras palavras ou escolha uma:", null, "Versão sem IA livre · a IA livre funciona no claude.ai",
     '<div class="qlist" style="margin-top:12px">' + sug.map(function (y, i) { return '<button data-sug="' + i + '">' + esc(y.x.p.q) + "</button>"; }).join("") + "</div>");
-  document.querySelectorAll("#iaOut [data-sug]").forEach(function (b) { b.onclick = function () { var y = sug[+b.dataset.sug].x.p, r = y.a(); mostra(y.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração"); }; });
+  document.querySelectorAll("#iaOut [data-sug]").forEach(function (b) { b.onclick = function () { var y = sug[+b.dataset.sug].x.p, r = y.a(); mostra(y.q, r.t || "Nada a apontar nesta base.", r.g, "Resposta planejada · calculada da base de demonstração", recHtml(r.rec)); }; });
 }
 /* ---------- perguntas padrão por perfil (incluir, editar, excluir) ---------- */
 var PADROES = {
@@ -1492,7 +1530,7 @@ function mpSalvar(itens) {
 function acharPlanejada(q) { var c = candidatas(); for (var i = 0; i < c.length; i++) if (c[i].p.q === q) return c[i].p; return null; }
 function mpPerguntar(q) {
   var pl = acharPlanejada(q);
-  if (pl) { var r = pl.a(); mostra(q, r.t || "Nada a apontar nesta base.", r.g, "Pergunta padrão · calculada da base de demonstração"); return; }
+  if (pl) { var r = pl.a(); mostra(q, r.t || "Nada a apontar nesta base.", r.g, "Pergunta padrão · calculada da base de demonstração", recHtml(r.rec)); return; }
   if (IA.sample) perguntar(q); else responderLocal(q);
 }
 function mpTitulo() { return ehPref() ? "do prefeito(a)" : "da " + nomeSec(PERFIL); }
