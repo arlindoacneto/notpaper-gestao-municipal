@@ -302,6 +302,17 @@ var LIM = [
   else l.nivel = l.pct < l.limite ? "bad" : (l.pct < l.limite + 1.5 ? "warn" : "ok");
   return l; });
 var LIMN = {}; LIM.forEach(function (l) { LIMN[l.id] = l; });
+/* ---- composição analítica dos limites: cada parte soma exatamente o valor de cima ---- */
+function partes(total, itens) { var acc = 0; return itens.map(function (it, i) { var v = i < itens.length - 1 ? rK(total * it[1]) : total - acc; acc += v; return { nome: it[0], valor: v, nota: it[2] || "" }; }); }
+var NAT_PES = [["Vencimentos e vantagens (servidores ativos)", .68, "Salários, gratificações, 13º salário e férias"], ["Obrigações patronais", .17, "Contribuição previdenciária e FGTS pagos pela prefeitura"], ["Aposentadorias e pensões", .11, "Inativos e pensionistas pagos pelo Tesouro municipal"], ["Terceirização que substitui servidor (LRF, art. 18, § 1º)", .04, "Contratos de mão de obra que substituem servidores"]];
+var COMP = {
+  sau: partes(SAUDE_ASPS, [["Atenção básica (UBS e Saúde da Família)", .46, "Equipes de Saúde da Família, UBS e agentes comunitários"], ["Assistência hospitalar e ambulatorial", .29, "Consultas especializadas, exames e internações"], ["Farmácia básica (medicamentos)", .11, "Compra e distribuição de medicamentos"], ["Vigilância em saúde", .06, "Vigilância sanitária e epidemiológica"], ["Gestão do SUS municipal", .08, "Administração, regulação e sistemas"]]),
+  edu: partes(EDU_MDE, [["Ensino fundamental", .52, "Escolas municipais do 1º ao 9º ano"], ["Educação infantil (creche e pré-escola)", .31, "Creches e pré-escolas"], ["Transporte escolar", .07, "Rotas urbanas e rurais"], ["Administração e apoio ao ensino", .10, "Secretaria, formação de professores e materiais"]]),
+  fun: partes(FUNDEB_REM, [["Professores do ensino fundamental", .55, "Remuneração dos profissionais em efetivo exercício"], ["Profissionais da educação infantil", .31, "Professores de creche e pré-escola"], ["Encargos patronais dos profissionais", .14, "Contribuição previdenciária sobre a folha do magistério"]])
+};
+var DC_TOTAL = 78500000;
+var DC = partes(DC_TOTAL, [["Financiamento Caixa (infraestrutura urbana)", .44, "Contrato de longo prazo para pavimentação e drenagem"], ["BNDES – PMAT (modernização da gestão)", .154, "Programa de modernização administrativa e tributária"], ["Parcelamento previdenciário (INSS)", .273, "Débitos previdenciários parcelados"], ["Precatórios posteriores a 05/05/2000", .133, "Condenações judiciais incluídas na dívida"]]);
+var CORR = partes(RCL.correntes, [["Impostos, taxas e contribuições", .2264, "IPTU, ISS, ITBI, IRRF, taxas e contribuições (12 meses)"], ["Transferências correntes", .7246, "FPM, ICMS, IPVA, FUNDEB, SUS e outras (12 meses)"], ["Outras receitas correntes", .049, "Receitas patrimoniais, de serviços e diversas (12 meses)"]]);
 
 /* ---- licitações (Lei 14.133/2021) ---- */
 var FASES = ["Planejamento", "Edital publicado", "Disputa", "Habilitação e recursos", "Homologado", "Deserto ou fracassado"];
@@ -453,7 +464,7 @@ function cor(n) { return "var(--" + (n === "info" ? "accent" : n) + ")"; }
 /* ======================= DETALHAMENTO (tabelas que somam) ======================= */
 function tabela(cols, linhas, total, onRow) {
   var h = '<div class="tbl-w"><table><thead><tr>' + cols.map(function (c) { return "<th" + (c.n ? ' class="n"' : "") + ">" + esc(c.t) + "</th>"; }).join("") + "</tr></thead><tbody>";
-  linhas.forEach(function (l, i) { h += '<tr' + (onRow ? ' class="click" data-i="' + i + '" tabindex="0"' : "") + ">" + cols.map(function (c) { var v = typeof c.k === "function" ? c.k(l) : l[c.k]; return "<td" + (c.n ? ' class="n"' : "") + ">" + (c.html ? v : esc(c.f ? c.f(v) : v)) + "</td>"; }).join("") + "</tr>"; });
+  linhas.forEach(function (l, i) { h += '<tr' + (onRow && !l.semClique ? ' class="click" data-i="' + i + '" tabindex="0"' : "") + ">" + cols.map(function (c) { var v = typeof c.k === "function" ? c.k(l) : l[c.k]; return "<td" + (c.n ? ' class="n"' : "") + ">" + (c.html ? v : esc(c.f ? c.f(v) : v)) + "</td>"; }).join("") + "</tr>"; });
   if (total) h += '<tr class="tot">' + cols.map(function (c, j) { var v = total[c.k]; return "<td" + (c.n ? ' class="n"' : "") + ">" + (j === 0 ? "Total" : (v === undefined ? "" : esc(c.f ? c.f(v) : v))) + "</td>"; }).join("") + "</tr>";
   return h + "</tbody></table></div>";
 }
@@ -541,10 +552,46 @@ SOL.PE = function () {
     fonte: "Base consolidada de demonstração (orçamento, receitas, folha, obras, saúde e zeladoria)", lei: "LRF (LC 101/2000) · Lei 4.320/1964 · Lei 14.129/2021"
   };
 };
-function detLim(l) { return { titulo: l.nome, lead: "Como o percentual é calculado: " + mi(l.valor) + " ÷ " + mi(l.base) + " = " + pc(l.pct) + ". Base legal: " + l.lei + ".",
-  cols: [{ t: "Componente", k: "c" }, { t: "Valor", k: "v", n: 1 }], linhas: [{ c: l.nome + " (numerador)", v: mi(l.valor) }, { c: l.baseNome + " (base)", v: mi(l.base) }, { c: "Percentual calculado", v: pc(l.pct) }, { c: (l.tipo === "min" ? "Mínimo legal" : "Limite máximo"), v: pc(l.limite, l.limite % 1 ? 1 : 0) }].concat(l.alerta ? [{ c: "Limite de alerta", v: pc(l.alerta) }, { c: "Limite prudencial", v: pc(l.prudencial) }] : []),
-  extra: l.id === "pes" && ehPref() ? { titulo: "Despesa com pessoal por secretaria (12 meses)", cols: [{ t: "Secretaria", k: "nome" }, { t: "Valor", k: "valor", n: 1, f: mi }, { t: "% da RCL", k: function (p) { return pc(p.valor / RCL.valor * 100, 2); }, n: 1 }], linhas: PESSOAL.slice().sort(function (a, b) { return b.valor - a.valor; }), total: { valor: PESSOAL_T } }
-    : l.id === "pes" || l.id === "div" ? null : { titulo: "Composição da base (jan–out)", cols: [{ t: "Receita", k: "nome" }, { t: "Arrecadado", k: "arr", n: 1, f: mi }], linhas: (l.id === "fun" ? [RECN.FUNDEB] : BASE_IT_IDS.map(function (k) { return RECN[k]; })), total: { arr: l.base } } }; }
+function sinal(v) { return v < 0 ? "−" + mi(-v) : mi(v); }
+function detParte(titulo, lead, linhas, total, sub) {
+  return { titulo: titulo, lead: lead, cols: [{ t: "Componente", k: "nome" }, { t: "Valor", k: "valor", n: 1, f: mi }, { t: "% do total", k: function (x) { return pc(x.valor / total * 100); }, n: 1 }], linhas: linhas, total: { valor: total },
+    onRow: sub || function (x) { return { ficha: true, titulo: x.nome, pares: [["Valor", real(x.valor)], ["Participação no total", pc(x.valor / total * 100)], ["O que inclui", x.nota || "—"]], conta: "As partes de \"" + titulo + "\" somam " + mi(total) + "." }; } };
+}
+function detConta(titulo, lead, linhas) { // linhas com sinal (+/−); o total é o resultado da conta
+  return { titulo: titulo, lead: lead, cols: [{ t: "Linha", k: "nome" }, { t: "Valor", k: "valor", n: 1, f: sinal }], linhas: linhas, total: { valor: soma(linhas, "valor") }, onRow: function (x) { return x.det || { ficha: true, titulo: x.nome, pares: [["Valor", sinal(x.valor)], ["O que é", x.nota || "—"]] }; } };
+}
+function detRecMes(r) { var ls = MES.slice(0, NMES).map(function (m, i) { return { nome: m + "/2026", prev: r.prevMes[i], valor: r.arrMes[i] }; });
+  return { titulo: r.nome + " mês a mês", lead: "Arrecadado de janeiro a outubro. A soma dos meses é " + mi(r.arr) + ".", cols: [{ t: "Mês", k: "nome" }, { t: "Previsto", k: "prev", n: 1, f: mi }, { t: "Arrecadado", k: "valor", n: 1, f: mi }], linhas: ls, total: { prev: soma(ls, "prev"), valor: r.arr } }; }
+function detRCL() { return detConta("Receita Corrente Líquida (12 meses)", "RCL = receitas correntes dos últimos 12 meses − deduções previstas na LRF (art. 2º, IV). Toque numa linha para ver a composição.", [
+  { nome: "Receitas correntes (12 meses)", valor: RCL.correntes, det: detParte("Receitas correntes (12 meses)", "Grupos de receita que formam as receitas correntes.", CORR, RCL.correntes) },
+  { nome: "(−) Dedução para formação do FUNDEB", valor: -RCL.dedFundeb, nota: "Parcela dos impostos retida para o FUNDEB" },
+  { nome: "(−) Contribuição dos servidores ao regime próprio", valor: -RCL.dedPrev, nota: "Contribuição descontada dos servidores para a previdência" }]); }
+function detNum(l) {
+  if (l.id === "pes") {
+    var nat = function (titulo, v) { return detParte(titulo, "Natureza da despesa com pessoal. As partes somam " + mi(v) + ".", partes(v, NAT_PES), v); };
+    if (!ehPref()) return nat("Despesa com pessoal: composição", l.valor);
+    return detParte("Despesa com pessoal por secretaria (12 meses)", "Toque numa secretaria para ver a natureza da despesa.", TODO.PESSOAL.slice().sort(function (a, b) { return b.valor - a.valor; }).map(function (x) { return { nome: x.nome, valor: x.valor }; }), l.valor, function (x) { return nat(x.nome + ": pessoal", x.valor); });
+  }
+  if (l.id === "div") return detConta("Dívida consolidada líquida", "DCL = dívida consolidada − disponibilidade de caixa e haveres financeiros.", [
+    { nome: "Dívida consolidada", valor: DC_TOTAL, det: detParte("Dívida consolidada", "Contratos e obrigações que formam a dívida.", DC, DC_TOTAL) },
+    { nome: "(−) Disponibilidade de caixa e haveres", valor: -(DC_TOTAL - DIVIDA), nota: "Saldo em caixa livre que abate a dívida" }]);
+  return detParte(l.nome + ": o que foi aplicado", "Onde o valor foi aplicado (despesa liquidada). Toque num item para ver o que inclui.", COMP[l.id], l.valor);
+}
+function detBase(l) {
+  if (l.id === "pes" || l.id === "div") return detRCL();
+  if (l.id === "fun") return detRecMes(RECN.FUNDEB);
+  var ls = BASE_IT_IDS.map(function (k) { return { nome: RECN[k].nome, valor: RECN[k].arr, r: RECN[k] }; });
+  return detParte("Impostos e transferências constitucionais (jan–out)", "Receitas que formam a base de saúde e educação. Toque numa receita para ver mês a mês.", ls, l.base, function (x) { return detRecMes(x.r); });
+}
+function detLim(l) {
+  var lim = function (v) { return pc(v, v % 1 ? 1 : 0); };
+  return { titulo: l.nome,
+    lead: "Percentual = numerador ÷ base = " + mi(l.valor) + " ÷ " + mi(l.base) + " = " + pc(l.pct) + ". Toque no numerador ou na base para ver o que compõe cada valor. Base legal: " + l.lei + ".",
+    cols: [{ t: "Linha", k: "c" }, { t: "Valor", k: "v", n: 1 }, { t: "", k: function (r) { return r.semClique ? "" : "Abrir ›"; }, n: 1 }],
+    linhas: [{ c: "Numerador: " + l.nome, v: mi(l.valor), det: detNum(l) }, { c: "Base: " + l.baseNome, v: mi(l.base), det: detBase(l) }, { c: "Percentual calculado", v: pc(l.pct), semClique: 1 }, { c: l.tipo === "min" ? "Mínimo legal" : "Limite máximo", v: lim(l.limite), semClique: 1 }]
+      .concat(l.alerta ? [{ c: "Limite de alerta (90%)", v: pc(l.alerta), semClique: 1 }, { c: "Limite prudencial (95%)", v: pc(l.prudencial), semClique: 1 }] : []),
+    onRow: function (r) { return r.semClique ? null : r.det; } };
+}
 SOL.LL = function () {
   if (!ehPref()) return llSec();
   var p = LIMN.pes, folga = (p.prudencial / 100 * RCL.valor) - p.valor;
@@ -807,15 +854,15 @@ function pr(q, f) { return { q: q, a: f }; }
 var PRONTAS = {
   geral: [
     pr("Como está o município hoje?", function () { var s = SOL.PE(); return { t: s.sintese.t.replace(/<[^>]+>/g, ""), g: s.grafico }; }),
-    pr("Estamos cumprindo os limites legais?", function () { return { t: LIM.map(function (l) { return l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + ")"; }).join("\n"), g: { tipo: "regua", dados: LIM } }; }),
+    pr("Estamos cumprindo os limites legais?", function () { return { t: LIM.map(function (l) { return l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + ")"; }).join("\n"), g: { tipo: "regua", dados: LIM.map(function (l) { return Object.assign({}, l, { det: detLim(l) }); }) } }; }),
     pr("O que está atrasado e precisa da minha decisão?", function () { return { t: "1) Despesa com pessoal acima do alerta (" + pc(LIMN.pes.pct) + ").\n2) " + OB.filter(function (o) { return o.sit === "Paralisada"; }).length + " obras paralisadas.\n3) " + nf(ZAB.filter(function (z) { return z.venc; }).length) + " pedidos de zeladoria vencidos.\n4) " + LIC.filter(function (l) { return l.fi < 4 && l.dias > 30; }).length + " licitações paradas há mais de 30 dias.\n5) " + nf(FS_180) + " pessoas há mais de 180 dias na fila da saúde." }; })
   ],
   PE: [],
   OR: [pr("Quanto ainda posso suplementar sem lei?", function () { return { t: "Ainda é possível suplementar " + mi(LIMITE_SUPLEMENTACAO - DESP.sup) + " por decreto. A LOA autoriza 20% (" + mi(LIMITE_SUPLEMENTACAO) + ") e já foram usados " + mi(DESP.sup) + "." }; }),
        pr("Quanto o orçamento cresceu desde a aprovação?", function () { return { t: "A dotação passou de " + mi(DESP.ini) + " para " + mi(DESP.atu) + ": +" + mi(DESP.sup) + " em suplementações e −" + mi(DESP.anu) + " em anulações." }; })],
-  LL: [pr("Estamos perto do limite de pessoal?", function () { var p = LIMN.pes; return { t: "A despesa com pessoal está em " + pc(p.pct) + " da RCL: acima do alerta (48,6%) e abaixo do prudencial (51,3%). Restam " + mi(p.prudencial / 100 * RCL.valor - p.valor) + " até o prudencial.", g: { tipo: "barras", f: mi, lw: 200, dados: PESSOAL.slice().sort(function (a, b) { return b.valor - a.valor; }).map(function (x) { return { rotulo: x.nome, valor: x.valor }; }) } }; }),
+  LL: [pr("Estamos perto do limite de pessoal?", function () { var p = LIMN.pes; return { t: "A despesa com pessoal está em " + pc(p.pct) + " da RCL: acima do alerta (48,6%) e abaixo do prudencial (51,3%). Restam " + mi(p.prudencial / 100 * RCL.valor - p.valor) + " até o prudencial.", g: { tipo: "barras", f: mi, lw: 200, dados: PESSOAL.slice().sort(function (a, b) { return b.valor - a.valor; }).map(function (x) { return { rotulo: x.nome, valor: x.valor, det: detParte(x.nome + ": pessoal", "Natureza da despesa com pessoal. As partes somam " + mi(x.valor) + ".", partes(x.valor, NAT_PES), x.valor) }; }) } }; }),
        pr("Vamos fechar o ano aplicando 25% em educação?", function () { return { t: "Até outubro a aplicação está em " + pc(LIMN.edu.pct) + ", acima do mínimo de 25%. Mantido o ritmo, o município fecha o ano cumprindo o mínimo." }; })],
-  FI: [pr("Quanto falta pagar de despesa já liquidada?", function () { return { t: mi(DESP.aPag) + " estão liquidados e aguardando pagamento.", g: { tipo: "barras", f: mi, lw: 210, dados: SEC.slice().sort(function (a, b) { return b.aPag - a.aPag; }).slice(0, 6).map(function (s) { return { rotulo: s.nome, valor: s.aPag }; }) } }; }),
+  FI: [pr("Quanto falta pagar de despesa já liquidada?", function () { return { t: mi(DESP.aPag) + " estão liquidados e aguardando pagamento.", g: { tipo: "barras", f: mi, lw: 210, dados: SEC.slice().sort(function (a, b) { return b.aPag - a.aPag; }).slice(0, 6).map(function (s) { return { rotulo: s.nome, valor: s.aPag, det: fichaSec(s) }; }) } }; }),
        pr("Qual secretaria executou menos do orçamento?", function () { var l = SEC.filter(function (s) { return s.id !== "ENC"; }).map(function (s) { return { rotulo: s.nome, valor: r2(s.liq / s.atu * 100) }; }).sort(function (a, b) { return a.valor - b.valor; }); return { t: l[0].rotulo + " liquidou " + pc(l[0].valor) + " da dotação atualizada, a menor execução.", g: { tipo: "barras", f: function (v) { return pc(v); }, lw: 210, dados: l } }; })],
   GT: [pr("A arrecadação do IPTU está abaixo do previsto?", function () { var r = RECN.IPTU; return { t: "Sim. Até outubro o IPTU arrecadou " + mi(r.arr) + " de " + mi(r.prevAte) + " previstos (" + pc(r.arr / r.prevAte * 100) + "): faltam " + mi(r.prevAte - r.arr) + ".", g: { tipo: "colunas", f: mi, rotulos: MES.slice(0, NMES), series: [{ nome: "Arrecadado", cor: "var(--accent)", valores: r.arrMes }, { nome: "Previsto", cor: "var(--muted)", tipo: "lin", valores: r.prevMes }] } }; }),
        pr("Quais receitas estão acima do previsto?", function () { var l = REC.filter(function (r) { return r.arr > r.prevAte; }); return { t: l.map(function (r) { return r.nome + ": +" + mi(r.arr - r.prevAte); }).join("\n") }; })],
@@ -825,7 +872,7 @@ var PRONTAS = {
        pr("Há aditivo acima do limite legal?", function () { var a = CT.filter(function (c) { return c.aditPct > 25; }); return { t: a.length ? a.map(function (c) { return c.objeto + ": aditivo de " + pc(c.aditPct) + " (limite de 25%)."; }).join("\n") : "Não há aditivos acima de 25%." }; })],
   OB: [pr("Quais obras estão paralisadas e há quanto tempo?", function () { return { t: OB.filter(function (o) { return o.sit === "Paralisada"; }).map(function (o) { return o.nome + ": " + o.semMed + " dias sem medição, " + pc(o.fis, 0) + " executada."; }).join("\n") }; }),
        pr("Onde o pagamento está à frente da obra?", function () { var a = OB.filter(function (o) { return o.sit === "Atenção"; }); return { t: a.length ? a.map(function (o) { return o.nome + ": " + pc(o.fin, 0) + " pago × " + pc(o.fis, 0) + " executado."; }).join("\n") : "Nenhuma obra com pagamento à frente da execução." }; })],
-  FS: [pr("Qual especialidade tem a maior espera?", function () { var l = FS.slice().sort(function (a, b) { return b.faixas[3] - a.faixas[3]; }); return { t: l[0].nome + " tem " + nf(l[0].faixas[3]) + " pessoas esperando há mais de 180 dias.", g: { tipo: "barras", f: nf, lw: 190, dados: l.map(function (f) { return { rotulo: f.nome, valor: f.faixas[3] }; }) } }; }),
+  FS: [pr("Qual especialidade tem a maior espera?", function () { var l = FS.slice().sort(function (a, b) { return b.faixas[3] - a.faixas[3]; }); return { t: l[0].nome + " tem " + nf(l[0].faixas[3]) + " pessoas esperando há mais de 180 dias.", g: { tipo: "barras", f: nf, lw: 190, dados: l.map(function (f) { return { rotulo: f.nome, valor: f.faixas[3], det: detFSesp(f) }; }) } }; }),
        pr("Quantas vagas perdemos por falta do paciente?", function () { return { t: nf(FS_FALTAS) + " vagas em outubro (" + pc(FS_FALTAS / FS_OFERTA * 100) + " da oferta). Confirmar a consulta por WhatsApp 48 h antes reduz as faltas." }; })],
   ZU: [pr("Quantas lâmpadas apagadas estão sem conserto?", function () { var a = ZAB.filter(function (z) { return z.tipo === "Iluminação"; }); return { t: nf(a.length) + " pedidos de iluminação abertos; " + nf(a.filter(function (z) { return z.venc; }).length) + " já passaram do prazo de 3 dias." }; }),
        pr("Qual bairro mais pede tapa-buraco?", function () { var l = ZBAI.map(function (b) { return { rotulo: b, valor: ZEL.filter(function (z) { return z.tipo === "Tapa-buraco" && z.bairro === b; }).length }; }).sort(function (a, b) { return b.valor - a.valor; }); return { t: l[0].rotulo + " fez " + l[0].valor + " pedidos de tapa-buraco desde agosto.", g: { tipo: "barras", f: nf, lw: 170, dados: l } }; })]
@@ -855,7 +902,7 @@ var PRONTAS_SEC = {
 };
 function prontasDe(sig) {
   if (sig === "geral") return ehPref() ? PRONTAS.geral : PRONTAS_SEC.geral;
-  if (!ehPref() && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome.toLowerCase() + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + "." }; }); });
+  if (!ehPref() && sig === "LL") return LIM.map(function (l) { return pr("Como está o índice: " + l.nome.toLowerCase() + "?", function () { return { t: l.nome + ": " + pc(l.pct) + " (" + (l.tipo === "min" ? "mínimo " : "máximo ") + pc(l.limite, l.limite % 1 ? 1 : 0) + "). Situação: " + NIVEL_TXT[l.nivel].toLowerCase() + ". Cálculo: " + mi(l.valor) + " ÷ " + mi(l.base) + ".", g: { tipo: "regua", dados: [Object.assign({}, l, { det: detLim(l) })] } }; }); });
   if (!ehPref() && PRONTAS_SEC[sig]) return PRONTAS_SEC[sig];
   return PRONTAS[sig] || [];
 }
@@ -889,7 +936,11 @@ function fechamento1() {
   REC.forEach(function (r) { chk(soma(r.arrMes, function (x) { return x; }) === r.arr, r.id + ": arrecadado mensal"); });
   if (ehPref()) chk(Math.abs(RECT.prev - DESP.ini) <= 1000, "LOA equilibrada (receita prevista = despesa fixada)");
   chk(PESSOAL_T === LIMN.pes.valor, "pessoal por secretaria = numerador do limite");
-  LIM.forEach(function (l) { chk(Math.abs(l.pct - l.valor / l.base * 100) < 0.01, l.id + ": percentual recalculado"); });
+  LIM.forEach(function (l) { chk(Math.abs(l.pct - l.valor / l.base * 100) < 0.01, l.id + ": percentual recalculado");
+    var dn = detNum(l), db = detBase(l); chk(soma(dn.linhas, "valor") === l.valor, l.id + ": analítico do numerador soma o numerador"); chk(soma(db.linhas, "valor") === l.base, l.id + ": analítico da base soma a base");
+    dn.linhas.concat(db.linhas).forEach(function (x) { var d = x.det || (dn.onRow && !x.semClique ? null : null); if (x.det && x.det.linhas) chk(soma(x.det.linhas, "valor") === x.valor, l.id + ": " + x.nome + " soma"); }); });
+  if (ehPref()) TODO.PESSOAL.forEach(function (x) { chk(soma(partes(x.valor, NAT_PES), "valor") === x.valor, "pessoal " + x.id + ": natureza soma"); });
+  chk(soma(CORR, "valor") === RCL.correntes, "receitas correntes: grupos somam"); chk(soma(DC, "valor") === DC_TOTAL, "dívida consolidada: contratos somam");
   chk(SAUDE_ASPS <= SECN.SAU.liq, "saúde aplicada ≤ liquidado da Saúde"); chk(EDU_MDE <= SECN.EDU.liq, "educação aplicada ≤ liquidado da Educação");
   LIC.forEach(function (l) { chk(!l.contr || l.contr <= l.est, l.id + ": contratado ≤ estimado"); chk((l.fase === "Homologado") === (l.contr > 0), l.id + ": contratado só se homologado"); });
   CT.forEach(function (c) { chk(c.pago <= c.med && c.med <= c.total, c.id + ": pago ≤ medido ≤ total"); });
@@ -1006,6 +1057,7 @@ function renderSol(sig) {
 
 /* ---------- painel de detalhamento (pilha com voltar) ---------- */
 var pilha = [];
+function voltarDet() { pilha.pop(); var topo = pilha[pilha.length - 1]; if (topo && topo.volta) { var f = topo.volta; pilha = []; f(); } else if (pilha.length) desenhaDet(); else fecharTudo(); }
 function abrir(det) { if (!det) return; pilha.push(det); desenhaDet(); }
 function fecharTudo() { pilha = []; layer.innerHTML = ""; document.body.style.overflow = ""; }
 function desenhaDet() {
@@ -1016,7 +1068,7 @@ function desenhaDet() {
   else { corpo = (d.lead ? '<p class="lead">' + esc(d.lead) + "</p>" : "") + tabela(d.cols, d.linhas, d.total, d.onRow) + (d.extra ? '<h3 style="margin:22px 0 8px;font:600 16px var(--f-display)">' + esc(d.extra.titulo) + "</h3>" + tabela(d.extra.cols, d.extra.linhas, d.extra.total) : ""); }
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(d.titulo) + '"><header><div>' + path + "<h2>" + esc(d.titulo) + '</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
-  var v = document.getElementById("volta"); if (v) v.onclick = function () { pilha.pop(); desenhaDet(); };
+  var v = document.getElementById("volta"); if (v) v.onclick = voltarDet;
   layer.querySelectorAll("tr.click").forEach(function (tr) { tr.onclick = function () { abrir(d.onRow(d.linhas[+tr.dataset.i])); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
   var dd = document.getElementById("dDesp"); if (dd) dd.onclick = function () { toast("Despacho criado (demonstração)."); };
   var di = document.getElementById("dIA"); if (di) di.onclick = function () { abrirIA("livre", "Analise: " + d.titulo + ". " + d.pares.map(function (p) { return p[0] + ": " + p[1]; }).join("; ")); };
@@ -1030,7 +1082,13 @@ if (window.claude && window.claude.use) {
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
   window.claude.use("tts").then(function (t) { IA.tts = t; });
 }
+function abrirDeIA(det) {
+  if (!det) return;
+  var u = IA.ultima, aba = IA.aba;
+  pilha = [{ titulo: "Resposta do Assessor IA", volta: function () { abrirIA(aba); if (u) mostra.apply(null, u); } }, det]; desenhaDet();
+}
 function abrirIA(aba, pre) {
+  pilha = [];
   IA.aba = aba || "prontas"; document.body.style.overflow = "hidden";
   var sig = ATIVAS.indexOf(atual) >= 0 ? atual : "geral";
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Assessor IA"><header><div><div class="path">Assessor IA · base de demonstração de ' + MUN.nome + '</div><h2>Pergunte ao Gestor</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header>' +
@@ -1055,10 +1113,12 @@ function abrirIA(aba, pre) {
     document.getElementById("qIn").focus();
   }
 }
+function temDet(g) { return !!(g && ((g.dados || []).some(function (x) { return x.det; }) || g.det)); }
 function mostra(q, t, g, fonte, extra) {
-  CH = [];
+  CH = []; IA.ultima = [q, t, g, fonte, extra];
   var o = document.getElementById("iaOut"); if (!o) return;
-  o.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">' + esc(t) + "</div>" + (g ? '<div style="margin-top:12px">' + grafico(Object.assign({ hint: false }, g)) + "</div>" : "") + '<div class="rs">' + esc(fonte) + "</div>" + (IA.tts ? '<div class="ra"><button class="mini" id="ouvir">Ouvir resposta</button></div>' : "") + (extra || "") + "</div>";
+  o.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">' + esc(t) + "</div>" + (g ? '<div style="margin-top:12px">' + grafico(Object.assign({}, g, { hint: temDet(g) ? "Toque numa barra ou limite para ver o detalhamento." : false })) + "</div>" : "") + '<div class="rs">' + esc(fonte) + "</div>" + (IA.tts ? '<div class="ra"><button class="mini" id="ouvir">Ouvir resposta</button></div>' : "") + (extra || "") + "</div>";
+  o.querySelectorAll("[data-ch]").forEach(function (el) { var d = CH[+el.dataset.ch]; if (!d) return; el.onclick = function () { abrirDeIA(typeof d === "function" ? d() : d); }; el.onkeydown = function (ev) { if (ev.key === "Enter") el.onclick(); }; });
   var ou = document.getElementById("ouvir"); if (ou) ou.onclick = function () { IA.tts.speak(t.slice(0, 1900), { language: "pt-BR" }).catch(function () {}); };
 }
 var ctl = null;
@@ -1111,7 +1171,7 @@ document.addEventListener("click", function (e) { var b = e.target.closest && e.
 document.getElementById("iaB").onclick = function () { abrirIA("livre"); };
 document.getElementById("prontasB").onclick = function () { abrirIA("prontas"); };
 document.getElementById("menuB").onclick = function () { side.classList.toggle("open"); };
-document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (pilha.length > 1) { pilha.pop(); desenhaDet(); } else fecharTudo(); } });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (pilha.length > 1) voltarDet(); else fecharTudo(); } });
 window.addEventListener("hashchange", function () { fecharTudo(); var h = location.hash.slice(1); if (h && cat(h)) renderSol(h); else renderInicio(); });
 var h0 = location.hash.slice(1); if (h0 && cat(h0)) renderSol(h0); else renderInicio();
 })();
