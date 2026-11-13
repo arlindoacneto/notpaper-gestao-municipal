@@ -205,6 +205,12 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .dtipos label { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 8px; padding: 10px 12px; border-radius: 11px; border: 1px solid var(--line); background: var(--surface2); cursor: pointer; }
 .dtipos label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .dtipos b { font-size: 14.5px; color: var(--ink); } .dtipos small { grid-column: 2; font-size: 12.5px; color: var(--muted); font-weight: 400; }
+.dbase { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 0; display: grid; gap: 8px; background: var(--surface2); }
+.dbase legend { font: 600 13.5px var(--f-body); color: var(--muted); padding: 0 4px; }
+.dbase legend small { font-weight: 400; }
+.dbase label { display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 8px; align-items: start; font-size: 14.5px; line-height: 1.4; color: var(--ink); cursor: pointer; }
+.dbase input { width: 20px; height: 20px; margin-top: 1px; }
+.dbase small { color: var(--muted); }
 .dquick { display: flex; gap: 6px; flex-wrap: wrap; }
 .dconf { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); font-size: 15px; font-weight: 600; color: var(--ink); }
 .dconf input { width: 22px; height: 22px; margin-top: 1px; flex: 0 0 auto; }
@@ -1088,7 +1094,7 @@ function renderSol(sig) {
   view.querySelectorAll("[data-kpi]").forEach(function (b) { b.onclick = function () { var k = S.kpis[+b.dataset.kpi]; if (k.go) go(k.go); else if (k.det) abrir(k.det); else toast("Sem detalhamento para este número."); }; });
   view.querySelectorAll("[data-ch]").forEach(function (g) { var d = CH[+g.dataset.ch]; if (!d) return; g.onclick = function () { abrir(typeof d === "function" ? d() : d); }; g.onkeydown = function (ev) { if (ev.key === "Enter") g.onclick(); }; });
   view.querySelectorAll("tr.click").forEach(function (tr) { tr.onclick = function () { var r = S.exc.onRow(S.exc.linhas[+tr.dataset.i]); if (r && r.go) go(r.go); else abrir(r); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
-  view.querySelectorAll("[data-desp]").forEach(function (b) { b.onclick = function () { var ac = S.acoes[+b.dataset.desp]; abrirDespacho({ providencia: ac.t, resp: ac.r, prazo: ac.p, contexto: S.sintese.t.replace(/<[^>]+>/g, ""), lei: S.lei, origem: nome(sig) }); }; });
+  view.querySelectorAll("[data-desp]").forEach(function (b) { b.onclick = function () { var ac = S.acoes[+b.dataset.desp]; abrirDespacho({ providencia: ac.t, resp: ac.r, prazo: ac.p, contexto: S.sintese.t.replace(/<[^>]+>/g, ""), lei: S.lei, origem: nome(sig), fonte: S.fonte, dados: itemDaAcao(ac.t).concat([["Situação", S.sintese.t.replace(/<[^>]+>/g, ""), ""]]).concat(S.kpis.map(function (k) { return [k.r, k.v, k.c]; })) }); }; });
   view.querySelectorAll("[data-perg]").forEach(function (b) { b.onclick = function () { abrirIA("livre", "Explique e quantifique: " + b.dataset.perg); }; });
 }
 
@@ -1109,7 +1115,7 @@ function desenhaDet() {
   var v = document.getElementById("volta"); if (v) v.onclick = voltarDet;
   layer.querySelectorAll("tr.click").forEach(function (tr) { tr.onclick = function () { abrir(d.onRow(d.linhas[+tr.dataset.i])); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
   var dd = document.getElementById("dDesp"); if (dd) dd.onclick = function () { var sx = (d.pares.filter(function (p) { return /secretaria/i.test(p[0]); })[0] || [])[1] || "";
-    abrirDespacho({ providencia: "Analisar e dar andamento: " + d.titulo, resp: sx, prazo: "10 dias", contexto: d.pares.slice(0, 6).map(function (p) { return p[0] + ": " + p[1]; }).join("; ") + ".", lei: "", origem: d.titulo }); };
+    abrirDespacho({ providencia: "Analisar e dar andamento: " + d.titulo, resp: sx, prazo: "10 dias", contexto: d.pares.slice(0, 6).map(function (p) { return p[0] + ": " + p[1]; }).join("; ") + ".", lei: "", origem: d.titulo, fonte: "Ficha do item no Gestor", dados: d.pares.map(function (p) { return [p[0], p[1], ""]; }).concat(d.conta ? [["Como o valor fecha", d.conta, ""]] : []) }); };
   var di = document.getElementById("dIA"); if (di) di.onclick = function () { abrirIA("livre", "Analise: " + d.titulo + ". " + d.pares.map(function (p) { return p[0] + ": " + p[1]; }).join("; ")); };
   document.getElementById("dX").focus();
 }
@@ -1132,6 +1138,8 @@ function dspVisiveis() { return DSP.itens.filter(function (d) { return ehPref() 
 function nomeQuem(pf) { return pf === "PREF" ? "Prefeito(a)" : nomeSec(pf); }
 function hojeD() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
 function isoD(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function brD(iso) { return fdata(deIso(iso)); }
+function isoDeBr(t) { var m = String(t || "").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if (!m) return ""; var d = new Date(+m[3], +m[2] - 1, +m[1]); if (d.getDate() !== +m[1] || d.getMonth() !== +m[2] - 1) return ""; return isoD(d); }
 function maisDias(n) { var d = hojeD(); d.setDate(d.getDate() + n); return isoD(d); }
 function deIso(t) { var q = String(t).split("-"); return new Date(+q[0], +q[1] - 1, +q[2]); }
 function prazoDe(t) { var x = semAcento(t || ""), m;
@@ -1162,9 +1170,11 @@ function abrirDespacho(ctx) {
     '<fieldset class="dtipos"><legend>Tipo de despacho</legend>' + Object.keys(TIPOS_D).map(function (k) { return '<label><input type="radio" name="tipo" value="' + k + '"' + (k === tipo ? " checked" : "") + "><b>" + esc(TIPOS_D[k][0]) + "</b><small>" + esc(TIPOS_D[k][1]) + "</small></label>"; }).join("") + "</fieldset>" +
     '<label class="df">Assunto<input type="text" name="assunto" maxlength="160" value="' + esc(sug.assunto) + '"></label>' +
     '<label class="df">Despacho<textarea name="texto" rows="8" maxlength="2000">' + esc(sug.texto) + "</textarea></label>" +
+    '<fieldset class="dbase"><legend>Dados que embasam a decisão <small>(vão anexos ao despacho e ao futuro memorando; desmarque o que não quiser enviar)</small></legend>' + (ctx.dados || []).map(function (d, i) { return '<label><input type="checkbox" name="emb" value="' + i + '" checked><span><b>' + esc(d[0]) + ":</b> " + esc(d[1]) + (d[2] ? " <small>(" + esc(d[2]) + ")</small>" : "") + "</span></label>"; }).join("") +
+      '<p class="note" style="margin:4px 0 0">Fonte: ' + esc(ctx.fonte || "base do Gestor") + " · posição " + POS_TXT + (ctx.lei ? " · Base legal: " + esc(ctx.lei) : "") + "</p></fieldset>" +
     (IA.sample ? '<div><button type="button" class="mini" id="dReesc">✨ Reescrever o texto com a IA</button></div>' : "") +
     '<div class="drow"><label class="df">Destinatário<select name="destino">' + destinos().map(function (x) { return '<option value="' + esc(x[0]) + '"' + (x[0] === dest ? " selected" : "") + ">" + esc(x[1]) + "</option>"; }).join("") + "</select></label>" +
-    '<label class="df">Prazo final<input type="date" name="prazo" min="' + isoD(hojeD()) + '" value="' + prazo + '"></label></div>' +
+    '<label class="df">Prazo final (dia/mês/ano)<input type="text" name="prazo" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" value="' + brD(prazo) + '"></label></div>' +
     '<div class="dquick">' + [2, 5, 10, 15, 30].map(function (n) { return '<button type="button" class="mini" data-ddias="' + n + '">' + n + " dias</button>"; }).join("") + "</div>" +
     '<label class="df">Seu comentário pessoal (opcional)<textarea name="comentario" rows="3" maxlength="600" placeholder="Ex.: Priorizem o bairro com mais reclamações; quero um retorno pessoal na reunião de segunda."></textarea></label>' +
     '<label class="dconf"><input type="checkbox" name="revisei">Revisei este despacho e assumo esta decisão.</label>' +
@@ -1177,11 +1187,11 @@ function abrirDespacho(ctx) {
   var gerado = sug.texto;
   function sincroniza(refaz) {
     var tp = (f.querySelector("input[name=tipo]:checked") || {}).value || sug.tipo;
-    if (refaz && f.texto.value === gerado) { gerado = rascunho(tp, ctx.providencia, ctx.contexto, nomeDest(f.destino.value), f.prazo.value || sug.prazo, ctx.lei); f.texto.value = gerado; return; }
-    if (f.prazo.value) { var nv = f.texto.value.replace(/Prazo para retorno: \d{2}\/\d{2}\/\d{4}/, "Prazo para retorno: " + fdata(deIso(f.prazo.value))); if (f.texto.value === gerado) gerado = nv; f.texto.value = nv; }
+    if (refaz && f.texto.value === gerado) { gerado = rascunho(tp, ctx.providencia, ctx.contexto, nomeDest(f.destino.value), isoDeBr(f.prazo.value) || sug.prazo, ctx.lei); f.texto.value = gerado; return; }
+    var pzi = isoDeBr(f.prazo.value); if (pzi) { var nv = f.texto.value.replace(/Prazo para retorno: \d{2}\/\d{2}\/\d{4}/, "Prazo para retorno: " + brD(pzi)); if (f.texto.value === gerado) gerado = nv; f.texto.value = nv; }
   }
-  layer.querySelectorAll("[data-ddias]").forEach(function (b) { b.onclick = function () { f.prazo.value = maisDias(+b.dataset.ddias); sincroniza(false); }; });
-  f.prazo.addEventListener("change", function () { sincroniza(false); });
+  layer.querySelectorAll("[data-ddias]").forEach(function (b) { b.onclick = function () { f.prazo.value = brD(maisDias(+b.dataset.ddias)); sincroniza(false); }; });
+  f.prazo.addEventListener("input", function () { var dg = f.prazo.value.replace(/\D/g, "").slice(0, 8), v = dg; if (dg.length > 4) v = dg.slice(0, 2) + "/" + dg.slice(2, 4) + "/" + dg.slice(4); else if (dg.length > 2) v = dg.slice(0, 2) + "/" + dg.slice(2); f.prazo.value = v; if (isoDeBr(v)) sincroniza(false); });
   f.destino.addEventListener("change", function () { sincroniza(true); });
   f.querySelectorAll("input[name=tipo]").forEach(function (r) { r.addEventListener("change", function () { sincroniza(true); }); });
   var rb = document.getElementById("dReesc");
@@ -1190,23 +1200,35 @@ function abrirDespacho(ctx) {
       .then(function (r) { if (r && r.text) f.texto.value = r.text.trim(); rb.textContent = "✨ Reescrever o texto com a IA"; rb.disabled = false; })
       .catch(function () { rb.textContent = "✨ Reescrever o texto com a IA"; rb.disabled = false; toast("Não foi possível reescrever agora. O texto continua editável."); }); };
   f.onsubmit = function (ev) { ev.preventDefault();
-    var err = layer.querySelector(".derr"), tp = (f.querySelector("input[name=tipo]:checked") || {}).value, a = f.assunto.value.trim(), t = f.texto.value.trim(), ds = f.destino.value, pz = f.prazo.value, cm = f.comentario.value.trim();
+    var err = layer.querySelector(".derr"), tp = (f.querySelector("input[name=tipo]:checked") || {}).value, a = f.assunto.value.trim(), t = f.texto.value.trim(), ds = f.destino.value, pz = isoDeBr(f.prazo.value), cm = f.comentario.value.trim();
     if (!a || !t) { err.textContent = "Preencha o assunto e o texto do despacho."; (a ? f.texto : f.assunto).focus(); return; }
-    if (!pz || pz < isoD(hojeD())) { err.textContent = "O prazo final deve ser hoje ou uma data futura."; f.prazo.focus(); return; }
+    if (!pz) { err.textContent = "Informe o prazo no formato dia/mês/ano, por exemplo " + brD(maisDias(10)) + "."; f.prazo.focus(); return; }
+    if (pz < isoD(hojeD())) { err.textContent = "O prazo final deve ser hoje ou uma data futura."; f.prazo.focus(); return; }
     if (!f.revisei.checked) { err.textContent = "Marque “Revisei este despacho e assumo esta decisão” para emitir."; f.revisei.focus(); return; }
     var mud = []; if (tp !== sug.tipo) mud.push("tipo"); if (a !== sug.assunto) mud.push("assunto"); if (t !== gerado.trim()) mud.push("texto"); if (ds !== sug.destino) mud.push("destinatário"); if (pz !== sug.prazo) mud.push("prazo"); if (cm) mud.push("comentário pessoal");
+    var marc = [].map.call(f.querySelectorAll("input[name=emb]:checked"), function (c) { return +c.value; }), emb = marc.map(function (i) { var d = ctx.dados[i]; return { dado: d[0], valor: d[1], comparacao: d[2] || "" }; });
+    if (ctx.dados && marc.length < ctx.dados.length) mud.push("retirou " + (ctx.dados.length - marc.length) + " dado(s) do embasamento");
     var ano = new Date().getFullYear(), num = "D-" + ano + "-" + String(DSP.itens.length + 1).padStart(4, "0");
-    var reg = { id: num, tipo: tp, assunto: a, texto: t, comentario: cm, destino: ds, destNome: nomeDest(ds), destSec: ehPref() ? ds : PERFIL, prazo: pz, emissor: PERFIL, emissorNome: nomeQuem(PERFIL), origem: ctx.origem, criado: new Date().toISOString(), alteracoes: mud, sugestao: sug };
+    var reg = { id: num, tipo: tp, assunto: a, texto: t, comentario: cm, destino: ds, destNome: nomeDest(ds), destSec: ehPref() ? ds : PERFIL, prazo: pz, emissor: PERFIL, emissorNome: nomeQuem(PERFIL), origem: ctx.origem, criado: new Date().toISOString(), alteracoes: mud, sugestao: sug, embasamento: emb, fonte: ctx.fonte || "", posicao: POS_TXT, lei: ctx.lei || "" };
     DSP.itens = DSP.itens.concat([reg]); dspSalvar(); renderSide();
     document.getElementById("dBody").innerHTML = '<div class="ans-q"><small>Despacho emitido</small><p>' + esc(num) + " · " + esc(a) + "</p></div>" +
       '<div class="dtoque"><b>Seu toque:</b> ' + (mud.length ? "você alterou " + esc(mud.join(", ")) + " em relação à sugestão." : "você revisou e confirmou a sugestão sem alterações.") + "</div>" +
       '<dl class="kv" style="margin-top:14px"><dt>Tipo</dt><dd>' + esc(TIPOS_D[tp][0]) + "</dd><dt>De</dt><dd>" + esc(nomeQuem(PERFIL)) + "</dd><dt>Para</dt><dd>" + esc(reg.destNome) + "</dd><dt>Prazo final</dt><dd>" + fdata(deIso(pz)) + "</dd>" + (cm ? "<dt>Comentário pessoal</dt><dd>" + esc(cm) + "</dd>" : "") + "</dl>" +
-      '<div class="resp" style="margin-top:14px"><div class="rt">' + esc(t) + "</div></div>" +
+      '<div class="resp" style="margin-top:14px"><div class="rt">' + esc(t) + "</div></div>" + embHtml(reg) +
       '<div class="ans-volta"><button class="btn pri" id="dVer">Ver despachos emitidos</button></div><div class="dacts" style="margin-top:8px"><button class="btn" id="dFim">Fechar</button></div>';
     document.getElementById("dVer").onclick = abrirDespachos; document.getElementById("dFim").onclick = fecharTudo;
     toast("Despacho " + num + " emitido.");
   };
 }
+function itemDaAcao(t) { // a providência cita uma obra, contrato ou licitação: os dados do item entram primeiro no embasamento
+  var achou = null;
+  OB.forEach(function (o) { if (!achou && t.indexOf(o.nome) >= 0) achou = fichaOB(o); });
+  CT.forEach(function (c) { if (!achou && t.indexOf(c.objeto) >= 0) achou = fichaCT(c); });
+  LIC.forEach(function (l) { if (!achou && t.indexOf(l.objeto) >= 0) achou = fichaLic(l); });
+  return achou ? achou.pares.map(function (p) { return [achou.titulo + " · " + p[0], p[1], ""]; }) : []; }
+function embHtml(d) { if (!d.embasamento || !d.embasamento.length) return "";
+  return '<div class="dbase" style="margin-top:14px"><b style="font-size:14px">Dados que embasaram a decisão</b>' + d.embasamento.map(function (e) { return '<div style="font-size:14.5px"><b>' + esc(e.dado) + ":</b> " + esc(e.valor) + (e.comparacao ? " <small>(" + esc(e.comparacao) + ")</small>" : "") + "</div>"; }).join("") +
+    '<small>Fonte: ' + esc(d.fonte || "base do Gestor") + " · posição " + esc(d.posicao || POS_TXT) + (d.lei ? " · Base legal: " + esc(d.lei) : "") + "</small></div>"; }
 function abrirDespachos() {
   pilha = []; document.body.style.overflow = "hidden";
   var ls = dspVisiveis().slice().reverse(), hoje = isoD(hojeD());
@@ -1218,7 +1240,7 @@ function abrirDespachos() {
     '<p class="note">' + (ehPref() ? "O prefeito vê todos os despachos." : "A secretaria vê somente os despachos que emitiu ou que recebeu.") + (DSP.db && !DSP.local ? " Os despachos ficam salvos no Gestor." : " Nesta versão os despachos ficam salvos somente neste aparelho.") + "</p></div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
   layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { var d = ls[+tr.dataset.dsp];
-    abrir({ ficha: true, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", new Date(d.criado).toLocaleString("pt-BR")], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]], semDespachar: true }); }; });
+    abrir({ ficha: true, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }); }; });
 }
 
 /* ---------- Assessor IA ---------- */
