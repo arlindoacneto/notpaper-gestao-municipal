@@ -187,6 +187,13 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .mp-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
 .q-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px; }
 .q-row .mini { min-width: 44px; min-height: 44px; font-size: 18px; }
+.ans-q { padding: 14px 16px; border-radius: 13px; background: var(--accent); color: var(--accent-ink); }
+.ans-q small { display: block; font: 600 11.5px var(--f-body); letter-spacing: 1.4px; text-transform: uppercase; opacity: .85; }
+.ans-q p { margin: 4px 0 0; font: 600 19px/1.35 var(--f-display); }
+.ans .resp { margin-top: 14px; }
+.ans .rt { font-size: 17px; line-height: 1.6; }
+.ans-volta { margin-top: 20px; padding-bottom: 8px; }
+.ans-volta .btn { width: 100%; min-height: 52px; font-size: 16px; }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 @media (max-width: 1100px) { .grid2 { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 860px) {
@@ -1086,7 +1093,7 @@ function desenhaDet() {
 }
 
 /* ---------- Assessor IA ---------- */
-var IA = { sample: null, dict: null, tts: null, aba: "prontas", hist: [] };
+var IA = { seq: 0, sample: null, dict: null, tts: null, aba: "prontas", hist: [] };
 if (window.claude && window.claude.use) {
   window.claude.use("sample").then(function (s) { IA.sample = s; });
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
@@ -1127,10 +1134,18 @@ function abrirIA(aba, pre) {
   }
 }
 function temDet(g) { return !!(g && ((g.dados || []).some(function (x) { return x.det; }) || g.det)); }
+function telaResposta(q, corpo) {
+  var b = document.getElementById("iaBody"); if (!b) return null;
+  var tabs = document.querySelector(".ia-tabs"); if (tabs) tabs.style.display = "none";
+  b.innerHTML = '<div class="ans" id="iaOut"><div class="ans-q"><small>Sua pergunta</small><p>' + esc(q) + "</p></div>" + corpo + '<div class="ans-volta"><button class="btn pri" id="iaVolta">‹ Voltar às perguntas</button></div></div>';
+  b.scrollTop = 0;
+  document.getElementById("iaVolta").onclick = function () { IA.seq++; if (ctl) { try { ctl.abort(); } catch (x) {} } abrirIA(IA.aba); };
+  return document.getElementById("iaOut");
+}
 function mostra(q, t, g, fonte, extra) {
   CH = []; IA.ultima = [q, t, g, fonte, extra];
-  var o = document.getElementById("iaOut"); if (!o) return;
-  o.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">' + esc(t) + "</div>" + (g ? '<div style="margin-top:12px">' + grafico(Object.assign({}, g, { hint: temDet(g) ? "Toque numa barra ou limite para ver o detalhamento." : false })) + "</div>" : "") + '<div class="rs">' + esc(fonte) + "</div>" + (IA.tts ? '<div class="ra"><button class="mini" id="ouvir">Ouvir resposta</button></div>' : "") + (extra || "") + "</div>";
+  var o = telaResposta(q, '<div class="resp"><div class="rt">' + esc(t) + "</div>" + (g ? '<div style="margin-top:12px">' + grafico(Object.assign({}, g, { hint: temDet(g) ? "Toque numa barra ou limite para ver o detalhamento." : false })) + "</div>" : "") + '<div class="rs">' + esc(fonte) + "</div>" + (IA.tts ? '<div class="ra"><button class="mini" id="ouvir">Ouvir resposta</button></div>' : "") + (extra || "") + "</div>");
+  if (!o) return;
   o.querySelectorAll("[data-ch]").forEach(function (el) { var d = CH[+el.dataset.ch]; if (!d) return; el.onclick = function () { abrirDeIA(typeof d === "function" ? d() : d); }; el.onkeydown = function (ev) { if (ev.key === "Enter") el.onclick(); }; });
   var ou = document.getElementById("ouvir"); if (ou) ou.onclick = function () { IA.tts.speak(t.slice(0, 1900), { language: "pt-BR" }).catch(function () {}); };
 }
@@ -1222,15 +1237,17 @@ function perguntar(qx) {
   var inp = document.getElementById("qIn"), q = (typeof qx === "string" ? qx : (inp && inp.value) || "").trim(); if (!q) return;
   var nt = document.getElementById("iaNote"); if (nt && /^(Entendi|Ouvindo)/.test(nt.textContent)) nt.textContent = "";
   if (!IA.sample) { responderLocal(q); return; }
-  var out = document.getElementById("iaOut"); out.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">Pensando… (lendo a base de ' + MUN.nome + ')</div><div class="ra"><button class="mini" id="parar">Parar</button></div></div>';
+  var meu = ++IA.seq;
+  telaResposta(q, '<div class="resp"><div class="rt">Pensando… lendo a base de ' + MUN.nome + ' para responder.</div><div class="ra"><button class="mini" id="parar">Parar</button></div></div>');
   ctl = new AbortController(); document.getElementById("parar").onclick = function () { ctl.abort(); };
   var prompt = "Você é o Assessor IA do NotPaper Gestor, falando com um prefeito ou secretário que nem sempre tem facilidade com sistemas.\n" +
     (ehPref() ? "Perfil: prefeito(a), com acesso a todo o município.\n" : "Perfil: " + nomeSec(PERFIL) + ". Os dados abaixo são só desta secretaria. Se perguntarem sobre outra secretaria ou sobre o município como um todo, responda que este perfil só tem acesso aos dados da " + nomeSec(PERFIL) + ".\n") +
     "Responda SOMENTE com base nos dados JSON abaixo (demonstração fictícia do município de " + MUN.nome + ", posição " + POS_TXT + "). Valores em reais.\n" +
-    "Regras: 1) Comece pela resposta direta, em até 3 frases curtas, em português do Brasil, com o número que importa (use R$ x,x mi; percentuais com 1 casa). 2) Faça as contas com cuidado a partir dos dados (some, compare, calcule percentuais) e confira antes de responder. 3) Se a pergunta pedir comparação, ranking ou evolução, inclua um gráfico. 4) Se o dado não existir na base, diga claramente que essa informação não está na base de demonstração e sugira o que ela contém; nunca invente números. 5) Indique a fonte (qual tabela da base).\n" +
+    "Regras: 1) Responda em português do Brasil, de forma dissertativa e simples: a primeira frase traz a resposta direta com o número que importa; depois explique em 1 a 3 parágrafos curtos o que o número significa, de onde vem e o que merece atenção (use R$ x,x mi; percentuais com 1 casa; separe os parágrafos com uma linha em branco). 2) Faça as contas com cuidado a partir dos dados (some, compare, calcule percentuais) e confira antes de responder. 3) Se a pergunta pedir comparação, ranking ou evolução, inclua um gráfico. 4) Se o dado não existir na base, diga claramente que essa informação não está na base de demonstração e sugira o que ela contém; nunca invente números. 5) Indique a fonte (qual tabela da base).\n" +
     'Responda apenas com um JSON: {"resposta": string, "grafico": null ou {"tipo": "barras" ou "colunas", "titulo": string, "rotulos": [strings], "valores": [números], "unidade": "reais" | "percentual" | "quantidade"}, "fonte": string, "fora_da_base": boolean}\n\n' +
     "PERGUNTA: " + q + "\n\nDADOS:\n" + JSON.stringify(baseIA());
   IA.sample.json(prompt, { signal: ctl.signal, modelTier: "default", effort: "low" }).then(function (r) {
+    if (meu !== IA.seq) return;
     var g = null, f = r && r.grafico && r.grafico.unidade === "reais" ? mi : r && r.grafico && r.grafico.unidade === "percentual" ? function (v) { return pc(v); } : nf;
     if (r && r.grafico && Array.isArray(r.grafico.rotulos) && Array.isArray(r.grafico.valores) && r.grafico.rotulos.length === r.grafico.valores.length && r.grafico.valores.length) {
       var vals = r.grafico.valores.map(Number);
@@ -1238,8 +1255,9 @@ function perguntar(qx) {
     }
     mostra(q, String((r && r.resposta) || "Sem resposta."), g, (r && r.fora_da_base ? "Fora da base de demonstração · " : "Resposta gerada pela IA · ") + "Fonte: " + String((r && r.fonte) || "base de demonstração"));
   }).catch(function (e) {
+    if (meu !== IA.seq) return;
     var msg = { cancelled: "Pergunta cancelada.", not_granted: "O uso da IA não foi autorizado nesta página. Use as perguntas prontas.", rate_limited: "Muitas perguntas seguidas. Aguarde um minuto e tente de novo.", invalid_json: "A IA respondeu fora do formato. Tente reformular a pergunta.", session_expired: "Sua sessão do claude.ai expirou. Entre de novo.", sampling_disabled: "A IA não está disponível para esta conta." }[e && e.code] || "Não foi possível responder agora. Tente de novo.";
-    out.innerHTML = '<div class="resp"><div class="rq">' + esc(q) + '</div><div class="rt">' + esc(msg) + "</div></div>";
+    telaResposta(q, '<div class="resp"><div class="rt">' + esc(msg) + "</div></div>");
   });
 }
 var rec = null;
