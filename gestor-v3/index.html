@@ -1138,6 +1138,8 @@ function dspVisiveis() { return DSP.itens.filter(function (d) { return ehPref() 
 function nomeQuem(pf) { return pf === "PREF" ? "Prefeito(a)" : nomeSec(pf); }
 function hojeD() { var d = new Date(); d.setHours(0, 0, 0, 0); return d; }
 function isoD(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function diaSem(iso) { return ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"][deIso(iso).getDay()]; }
+function prazoIso(v) { return /^\d{4}-\d{2}-\d{2}$/.test(v || "") ? v : isoDeBr(v); }
 function brD(iso) { return fdata(deIso(iso)); }
 function isoDeBr(t) { var m = String(t || "").trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if (!m) return ""; var d = new Date(+m[3], +m[2] - 1, +m[1]); if (d.getDate() !== +m[1] || d.getMonth() !== +m[2] - 1) return ""; return isoD(d); }
 function maisDias(n) { var d = hojeD(); d.setDate(d.getDate() + n); return isoD(d); }
@@ -1174,24 +1176,24 @@ function abrirDespacho(ctx) {
       '<p class="note" style="margin:4px 0 0">Fonte: ' + esc(ctx.fonte || "base do Gestor") + " · posição " + POS_TXT + (ctx.lei ? " · Base legal: " + esc(ctx.lei) : "") + "</p></fieldset>" +
     (IA.sample ? '<div><button type="button" class="mini" id="dReesc">✨ Reescrever o texto com a IA</button></div>' : "") +
     '<div class="drow"><label class="df">Destinatário<select name="destino">' + destinos().map(function (x) { return '<option value="' + esc(x[0]) + '"' + (x[0] === dest ? " selected" : "") + ">" + esc(x[1]) + "</option>"; }).join("") + "</select></label>" +
-    '<label class="df">Prazo final (dia/mês/ano)<input type="text" name="prazo" inputmode="numeric" maxlength="10" placeholder="dd/mm/aaaa" value="' + brD(prazo) + '"></label></div>' +
+    '<label class="df">Prazo final<input type="date" name="prazo" min="' + isoD(hojeD()) + '" value="' + prazo + '"><small id="dPrazoTxt" style="font-weight:600;color:var(--ink)">' + brD(prazo) + ' (' + diaSem(prazo) + ')</small></label></div>' +
     '<div class="dquick">' + [2, 5, 10, 15, 30].map(function (n) { return '<button type="button" class="mini" data-ddias="' + n + '">' + n + " dias</button>"; }).join("") + "</div>" +
     '<label class="df">Seu comentário pessoal (opcional)<textarea name="comentario" rows="3" maxlength="600" placeholder="Ex.: Priorizem o bairro com mais reclamações; quero um retorno pessoal na reunião de segunda."></textarea></label>' +
     '<label class="dconf"><input type="checkbox" name="revisei">Revisei este despacho e assumo esta decisão.</label>' +
     '<p class="derr" role="alert"></p>' +
     '<div class="dacts"><button type="submit" class="btn pri">Emitir despacho como ' + esc(nomeQuem(PERFIL)) + '</button><button type="button" class="btn" id="dCancel">Cancelar</button></div>' +
-    '<p class="note">O despacho só é emitido quando você toca em “Emitir”. Ele fica registrado com o que você mudou em relação à sugestão.</p></form>';
+    '<p class="note">O despacho só é emitido quando você toca em “Emitir”. Ele fica registrado com o que você mudou em relação à sugestão.</p><p class="nota" style="margin-top:4px"><b>Próximo passo:</b> Por enquanto o despacho é apenas emitido e registrado aqui. Depois, ele deverá gerar um memorando no NotPaper NG, ou na ferramenta que o município tiver, onde corre o andamento: ciência, execução, resposta e conferência.</p></form>';
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Novo despacho"><header><div><div class="path">Despacho · ' + esc(ctx.origem) + '</div><h2>Novo despacho</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body" id="dBody">' + h + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo; document.getElementById("dCancel").onclick = fecharTudo;
   var f = layer.querySelector(".dform");
   var gerado = sug.texto;
   function sincroniza(refaz) {
     var tp = (f.querySelector("input[name=tipo]:checked") || {}).value || sug.tipo;
-    if (refaz && f.texto.value === gerado) { gerado = rascunho(tp, ctx.providencia, ctx.contexto, nomeDest(f.destino.value), isoDeBr(f.prazo.value) || sug.prazo, ctx.lei); f.texto.value = gerado; return; }
-    var pzi = isoDeBr(f.prazo.value); if (pzi) { var nv = f.texto.value.replace(/Prazo para retorno: \d{2}\/\d{2}\/\d{4}/, "Prazo para retorno: " + brD(pzi)); if (f.texto.value === gerado) gerado = nv; f.texto.value = nv; }
+    if (refaz && f.texto.value === gerado) { gerado = rascunho(tp, ctx.providencia, ctx.contexto, nomeDest(f.destino.value), prazoIso(f.prazo.value) || sug.prazo, ctx.lei); f.texto.value = gerado; return; }
+    var pzi = prazoIso(f.prazo.value), pt = document.getElementById("dPrazoTxt"); if (pt) pt.textContent = pzi ? brD(pzi) + " (" + diaSem(pzi) + ")" : "Escolha a data no calendário"; if (pzi) { var nv = f.texto.value.replace(/Prazo para retorno: \d{2}\/\d{2}\/\d{4}/, "Prazo para retorno: " + brD(pzi)); if (f.texto.value === gerado) gerado = nv; f.texto.value = nv; }
   }
-  layer.querySelectorAll("[data-ddias]").forEach(function (b) { b.onclick = function () { f.prazo.value = brD(maisDias(+b.dataset.ddias)); sincroniza(false); }; });
-  f.prazo.addEventListener("input", function () { var dg = f.prazo.value.replace(/\D/g, "").slice(0, 8), v = dg; if (dg.length > 4) v = dg.slice(0, 2) + "/" + dg.slice(2, 4) + "/" + dg.slice(4); else if (dg.length > 2) v = dg.slice(0, 2) + "/" + dg.slice(2); f.prazo.value = v; if (isoDeBr(v)) sincroniza(false); });
+  layer.querySelectorAll("[data-ddias]").forEach(function (b) { b.onclick = function () { f.prazo.value = maisDias(+b.dataset.ddias); sincroniza(false); }; });
+  f.prazo.addEventListener("change", function () { sincroniza(false); }); f.prazo.addEventListener("input", function () { sincroniza(false); });
   f.destino.addEventListener("change", function () { sincroniza(true); });
   f.querySelectorAll("input[name=tipo]").forEach(function (r) { r.addEventListener("change", function () { sincroniza(true); }); });
   var rb = document.getElementById("dReesc");
@@ -1200,9 +1202,9 @@ function abrirDespacho(ctx) {
       .then(function (r) { if (r && r.text) f.texto.value = r.text.trim(); rb.textContent = "✨ Reescrever o texto com a IA"; rb.disabled = false; })
       .catch(function () { rb.textContent = "✨ Reescrever o texto com a IA"; rb.disabled = false; toast("Não foi possível reescrever agora. O texto continua editável."); }); };
   f.onsubmit = function (ev) { ev.preventDefault();
-    var err = layer.querySelector(".derr"), tp = (f.querySelector("input[name=tipo]:checked") || {}).value, a = f.assunto.value.trim(), t = f.texto.value.trim(), ds = f.destino.value, pz = isoDeBr(f.prazo.value), cm = f.comentario.value.trim();
+    var err = layer.querySelector(".derr"), tp = (f.querySelector("input[name=tipo]:checked") || {}).value, a = f.assunto.value.trim(), t = f.texto.value.trim(), ds = f.destino.value, pz = prazoIso(f.prazo.value), cm = f.comentario.value.trim();
     if (!a || !t) { err.textContent = "Preencha o assunto e o texto do despacho."; (a ? f.texto : f.assunto).focus(); return; }
-    if (!pz) { err.textContent = "Informe o prazo no formato dia/mês/ano, por exemplo " + brD(maisDias(10)) + "."; f.prazo.focus(); return; }
+    if (!pz) { err.textContent = "Escolha o prazo final no calendário."; f.prazo.focus(); return; }
     if (pz < isoD(hojeD())) { err.textContent = "O prazo final deve ser hoje ou uma data futura."; f.prazo.focus(); return; }
     if (!f.revisei.checked) { err.textContent = "Marque “Revisei este despacho e assumo esta decisão” para emitir."; f.revisei.focus(); return; }
     var mud = []; if (tp !== sug.tipo) mud.push("tipo"); if (a !== sug.assunto) mud.push("assunto"); if (t !== gerado.trim()) mud.push("texto"); if (ds !== sug.destino) mud.push("destinatário"); if (pz !== sug.prazo) mud.push("prazo"); if (cm) mud.push("comentário pessoal");
@@ -1215,6 +1217,7 @@ function abrirDespacho(ctx) {
       '<div class="dtoque"><b>Seu toque:</b> ' + (mud.length ? "você alterou " + esc(mud.join(", ")) + " em relação à sugestão." : "você revisou e confirmou a sugestão sem alterações.") + "</div>" +
       '<dl class="kv" style="margin-top:14px"><dt>Tipo</dt><dd>' + esc(TIPOS_D[tp][0]) + "</dd><dt>De</dt><dd>" + esc(nomeQuem(PERFIL)) + "</dd><dt>Para</dt><dd>" + esc(reg.destNome) + "</dd><dt>Prazo final</dt><dd>" + fdata(deIso(pz)) + "</dd>" + (cm ? "<dt>Comentário pessoal</dt><dd>" + esc(cm) + "</dd>" : "") + "</dl>" +
       '<div class="resp" style="margin-top:14px"><div class="rt">' + esc(t) + "</div></div>" + embHtml(reg) +
+      '<p class="nota"><b>Próximo passo:</b> Por enquanto o despacho é apenas emitido e registrado aqui. Depois, ele deverá gerar um memorando no NotPaper NG, ou na ferramenta que o município tiver, onde corre o andamento: ciência, execução, resposta e conferência.</p>' +
       '<div class="ans-volta"><button class="btn pri" id="dVer">Ver despachos emitidos</button></div><div class="dacts" style="margin-top:8px"><button class="btn" id="dFim">Fechar</button></div>';
     document.getElementById("dVer").onclick = abrirDespachos; document.getElementById("dFim").onclick = fecharTudo;
     toast("Despacho " + num + " emitido.");
@@ -1237,8 +1240,14 @@ function abrirDespachos() {
       return '<tr class="click" data-dsp="' + i + '" tabindex="0"><td>' + esc(d.id) + "</td><td>" + esc(d.assunto) + "</td><td>" + (ehPref() ? "" : esc(d.emissorNome) + " → ") + esc(d.destNome) + '</td><td class="n">' + fdata(deIso(d.prazo)) + " " + ch + "</td></tr>"; }).join("") + "</tbody></table></div>"
     : '<p class="lead">Nenhum despacho emitido ' + (ehPref() ? "ainda." : "por esta secretaria ou para ela.") + " Use “Despachar” em “O que fazer agora” ou numa ficha.</p>";
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Despachos"><header><div><div class="path">' + esc(nomeQuem(PERFIL)) + '</div><h2>Despachos</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo +
-    '<p class="note">' + (ehPref() ? "O prefeito vê todos os despachos." : "A secretaria vê somente os despachos que emitiu ou que recebeu.") + (DSP.db && !DSP.local ? " Os despachos ficam salvos no Gestor." : " Nesta versão os despachos ficam salvos somente neste aparelho.") + "</p></div></aside>";
+    '<p class="note">' + (ehPref() ? "O prefeito vê todos os despachos." : "A secretaria vê somente os despachos que emitiu ou que recebeu.") + (DSP.db && !DSP.local ? " Os despachos ficam salvos no Gestor." : " Nesta versão os despachos ficam salvos somente neste aparelho.") + "</p>" +
+    '<p class="nota"><b>Próximo passo:</b> Por enquanto o despacho é apenas emitido e registrado aqui. Depois, ele deverá gerar um memorando no NotPaper NG, ou na ferramenta que o município tiver, onde corre o andamento: ciência, execução, resposta e conferência.</p>' +
+    (ehPref() && DSP.itens.length ? '<div class="dacts" style="margin-top:16px"><button class="btn" id="dLimpar">Limpar despachos da demonstração</button></div>' : "") + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
+  var lp = document.getElementById("dLimpar");
+  if (lp) lp.onclick = function () {
+    if (!lp.dataset.ok) { lp.dataset.ok = "1"; lp.textContent = "Tocar de novo para apagar os " + DSP.itens.length + " despachos"; lp.style.background = "var(--bad)"; lp.style.color = "#fff"; lp.style.borderColor = "var(--bad)"; return; }
+    DSP.itens = []; dspSalvar(); renderSide(); toast("Despachos da demonstração apagados."); abrirDespachos(); };
   layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { var d = ls[+tr.dataset.dsp];
     abrir({ ficha: true, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }); }; });
 }
