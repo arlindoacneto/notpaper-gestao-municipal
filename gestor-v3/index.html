@@ -222,6 +222,12 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .rec-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
 .rec-bar .mini.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .rec-met { margin-bottom: 12px; }
+.voltar-b { padding: 0 14px 0 10px; }
+.voltar-b:disabled { opacity: .4; cursor: default; border-color: var(--line); }
+#voltarF { display: none; position: fixed; top: var(--vy, 12px); left: var(--vx, 16px); z-index: 30; box-shadow: var(--shadow); }
+body.painel #voltarF { display: inline-flex; } body.painel #voltarB { visibility: hidden; }
+@media (max-width: 860px) { #voltarF .lbl-txt { display: none; } #voltarF { padding: 0 12px; } }
+@media (max-width: 760px) { body.painel .drawer header { padding-left: 76px; } }
 .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 40; padding: 12px 18px; border-radius: 12px; background: var(--ink); color: var(--bg); font-weight: 600; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 @media (max-width: 1100px) { .grid2 { grid-template-columns: minmax(0,1fr); } }
 @media (max-width: 860px) {
@@ -244,6 +250,7 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
   <aside class="side" id="side" aria-label="Soluções"></aside>
   <div class="main">
     <div class="top">
+      <button class="btn voltar-b" id="voltarB" aria-label="Voltar à tela anterior" title="Voltar"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg><span class="lbl-txt">Voltar</span></button>
       <button class="btn menu-b" id="menuB" aria-label="Abrir menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <div class="crumb" id="crumb"></div>
       <div class="sp"></div>
@@ -1160,7 +1167,7 @@ try { aplicarPerfil(localStorage.getItem("np-gestor-perfil") || "PREF"); } catch
 var selP = document.getElementById("perfilSel");
 selP.innerHTML = '<option value="PREF">Prefeito(a)</option>' + PERFIS.map(function (pf) { return '<option value="' + pf + '">' + esc(nomeSec(pf)) + "</option>"; }).join("");
 selP.value = PERFIL;
-function trocarPerfil(pf) { aplicarPerfil(pf); mpCarregar(); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} go("inicio"); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + (ehTransv() ? ". Leitura de " + temasTransv().join(", ") + " de todas as secretarias." : ". Só os dados desta secretaria.")); }
+function trocarPerfil(pf) { aplicarPerfil(pf); mpCarregar(); selP.value = PERFIL; try { localStorage.setItem("np-gestor-perfil", PERFIL); } catch (x) {} HIST = []; voltando = true; go("inicio"); voltando = false; atualizaVoltar(); toast(ehPref() ? "Perfil: prefeito(a), visão do município." : "Perfil: " + nomeSec(PERFIL) + (ehTransv() ? ". Leitura de " + temasTransv().join(", ") + " de todas as secretarias." : ". Só os dados desta secretaria.")); }
 selP.onchange = function () { trocarPerfil(selP.value); };
 function cat(sig) { return CATALOGO.filter(function (c) { return c.sigla === sig; })[0]; }
 function nome(sig) { var c = cat(sig); return NOME_CURTO[sig] || (c ? c.nome : ""); }
@@ -1599,15 +1606,27 @@ function falar() {
 }
 
 /* ---------- navegação ---------- */
-function go(sig) { fecharTudo(); side.classList.remove("open"); if (sig === "inicio") { location.hash = ""; renderInicio(); } else { location.hash = sig; renderSol(sig); } }
+var HIST = [], voltando = false;
+function go(sig) { if (!voltando && sig !== atual) HIST.push(atual); fecharTudo(); side.classList.remove("open"); if (sig === "inicio") { location.hash = ""; renderInicio(); } else { location.hash = sig; renderSol(sig); } atualizaVoltar(); }
+function voltarTela() {
+  if (layer.innerHTML) { if (pilha.length > 1) voltarDet(); else if (document.getElementById("iaVolta")) document.getElementById("iaVolta").click(); else fecharTudo(); atualizaVoltar(); return; }
+  if (side.classList.contains("open")) { side.classList.remove("open"); return; }
+  var prev = HIST.pop(); if (prev === undefined) return;
+  voltando = true; go(prev); voltando = false; atualizaVoltar(); }
+function atualizaVoltar() { var b = document.getElementById("voltarB"); if (!b) return; var aberto = !!layer.innerHTML;
+  if (aberto && !document.body.classList.contains("painel")) { var r = b.getBoundingClientRect(); document.body.style.setProperty("--vx", r.left + "px"); document.body.style.setProperty("--vy", Math.max(8, r.top) + "px"); }
+  document.body.classList.toggle("painel", aberto); b.disabled = !aberto && !HIST.length; }
+document.getElementById("voltarB").onclick = voltarTela;
+(function () { var f = document.getElementById("voltarB").cloneNode(true); f.id = "voltarF"; f.disabled = false; f.onclick = voltarTela; document.body.appendChild(f); })();
+new MutationObserver(atualizaVoltar).observe(layer, { childList: true });
 document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-go]"); if (b) go(b.dataset.go); var dl = e.target.closest && e.target.closest("[data-desplista]"); if (dl) { side.classList.remove("open"); abrirDespachos(); } });
 document.getElementById("iaB").onclick = function () { abrirIA("livre"); };
 document.getElementById("prontasB").onclick = function () { abrirIA("prontas"); };
 document.getElementById("menuB").onclick = function () { side.classList.toggle("open"); };
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (pilha.length > 1) voltarDet(); else fecharTudo(); } });
-window.addEventListener("hashchange", function () { fecharTudo(); var h = location.hash.slice(1); if (h && cat(h)) renderSol(h); else renderInicio(); });
+window.addEventListener("hashchange", function () { var h = location.hash.slice(1) || "inicio"; if (h === atual) return; if (!voltando) HIST.push(atual); fecharTudo(); if (h !== "inicio" && cat(h)) renderSol(h); else renderInicio(); atualizaVoltar(); });
 mpCarregar(); dspCarregar();
-var h0 = location.hash.slice(1); if (h0 && cat(h0)) renderSol(h0); else renderInicio();
+var h0 = location.hash.slice(1); if (h0 && cat(h0)) renderSol(h0); else renderInicio(); atualizaVoltar();
 })();
 </script>
 </body></html>
