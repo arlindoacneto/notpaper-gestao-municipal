@@ -375,6 +375,10 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .papel dt, .papel dd { margin: 0; padding: 7px 0; border-bottom: 1px solid #DCD8CC; } .papel dd { font-weight: 600; }
 .papel .linhas i { display: block; height: 7px; background: #E4E0D4; margin: 9px 0; border-radius: 3px; }
 .papel .anexo { display: flex; gap: 14px; align-items: center; padding: 18px; border: 1px dashed #A9A498; border-radius: 8px; } .papel .anexo span { font-size: 34px; color: #5B6475; line-height: 1.1; }
+.papel .anx-fig { margin: 10px 0; } .papel .anx-fig img { display: block; max-width: 100%; max-height: 520px; margin: 0 auto; border: 1px solid #DCD8CC; background: #fff; }
+.papel .anx-fig figcaption { font: 400 12px var(--f-body); color: #5B6475; margin-top: 6px; text-align: center; }
+.papel .anexo .btn { display: inline-flex; margin-top: 8px; min-height: 36px; padding: 0 12px; text-decoration: none; color: #1B2333; background: #fff; }
+.tram .tanx { font-size: 13px; margin-top: 3px; } .tram .tanx a { color: var(--accent); }
 .papel .ass { margin-top: 16px; padding-top: 10px; border-top: 1px solid #DCD8CC; font: 400 11.5px var(--f-body); color: #3A4458; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .papel .marca { position: absolute; top: 20px; right: -42px; transform: rotate(35deg); background: #B3261E; color: #fff; font: 700 11px var(--f-body); letter-spacing: 1.5px; padding: 4px 48px; }
 .papel .btn { font-family: var(--f-body); }
@@ -1672,6 +1676,36 @@ function moverDesp(ref, para, info) {
   dp.hist = (dp.hist || []).concat([{ etapa: dp.etapa, de: de, quando: new Date().toISOString(), data: info.data || isoD(hojeD()), quem: nomeQuem(PERFIL), nota: info.nota || "", anexos: info.anexos || [], decisao: info.decisao || "", prazoEtapa: info.prazoEtapa || "", novoPrazo: info.novoPrazo || "" }]);
   dspSalvar(); renderSide(); return dp;
 }
+/* ---------- Anexos com o arquivo de verdade ---------- */
+var AST = { api: null, dl: null };
+/* no claude.ai o arquivo é entregue pelo recurso de downloads (link de baixar não funciona dentro do visualizador) */
+document.addEventListener("click", function (e) {
+  var a = e.target.closest && e.target.closest("[data-anx]"); if (!a || !AST.dl) return; e.preventDefault();
+  var nome = a.getAttribute("data-nome") || "anexo";
+  fetch(a.getAttribute("data-anx")).then(function (r) { return r.blob(); }).then(function (b) { return AST.dl.save({ filename: nome, data: b }); })
+    .catch(function (er) { var c = er && er.code; if (c === "declined") return; toast(c === "rejected_extension" ? "Este formato de arquivo não pode ser baixado aqui." : "Não foi possível abrir o arquivo agora."); });
+});
+function lerNoAparelho(f, meta) {
+  if (f.size > 1500000 || !/^(image\/|application\/pdf|text\/)/.test(f.type || "")) { meta.semArquivo = true; return Promise.resolve(meta); }
+  return new Promise(function (ok) { var fr = new FileReader(); fr.onload = function () { meta.data = fr.result; ok(meta); }; fr.onerror = function () { meta.semArquivo = true; ok(meta); }; fr.readAsDataURL(f); });
+}
+function guardarAnexos(files) {
+  return Promise.all(Array.prototype.map.call(files || [], function (f) {
+    var meta = { nome: f.name, tamanho: f.size, tipo: f.type || "" };
+    if (AST.api) return AST.api.upload(f).then(function (r) { meta.id = r.id; meta.tipo = r.contentType || meta.tipo; return meta; }, function () { meta.semArquivo = true; return meta; });
+    if (DSP.db && !DSP.local) { meta.semArquivo = true; return Promise.resolve(meta); }
+    return lerNoAparelho(f, meta);
+  }));
+}
+function anexoUrl(a) { return a ? (a.id ? "/_blob/" + a.id : a.data || "") : ""; }
+function tamTxt(n) { return n >= 1048576 ? (n / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+function anexoLink(a) { var u = anexoUrl(a); return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener" download="' + esc(a.nome) + '" data-anx="' + esc(u) + '" data-nome="' + esc(a.nome) + '">' + esc(a.nome) + "</a>" : esc(a.nome); }
+function anexoVer(a) {
+  var u = anexoUrl(a), img = /^image\//.test(a.tipo || "") || /^data:image\//.test(a.data || "");
+  if (u && img) return '<figure class="anx-fig"><img src="' + esc(u) + '" alt="' + esc(a.nome) + '"><figcaption>' + esc(a.nome) + " · " + tamTxt(a.tamanho || 0) + "</figcaption></figure>";
+  if (u) return '<div class="anexo"><span aria-hidden="true">' + (/pdf/.test(a.tipo || "") ? "PDF" : "▭") + "</span><p>" + esc(a.nome) + "<br><small>" + tamTxt(a.tamanho || 0) + '</small><br><a class="btn" href="' + esc(u) + '" target="_blank" rel="noopener" download="' + esc(a.nome) + '" data-anx="' + esc(u) + '" data-nome="' + esc(a.nome) + '">Abrir o arquivo</a></p></div>';
+  return '<div class="anexo"><span aria-hidden="true">▭</span><p>' + esc(a.nome) + "<br><small>" + tamTxt(a.tamanho || 0) + " · o arquivo não foi guardado nesta visualização (somente o nome)</small></p></div>";
+}
 /* Registro da transição (como na 2.6): todo movimento no quadro ou no fluxo abre este registro */
 function fecharTransicao() { var o = document.getElementById("transm"); if (o) o.remove(); }
 function abrirTransicao(id, para, depois) {
@@ -1693,20 +1727,22 @@ function abrirTransicao(id, para, depois) {
     '<label class="df">Anexos' + (pedeAnexo ? ' <b style="color:var(--bad)">obrigatório nesta etapa</b>' : " (opcional)") + '<input type="file" name="anexos" multiple></label>' +
     '<label class="dconf"><input type="checkbox" name="conf" required> Confirmo que as informações e os anexos comprovam esta transição.</label>' +
     '<p class="derr" id="trErr" role="alert"></p><div class="dacts"><button type="submit" class="btn pri">' + (volta ? "Registrar devolução" : "Registrar e mover") + '</button><button type="button" class="btn" data-tx="x">Cancelar</button></div>' +
-    '<p class="note">O registro entra no histórico do despacho e na tramitação do processo. Nesta demonstração guardamos o nome e o tamanho de cada anexo.</p></form></div>';
+    '<p class="note">O registro entra no histórico do despacho e na tramitação do processo. Os anexos ficam guardados no processo e podem ser abertos nos documentos.</p></form></div>';
   document.body.appendChild(o);
   o.addEventListener("click", function (e) { if (e.target === o || (e.target.closest("[data-tx]"))) fecharTransicao(); });
   o.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); fecharTransicao(); } });
   var f = document.getElementById("trF"); f.hist.focus();
   f.querySelectorAll("input[type=date]").forEach(function (inp) { var c = document.createElement("small"); c.className = "note"; c.style.marginTop = "2px"; inp.parentNode.appendChild(c); var up = function () { c.textContent = /^\d{4}-\d{2}-\d{2}$/.test(inp.value) ? brD(inp.value) + " (" + diaSem(inp.value) + ")" : ""; }; inp.addEventListener("input", up); up(); });
   f.onsubmit = function (ev) { ev.preventDefault(); var er = document.getElementById("trErr"), dec = (f.querySelector("input[name=decisao]:checked") || {}).value;
-    var anx = Array.prototype.map.call(f.anexos.files || [], function (x) { return { nome: x.name, tamanho: x.size, tipo: x.type || "" }; });
+    var anx = Array.prototype.slice.call(f.anexos.files || []);
     var falta = !f.data.value || f.data.value > hoje ? "Informe a data da ação (até hoje)." : f.prazo && (!f.prazo.value || f.prazo.value < f.data.value) ? "Informe o prazo da próxima etapa (a partir da data da ação)." :
       isJust && !f.novoPrazo.value ? "Informe o novo prazo proposto." : isDec && !dec ? "Escolha autorizar ou negar." : !f.hist.value.trim() ? (volta ? "Escreva o motivo da devolução." : "Escreva o histórico da ação.") :
       pedeAnexo && !anx.length ? "Nesta etapa é obrigatório anexar o documento que comprova a resposta." : !f.conf.checked ? "Marque a confirmação para registrar." : "";
     if (falta) { er.textContent = falta; return; }
-    moverDesp(id, para, { nota: f.hist.value.trim(), data: f.data.value, prazoEtapa: f.prazo ? f.prazo.value : "", novoPrazo: isJust ? f.novoPrazo.value : "", decisao: dec || "", anexos: anx });
-    fecharTransicao(); toast("Despacho " + id + ": " + alvo.toLowerCase() + ". Registro salvo."); if (depois) depois(); };
+    var bt = f.querySelector("button[type=submit]"); bt.disabled = true; bt.textContent = anx.length ? "Guardando anexos…" : "Registrando…";
+    guardarAnexos(anx).then(function (guardados) {
+      moverDesp(id, para, { nota: f.hist.value.trim(), data: f.data.value, prazoEtapa: f.prazo ? f.prazo.value : "", novoPrazo: isJust ? f.novoPrazo.value : "", decisao: dec || "", anexos: guardados });
+      fecharTransicao(); toast("Despacho " + id + ": " + alvo.toLowerCase() + ". Registro salvo" + (guardados.some(function (a) { return a.semArquivo; }) ? " (algum anexo ficou só com o nome)." : ".")); if (depois) depois(); }); };
 }
 function tramEventos(d) {
   var A = autosDe(d), ev = [
@@ -1719,16 +1755,16 @@ function tramEventos(d) {
     ev.push({ q: new Date(dp.criado), o: "Despacho " + dp.id + " · " + TIPOS_D[dp.tipo][0], x: dp.emissorNome + " → " + dp.destNome + " · prazo " + brD(dp.prazo) + "\n" + dp.texto, c: "t-desp" });
     (dp.hist || []).forEach(function (hs) { ev.push({ q: hs.data ? deIso(hs.data) : new Date(hs.quando), o: "Despacho " + dp.id + ": " + ETAPAS[etapaIdx({ etapa: hs.etapa })][1].toLowerCase(), x: hs.quem + (hs.nota ? " · " + hs.nota : "") + (hs.decisao ? " · decisão: " + hs.decisao : "") + ((hs.anexos || []).length ? "\nAnexos: " + hs.anexos.map(function (a) { return a.nome; }).join(", ") : ""), c: "t-desp" }); }); });
   TRM.itens.filter(function (x) { return x.origem === d.titulo; }).forEach(function (r) {
-    ev.push({ q: new Date(r.quando), o: (r.tipo === "resposta" ? "Resposta ao despacho " + r.despacho : r.tipo === "anexo" ? "Juntada de anexo" : "Interação registrada") + " · " + r.quemNome, x: r.texto, c: "t-int" }); });
+    ev.push({ q: new Date(r.quando), o: (r.tipo === "resposta" ? "Resposta ao despacho " + r.despacho : r.tipo === "anexo" ? "Juntada de anexo" : "Interação registrada") + " · " + r.quemNome, x: r.texto, anx: r.anexos || [], c: "t-int" }); });
   ev.sort(function (a, b) { return a.q - b.q; }); if (ev.length) ev[ev.length - 1].c += " t-atual"; return ev;
 }
 function tramInner(d) {
   var ev = tramEventos(d), ult = ev[ev.length - 1], dps = DSP.itens.filter(function (x) { return x.origem === d.titulo && etapaIdx(x) < 3; });
   var hora = function (q) { return fdata(q) + (q.getHours() !== 9 || q.getMinutes() ? " às " + q.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : ""); };
   return '<span class="eye">Trilha de tramitação</span><h3>Tramitação, interações e anexos</h3><p class="sit">Situação atual: <b>' + esc(ult.o) + "</b> · " + esc(hora(ult.q)) + "</p>" +
-    "<ol>" + ev.map(function (e) { return '<li class="' + e.c + '"><div class="tq">' + esc(hora(e.q)) + '</div><div class="to">' + esc(e.o) + '</div><div class="tx">' + esc(e.x) + "</div></li>"; }).join("") + "</ol>" +
+    "<ol>" + ev.map(function (e) { return '<li class="' + e.c + '"><div class="tq">' + esc(hora(e.q)) + '</div><div class="to">' + esc(e.o) + '</div><div class="tx">' + esc(e.x) + "</div>" + ((e.anx || []).length ? '<div class="tanx">' + e.anx.map(anexoLink).join(" · ") + "</div>" : "") + "</li>"; }).join("") + "</ol>" +
     '<form id="trmF"><label for="trmT">Registrar interação ou responder ao gestor</label><select id="trmT"><option value="interacao">Interação ou andamento</option>' + (dps.length ? dps.map(function (x) { return '<option value="r:' + esc(x.id) + '">Responder ao despacho ' + esc(x.id) + "</option>"; }).join("") : "") + '<option value="anexo">Juntar anexo (nome do documento)</option></select>' +
-    '<textarea id="trmX" placeholder="Ex.: Vistoria feita em 05/11; aguardando orçamento da empresa."></textarea><div><button type="submit" class="btn pri">Registrar</button></div></form>';
+    '<textarea id="trmX" placeholder="Ex.: Vistoria feita em 05/11; aguardando orçamento da empresa."></textarea><label for="trmA">Arquivos (opcional; obrigatório para juntar anexo)</label><input type="file" id="trmA" multiple><div><button type="submit" class="btn pri">Registrar</button></div></form>';
 }
 function dspProcHtml(d) {
   var ls = DSP.itens.filter(function (x) { return x.origem === d.titulo; }), hoje = isoD(hojeD());
@@ -1742,14 +1778,18 @@ function dspProcLigar(d) { var ls = DSP.itens.filter(function (x) { return x.ori
 function tramHtml(d) { return '<section class="tram" id="tram" aria-label="Tramitação">' + tramInner(d) + "</section>"; }
 function tramLigar(d) {
   var box = document.getElementById("tram"); if (!box) return;
-  box.onsubmit = function (ev) { ev.preventDefault(); var tp = document.getElementById("trmT").value, tx = document.getElementById("trmX").value.trim();
+  box.onsubmit = function (ev) { ev.preventDefault(); var tp = document.getElementById("trmT").value, tx = document.getElementById("trmX").value.trim(), fs = Array.prototype.slice.call(document.getElementById("trmA").files || []);
+    if (tp === "anexo" && !fs.length) { toast("Escolha o arquivo a juntar."); document.getElementById("trmA").focus(); return; }
+    if (!tx && tp === "anexo") tx = fs.map(function (x) { return x.name; }).join(", ");
     if (!tx) { toast("Escreva o que aconteceu antes de registrar."); document.getElementById("trmX").focus(); return; }
+    var bt = box.querySelector("button[type=submit]"); bt.disabled = true; if (fs.length) bt.textContent = "Guardando anexos…";
+    guardarAnexos(fs).then(function (guardados) {
     var r = { id: "TR-" + Date.now().toString(36), origem: d.titulo, quando: new Date().toISOString(), quem: PERFIL, quemNome: nomeQuem(PERFIL), tipo: tp === "anexo" ? "anexo" : /^r:/.test(tp) ? "resposta" : "interacao", texto: tx, despacho: /^r:/.test(tp) ? tp.slice(2) : "" };
-    TRM.itens.push(r); trmSalvar();
+    r.anexos = guardados; TRM.itens.push(r); trmSalvar();
     if (r.despacho) { var dp = DSP.itens.filter(function (x) { return x.id === r.despacho; })[0]; if (dp) moverDesp(dp, 3, "respondido na tramitação"); }
     var au = document.getElementById("autos"); if (au && r.tipo !== "interacao") { au.outerHTML = autosHtml(d); autosLigar(d); }
     var dpx = document.getElementById("dspProc"); if (dpx && r.despacho) { dpx.outerHTML = dspProcHtml(d); dspProcLigar(d); }
-    box.innerHTML = tramInner(d); toast(r.tipo === "resposta" ? "Resposta registrada: o despacho foi para “Respondido”." : "Registrado na tramitação."); };
+    box.innerHTML = tramInner(d); toast(r.tipo === "resposta" ? "Resposta registrada: o despacho foi para “Respondido”." : "Registrado na tramitação."); }); };
 }
 
 function fichaDesp(d) { return { ficha: true, desp: d, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["Etapa", ETAPAS[etapaIdx(d)][1]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }; }
@@ -1766,7 +1806,7 @@ function fluxoHtml(dp) {
   dp = dspPorId(dp.id) || dp; var at = etapaIdx(dp);
   return '<div class="fluxo-box" id="fluxo"><span class="eye" style="font:700 11px var(--f-body);letter-spacing:.8px;text-transform:uppercase;color:var(--accent)">Fluxo do despacho</span><h3>' + esc(TIPOS_D[dp.tipo][0]) + '</h3><p class="note" style="margin-top:2px">' + esc(TIPOS_D[dp.tipo][1]) + "</p>" +
     '<div class="fluxo">' + ETAPAS.map(function (e, i) { return '<span class="' + (i < at ? "feito" : i === at ? "agora" : "") + '">' + e[1] + "</span>"; }).join("") + "</div>" +
-    ((dp.hist || []).length ? '<ul style="margin:0 0 10px;padding-left:18px;font-size:13px">' + dp.hist.map(function (h) { var q = new Date(h.quando); return "<li><b>" + esc((h.de ? ETAPAS[etapaIdx({ etapa: h.de })][1] + " → " : "") + ETAPAS[etapaIdx({ etapa: h.etapa })][1]) + "</b> · " + esc((h.data ? brD(h.data) : fdata(q)) + " · " + h.quem) + (h.nota ? "<br>" + esc(h.nota) : "") + (h.decisao ? "<br>Decisão: <b>" + esc(h.decisao) + "</b>" : "") + (h.prazoEtapa ? "<br><small>Prazo da etapa: " + esc(brD(h.prazoEtapa)) + "</small>" : "") + (h.novoPrazo ? "<br><small>Novo prazo final: " + esc(brD(h.novoPrazo)) + "</small>" : "") + ((h.anexos || []).length ? "<br><small>Anexos: " + esc(h.anexos.map(function (a) { return a.nome; }).join(", ")) + "</small>" : "") + "</li>"; }).join("") + "</ul>" : "") +
+    ((dp.hist || []).length ? '<ul style="margin:0 0 10px;padding-left:18px;font-size:13px">' + dp.hist.map(function (h) { var q = new Date(h.quando); return "<li><b>" + esc((h.de ? ETAPAS[etapaIdx({ etapa: h.de })][1] + " → " : "") + ETAPAS[etapaIdx({ etapa: h.etapa })][1]) + "</b> · " + esc((h.data ? brD(h.data) : fdata(q)) + " · " + h.quem) + (h.nota ? "<br>" + esc(h.nota) : "") + (h.decisao ? "<br>Decisão: <b>" + esc(h.decisao) + "</b>" : "") + (h.prazoEtapa ? "<br><small>Prazo da etapa: " + esc(brD(h.prazoEtapa)) + "</small>" : "") + (h.novoPrazo ? "<br><small>Novo prazo final: " + esc(brD(h.novoPrazo)) + "</small>" : "") + ((h.anexos || []).length ? "<br><small>Anexos: " + h.anexos.map(anexoLink).join(" · ") + "</small>" : "") + "</li>"; }).join("") + "</ul>" : "") +
     '<div class="dacts">' + (at > 0 ? '<button type="button" class="btn" data-flx="-1">‹ Voltar para ' + ETAPAS[at - 1][1] + "</button>" : "") + (at < 4 ? ' <button type="button" class="btn pri" data-flx="1">Avançar para ' + ETAPAS[at + 1][1] + " ›</button>" : "") + "</div></div>";
 }
 function fluxoLigar(dp) { var b = document.getElementById("fluxo"); if (!b) return;
@@ -1807,8 +1847,10 @@ function autosDe(d) {
     { t: docs[3], k: "Anexo", d: "PDF · 2 fl.", tipo: "anexo" },
     { t: docs[4], k: "Anexo", d: "PDF · 1 fl.", tipo: "anexo" },
     { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }].concat(DSP.itens.filter(function (x) { return x.origem === d.titulo; }).reduce(function (acc, x) { (x.hist || []).forEach(function (h) { (h.anexos || []).forEach(function (a) {
-      acc.push({ t: a.nome, k: "Anexo do despacho", d: h.data ? brD(h.data) : fdata(new Date(h.quando)), tipo: "juntado", r: { quemNome: h.quem + " (despacho " + x.id + ")" } }); }); }); return acc; }, [])).concat(TRM.itens.filter(function (r) { return r.origem === d.titulo && r.tipo !== "interacao"; }).map(function (r) {
-      return { t: r.tipo === "anexo" ? r.texto : "Resposta ao despacho " + r.despacho, k: r.tipo === "anexo" ? "Anexo juntado" : "Resposta", d: fdata(new Date(r.quando)), tipo: r.tipo === "anexo" ? "juntado" : "resposta", r: r }; })) };
+      acc.push({ t: a.nome, k: "Anexo do despacho", d: h.data ? brD(h.data) : fdata(new Date(h.quando)), tipo: "juntado", a: a, r: { quemNome: h.quem + " (despacho " + x.id + ")" } }); }); }); return acc; }, [])).concat(TRM.itens.filter(function (r) { return r.origem === d.titulo && r.tipo !== "interacao"; }).reduce(function (acc, r) {
+      if (r.tipo === "resposta") acc.push({ t: "Resposta ao despacho " + r.despacho, k: "Resposta", d: fdata(new Date(r.quando)), tipo: "resposta", r: r });
+      (r.anexos && r.anexos.length ? r.anexos : r.tipo === "anexo" ? [{ nome: r.texto, tamanho: 0, semArquivo: true }] : []).forEach(function (a) { acc.push({ t: a.nome, k: "Anexo juntado", d: fdata(new Date(r.quando)), tipo: "juntado", a: a, r: r }); });
+      return acc; }, [])) };
 }
 function papelHtml(d, A, i) {
   var it = A.itens[i], fl = String(i + 1).padStart(2, "0"), cod = hashS(A.num + i).toString(16).toUpperCase().padStart(8, "0");
@@ -1818,8 +1860,8 @@ function papelHtml(d, A, i) {
   else if (it.tipo === "ficha") c = "<p>Extrato dos dados do painel na posição de " + esc(POS_TXT) + ":</p>" + kv(d.pares.slice(0, 14));
   else if (it.tipo === "parecer") c = "<p>Conferidos os documentos das fls. 02 a 05, verificou-se a correspondência entre o registro do painel e os documentos de origem.</p><p>Opina-se pelo prosseguimento, com acompanhamento dos pontos de atenção pelo responsável da unidade.</p>";
   else if (it.tipo === "desp") c = A.nDesp ? "<p>Há " + A.nDesp + " despacho(s) do gestor vinculados a este item.</p><p><button type=\"button\" class=\"btn\" data-au=\"lista\">Abrir os despachos</button></p>" : "<p>Nenhum despacho foi emitido para este item.</p><p><button type=\"button\" class=\"btn pri\" data-au=\"novo\">Emitir despacho</button></p>";
-  else if (it.tipo === "juntado") c = '<div class="anexo"><span aria-hidden="true">▭</span><p>' + esc(it.t) + "<br><small>Juntado por " + esc(it.r.quemNome) + " em " + esc(it.d) + " · registro da tramitação</small></p></div>";
-  else if (it.tipo === "resposta") c = "<p>" + esc(it.r.quemNome) + " responde ao despacho <b>" + esc(it.r.despacho) + "</b>:</p><p style=\"white-space:pre-wrap\">" + esc(it.r.texto) + "</p>";
+  else if (it.tipo === "juntado") c = "<p>Juntado por <b>" + esc(it.r.quemNome) + "</b> em " + esc(it.d) + ".</p>" + anexoVer(it.a || { nome: it.t, tamanho: 0 });
+  else if (it.tipo === "resposta") c = "<p>" + esc(it.r.quemNome) + " responde ao despacho <b>" + esc(it.r.despacho) + "</b>:</p><p style=\"white-space:pre-wrap\">" + esc(it.r.texto) + "</p>" + ((it.r.anexos || []).length ? "<p>Anexos: " + it.r.anexos.map(anexoLink).join(" · ") + "</p>" : "");
   else if (it.tipo === "anexo") c = '<div class="anexo"><span aria-hidden="true">' + (/foto|imagem/i.test(it.t + it.d) ? "▦▦<br>▦▦" : /planilha|csv|xlsx/i.test(it.t + it.d) ? "▤" : "▭") + "</span><p>" + esc(it.t) + "<br><small>" + esc(it.d) + " · arquivo ilustrativo</small></p></div>";
   else c = "<p>Documento integrante dos autos referente a <b>" + esc(d.titulo) + "</b>.</p>" + kv(d.pares.slice(0, 5)) + '<p class="linhas" aria-hidden="true"><i></i><i></i><i></i><i style="width:62%"></i></p>';
   var ass = it.tipo === "desp" || it.tipo === "anexo" ? "" : '<div class="ass"><span>Assinado eletronicamente em ' + esc(/\d\d\/\d\d\/\d{4}/.test(it.d) ? it.d : POS_TXT) + "</span><code>Código verificador " + cod + "</code></div>";
@@ -2031,6 +2073,8 @@ if (window.claude && window.claude.use) {
       .then(function (st) { IA.motivo = st === "denied" ? "recusada" : "indisponivel"; iaStatus(); }, function () { IA.motivo = "indisponivel"; iaStatus(); }); });
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
   window.claude.use("tts").then(function (t) { IA.tts = t; });
+  window.claude.use("assets").then(function (a) { AST.api = a; });
+  window.claude.use("downloads").then(function (x) { AST.dl = x; });
   window.claude.use("db").then(function (d) { if (d) { MP.db = d; DSP.db = d; TRM.db = d; mpCarregar(); mpRedesenha(); dspCarregar(); trmCarregar(); } });
 }
 function abrirDeIA(det) {
