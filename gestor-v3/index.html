@@ -311,9 +311,9 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .tram li.t-desp::before { border-color: var(--accent); background: var(--accent); }
 .tram li.t-int::before { border-color: #1D6B55; background: #1D6B55; }
 .tram li.t-atual::before { border-color: var(--bad); background: var(--bad); }
-.tram .q { font-size: 12px; color: var(--muted); }
-.tram .o { font-weight: 600; font-size: 14px; }
-.tram .x { font-size: 13.5px; white-space: pre-wrap; margin-top: 2px; }
+.tram .tq { font-size: 12px; color: var(--muted); }
+.tram .to { font-weight: 600; font-size: 14px; }
+.tram .tx { font-size: 13.5px; white-space: pre-wrap; margin-top: 2px; }
 .tram form { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
 .tram form label { font-size: 13px; font-weight: 600; }
 .tram select, .tram textarea, .tram input { width: 100%; font: 400 14.5px var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
@@ -1659,7 +1659,7 @@ function moverDesp(dp, para, nota) { dp.etapa = ETAPAS[para][0]; dp.hist = (dp.h
 function tramEventos(d) {
   var A = autosDe(d), ev = [
     { q: deBr(A.itens[0].d), o: "Processo autuado · Autos nº " + A.num, x: "Protocolo geral · fl. 01", c: "" },
-    { q: deBr(A.itens[1].d), o: "Encaminhado à " + A.sec + " para instrução", x: "Juntada: " + A.itens[1].t + " (fl. 02)", c: "" },
+    { q: deBr(A.itens[1].d), o: "Encaminhado para " + A.sec + ", para instrução", x: "Juntada: " + A.itens[1].t + " (fl. 02)", c: "" },
     { q: deBr(A.itens[3].d), o: "Juntada de documentos", x: A.itens[3].t + " (fl. 04) · " + A.itens[4].t + " (fl. 05)", c: "" },
     { q: deBr("14/10/2026"), o: "Parecer técnico de conferência", x: "Opina pelo prosseguimento (fl. 06)", c: "" },
     { q: deBr(POS_TXT), o: "Registro atualizado no NotPaper", x: "Ficha do registro (fl. 03) na posição de " + POS_TXT, c: "" }];
@@ -1674,7 +1674,7 @@ function tramInner(d) {
   var ev = tramEventos(d), ult = ev[ev.length - 1], dps = DSP.itens.filter(function (x) { return x.origem === d.titulo && etapaIdx(x) < 3; });
   var hora = function (q) { return fdata(q) + (q.getHours() !== 9 || q.getMinutes() ? " às " + q.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : ""); };
   return '<span class="eye">Trilha de tramitação</span><h3>Tramitação, interações e anexos</h3><p class="sit">Situação atual: <b>' + esc(ult.o) + "</b> · " + esc(hora(ult.q)) + "</p>" +
-    "<ol>" + ev.map(function (e) { return '<li class="' + e.c + '"><div class="q">' + esc(hora(e.q)) + '</div><div class="o">' + esc(e.o) + '</div><div class="x">' + esc(e.x) + "</div></li>"; }).join("") + "</ol>" +
+    "<ol>" + ev.map(function (e) { return '<li class="' + e.c + '"><div class="tq">' + esc(hora(e.q)) + '</div><div class="to">' + esc(e.o) + '</div><div class="tx">' + esc(e.x) + "</div></li>"; }).join("") + "</ol>" +
     '<form id="trmF"><label for="trmT">Registrar interação ou responder ao gestor</label><select id="trmT"><option value="interacao">Interação ou andamento</option>' + (dps.length ? dps.map(function (x) { return '<option value="r:' + esc(x.id) + '">Responder ao despacho ' + esc(x.id) + "</option>"; }).join("") : "") + '<option value="anexo">Juntar anexo (nome do documento)</option></select>' +
     '<textarea id="trmX" placeholder="Ex.: Vistoria feita em 05/11; aguardando orçamento da empresa."></textarea><div><button type="submit" class="btn pri">Registrar</button></div></form>';
 }
