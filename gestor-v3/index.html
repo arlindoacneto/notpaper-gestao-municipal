@@ -166,6 +166,11 @@ tr.tot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: 0
 .resp .rs { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
 .resp .ra { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
 .note { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+.ia-stat:empty { display: none; }
+.ia-stat { margin: 10px 0 0; padding: 9px 12px; border-radius: 10px; font-size: 13.5px; line-height: 1.45; }
+.ia-stat.ok { background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--ink); }
+.ia-stat.off { background: color-mix(in srgb, #E8A33D 18%, transparent); color: var(--ink); }
+.ia-stat .mini { margin-left: 6px; }
 .btn, .pill { white-space: nowrap; flex: 0 0 auto; }
 .card .big strong { white-space: nowrap; }
 @media (max-width: 1280px) { .perfil > span { display: none; } }
@@ -1601,9 +1606,25 @@ function abrirDespachos() {
 }
 
 /* ---------- Assessor IA ---------- */
-var IA = { seq: 0, sample: null, dict: null, tts: null, aba: "prontas", hist: [] };
+var IA = { seq: 0, sample: null, dict: null, tts: null, aba: "prontas", hist: [], motivo: window.claude && window.claude.use ? "aguardando" : "publica", perm: null };
+var IA_MSG = {
+  aguardando: "Ligando a IA… enquanto isso, a pergunta é ligada à pergunta planejada mais próxima.",
+  publica: "Esta é a cópia pública: a pergunta digitada ou falada é ligada à pergunta planejada mais próxima. A IA livre funciona no link do claude.ai.",
+  tela: "A IA está desligada porque a página foi aberta em tela própria (nova aba ou link direto). Abra o link do claude.ai dentro do Claude, sem “abrir em nova aba”, para a IA responder qualquer pergunta.",
+  recusada: "A IA foi recusada para esta página. Toque em “Reativar a IA”, ligue a permissão e recarregue a página.",
+  indisponivel: "A IA não está disponível nesta visualização: conta fora da organização dona da página, app de celular ou conta sem acesso à IA. Abra no navegador do computador, logado na conta dona da página."
+};
+function iaStatus() {
+  var b = document.getElementById("iaStat"); if (!b) return;
+  if (IA.sample) { b.className = "ia-stat ok"; b.innerHTML = "✨ IA ligada: responde qualquer pergunta com os dados desta base."; var n = document.getElementById("iaNote"); if (n && /cópia pública|IA livre|pergunta planejada/.test(n.textContent)) n.textContent = "A resposta usa somente os dados desta base de demonstração."; return; }
+  b.className = "ia-stat off"; b.innerHTML = esc(IA_MSG[IA.motivo] || IA_MSG.indisponivel) + (IA.motivo === "recusada" && IA.perm ? ' <button type="button" class="mini" id="iaReat">Reativar a IA</button>' : "");
+  var r = document.getElementById("iaReat"); if (r) r.onclick = function () { IA.perm.manage().then(function () { b.innerHTML = "Se ligou a permissão, recarregue a página para a IA voltar."; }, function () { b.innerHTML = "Abra o menu da página no claude.ai › Permissões e ligue a IA; depois recarregue."; }); };
+}
 if (window.claude && window.claude.use) {
-  window.claude.use("sample").then(function (s) { IA.sample = s; });
+  window.claude.use("sample").then(function (s) { IA.sample = s; if (s) { IA.motivo = ""; iaStatus(); return; }
+    if (window.top === window) { IA.motivo = "tela"; iaStatus(); return; }
+    window.claude.use("permissions").then(function (pm) { IA.perm = pm; return pm ? pm.state("sample") : "unavailable"; })
+      .then(function (st) { IA.motivo = st === "denied" ? "recusada" : "indisponivel"; iaStatus(); }, function () { IA.motivo = "indisponivel"; iaStatus(); }); });
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
   window.claude.use("tts").then(function (t) { IA.tts = t; });
   window.claude.use("db").then(function (d) { if (d) { MP.db = d; DSP.db = d; mpCarregar(); mpRedesenha(); dspCarregar(); } });
@@ -1634,7 +1655,8 @@ function abrirIA(aba, pre) {
     b.innerHTML = '<p class="lead">Pergunte com suas palavras sobre orçamento, receitas, limites, licitações, contratos, obras, filas da saúde ou zeladoria.</p>' +
       '<div class="ask"><textarea id="qIn" aria-label="Sua pergunta" placeholder="Ex.: Quanto a Educação já pagou este ano? Compare com a Saúde.">' + esc(pre || "") + '</textarea>' +
       '<div style="display:flex;flex-direction:column;gap:8px">' + (micOk ? '<button class="btn mic" id="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Falar</button>' : "") + '<button class="btn pri" id="qGo">Perguntar</button></div></div>' +
-      '<p class="note" id="iaNote">' + (IA.sample ? "A resposta usa somente os dados desta base de demonstração." : "Nesta versão, a pergunta digitada ou falada é ligada à pergunta planejada mais próxima e respondida com os dados da base. A IA livre funciona no claude.ai.") + "</p>" + (!micOk ? '<p class="note">Para falar a pergunta, toque no campo de texto e use o microfone 🎤 do teclado do aparelho.' + (IOS ? " No iPhone ou iPad, se o 🎤 do teclado estiver cinza, ligue em Ajustes › Geral › Teclado › Ativar Ditado." : "") + "</p>" : IOS ? '<p class="note">No iPhone ou iPad, se o botão Falar não funcionar, toque no campo de texto e use o microfone 🎤 do teclado.</p>' : "") + '<div id="iaOut"></div>' + mpNota();
+      '<p class="ia-stat" id="iaStat"></p><p class="note" id="iaNote">' + (IA.sample ? "A resposta usa somente os dados desta base de demonstração." : "") + "</p>" + (!micOk ? '<p class="note">Para falar a pergunta, toque no campo de texto e use o microfone 🎤 do teclado do aparelho.' + (IOS ? " No iPhone ou iPad, se o 🎤 do teclado estiver cinza, ligue em Ajustes › Geral › Teclado › Ativar Ditado." : "") + "</p>" : IOS ? '<p class="note">No iPhone ou iPad, se o botão Falar não funcionar, toque no campo de texto e use o microfone 🎤 do teclado.</p>' : "") + '<div id="iaOut"></div>' + mpNota();
+    iaStatus();
     document.getElementById("qGo").onclick = perguntar;
     document.getElementById("qIn").onkeydown = function (ev) { if (ev.key === "Enter" && !ev.shiftKey) { ev.preventDefault(); perguntar(); } };
     var m = document.getElementById("mic"); if (m) m.onclick = falar;
