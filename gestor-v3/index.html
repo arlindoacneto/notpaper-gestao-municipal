@@ -282,6 +282,56 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
   .top { gap: 8px; }
   .top .crumb { display: none; }
 }
+/* Localização na ficha, trilha de tramitação e quadro do despacho (recuperados da v2.6) */
+.local { margin-top: 22px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
+.local-tx { padding: 14px 16px; }
+.local .eye, .tram .eye { font: 700 11px/1.2 var(--f-body); letter-spacing: .8px; text-transform: uppercase; color: var(--accent); }
+.local-tx strong { display: block; font: 600 17px/1.3 var(--f-display); margin: 4px 0 8px; }
+.local-tx dl { margin: 0 0 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13.5px; }
+.local-tx dt { color: var(--muted); } .local-tx dd { margin: 0; font-weight: 600; }
+.local-map { border-left: 1px solid var(--line); min-height: 190px; }
+.local-map { display: flex; align-items: stretch; background: var(--bg); }
+.local-map svg { width: 100%; height: auto; align-self: center; }
+.m-pin { fill: var(--bad); stroke: #fff; stroke-width: 2.5; }
+.m-pin-h { fill: var(--bad); fill-opacity: .18; }
+.m-viz { fill: #8A94A8; stroke: #fff; stroke-width: 1.5; }
+@media (max-width: 560px) { .local { grid-template-columns: 1fr; } .local-map { border-left: 0; border-top: 1px solid var(--line); } }
+.tram { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px 16px; }
+.tram h3 { margin: 4px 0 4px; font: 600 17px/1.3 var(--f-display); }
+.tram .sit { font-size: 13.5px; color: var(--muted); margin: 0 0 10px; }
+.tram ol { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); }
+.tram li { position: relative; padding: 0 0 14px 10px; }
+.tram li::before { content: ""; position: absolute; left: -25px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--muted); }
+.tram li.t-desp::before { border-color: var(--accent); background: var(--accent); }
+.tram li.t-int::before { border-color: #1D6B55; background: #1D6B55; }
+.tram li.t-atual::before { border-color: var(--bad); background: var(--bad); }
+.tram .q { font-size: 12px; color: var(--muted); }
+.tram .o { font-weight: 600; font-size: 14px; }
+.tram .x { font-size: 13.5px; white-space: pre-wrap; margin-top: 2px; }
+.tram form { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--line); display: grid; gap: 8px; }
+.tram form label { font-size: 13px; font-weight: 600; }
+.tram select, .tram textarea, .tram input { width: 100%; font: 400 14.5px var(--f-body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.tram textarea { min-height: 70px; resize: vertical; }
+.dv-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.dv-tabs .mini.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.drawer.largo { width: min(1180px, calc(100% - 432px)); }
+@media (max-width: 860px) { .drawer.largo { width: 100%; } }
+.kb { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(190px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 8px; }
+.kb-col { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px; min-height: 120px; }
+.kb-col h4 { margin: 0 0 8px; font: 700 12px var(--f-body); letter-spacing: .5px; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.kb-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
+.kb-card .n { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+.kb-card .a { font-size: 13.5px; font-weight: 600; margin: 3px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.kb-card .p { font-size: 12px; color: var(--muted); }
+.kb-card .mv { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+@media (min-width: 1000px) { .drawer.largo .kb { grid-auto-flow: row; grid-template-columns: repeat(5, minmax(0, 1fr)); overflow: visible; } }
+.kb-card .mv button { flex: 1; min-height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+.fluxo { display: flex; gap: 4px; margin: 6px 0 12px; flex-wrap: wrap; }
+.fluxo span { flex: 1; min-width: 92px; text-align: center; font-size: 12px; font-weight: 600; padding: 8px 6px; border-radius: 8px; background: var(--bg); color: var(--muted); border: 1px solid var(--line); }
+.fluxo span.feito { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--ink); }
+.fluxo span.agora { background: var(--accent); color: #fff; border-color: var(--accent); }
+.fluxo-box { margin-top: 18px; border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: var(--surface); }
+.fluxo-box h3 { margin: 4px 0 2px; font: 600 17px/1.3 var(--f-display); }
 /* Autos do processo (documentos de cada registro, recuperado da v2.6) */
 .autos { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg); }
 .autos-h { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); background: var(--surface); }
@@ -1499,7 +1549,8 @@ function desenhaDet() {
   if (d.ficha && d.semDespachar) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd style=\"white-space:pre-wrap\">" + esc(p[1]) + "</dd>"; }).join("") + "</dl>";
   else if (d.ficha) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>" + (d.conta ? '<p class="note">Como fecha: ' + esc(d.conta) + "</p>" : "") + '<div class="resp" style="margin-top:18px"><div class="ra">' + (d.links || []).map(function (k, i) { return '<button class="mini" data-lk="' + i + '">' + esc(k.t) + " ›</button>"; }).join("") + '<button class="mini" id="dDesp">Despachar</button><button class="mini" id="dIA">Perguntar à IA sobre isto</button></div></div>';
   else { corpo = (d.lead ? '<p class="lead">' + esc(d.lead) + "</p>" : "") + tabela(d.cols, d.linhas, d.total, d.onRow) + (d.extra ? '<h3 style="margin:22px 0 8px;font:600 16px var(--f-display)">' + esc(d.extra.titulo) + "</h3>" + tabela(d.extra.cols, d.extra.linhas, d.extra.total) : ""); }
-  if (d.ficha && !d.semDespachar) corpo += autosHtml(d);
+  if (d.ficha && !d.semDespachar) corpo += localHtml(d) + autosHtml(d) + tramHtml(d);
+  if (d.desp) corpo += fluxoHtml(d.desp);
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(d.titulo) + '"><header><div>' + path + "<h2>" + esc(d.titulo) + '</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
   var v = document.getElementById("volta"); if (v) v.onclick = voltarDet;
@@ -1508,9 +1559,107 @@ function desenhaDet() {
   var dd = document.getElementById("dDesp"); if (dd) dd.onclick = function () { var sx = (d.pares.filter(function (p) { return /secretaria/i.test(p[0]); })[0] || [])[1] || "";
     abrirDespacho({ providencia: "Analisar e dar andamento: " + d.titulo, resp: sx, prazo: "10 dias", contexto: d.pares.slice(0, 6).map(function (p) { return p[0] + ": " + p[1]; }).join("; ") + ".", lei: "", origem: d.titulo, fonte: "Ficha do item no Gestor", dados: d.pares.map(function (p) { return [p[0], p[1], ""]; }).concat(d.conta ? [["Como o valor fecha", d.conta, ""]] : []) }); };
   var di = document.getElementById("dIA"); if (di) di.onclick = function () { abrirIA("livre", "Analise: " + d.titulo + ". " + d.pares.map(function (p) { return p[0] + ": " + p[1]; }).join("; ")); };
-  if (d.ficha && !d.semDespachar) autosLigar(d);
+  if (d.ficha && !d.semDespachar) { localLigar(d); autosLigar(d); tramLigar(d); }
+  if (d.desp) fluxoLigar(d.desp);
   document.getElementById("dX").focus();
 }
+
+/* ---------- Localização na ficha (recuperado da v2.6) ---------- */
+var RUAS = ["Rua das Acácias", "Rua XV de Novembro", "Av. Central", "Rua Sete de Setembro", "Rua dos Ipês", "Av. Brasil", "Rua Tiradentes", "Rua Santos Dumont", "Rua da Matriz", "Rua das Palmeiras"];
+function localDe(d) {
+  var t = d.titulo, ps = {}; d.pares.forEach(function (p) { ps[p[0]] = p[1]; });
+  var h = hashS(t), dentroDe = function (txt, alvo) { return txt === alvo || (alvo.length > 6 && txt.indexOf(alvo) >= 0); };
+  var e = EQ.filter(function (x) { return x.nome === t || x.id === ps["Equipamento"]; })[0];
+  if (e) return { x: e.x, y: e.y, nome: e.nome, end: e.end, bairro: e.bairro, foco: "eq:" + e.id, tipo: "Equipamento" };
+  var o = OB.filter(function (x) { return x.mapa && dentroDe(t, x.nome); })[0];
+  if (o) return { x: o.mapa[0], y: o.mapa[1], nome: o.nome, bairro: o.bairro || bairroDe(o.mapa[0], o.mapa[1]), foco: "ob:" + o.id, tipo: "Local da obra" };
+  var l = LIC.filter(function (x) { return x.mapa && (dentroDe(t, x.objeto) || ps["Processo"] === x.id); })[0];
+  if (l) return { x: l.mapa.x, y: l.mapa.y, nome: l.objeto, bairro: l.mapa.bairro, foco: "lc:" + l.id, tipo: "Local da contratação" };
+  var b = ps["Bairro"];
+  if (b && (BAIRROS[b] || b === "Zona Rural")) { var c = centroDe(b); return { x: c[0] + (h % 40) - 20, y: c[1] + ((h >> 6) % 30) - 15, nome: t, bairro: b, foco: null, tipo: "Local do registro" }; }
+  var sv = ps["Secretaria"] || ps["Secretaria responsável"] || ps["Órgão"] || "";
+  var sede = EQ.filter(function (x) { return x.grupo === "adm" && sv && nomeSec(x.sec) === sv; })[0] || EQN["EQ-22"];
+  return { x: sede.x, y: sede.y, nome: sede.nome, end: sede.end, bairro: sede.bairro, foco: "eq:" + sede.id, tipo: "Local da unidade" };
+}
+function miniMapa(L) {
+  var w = 520, hh = 330, x0 = Math.max(0, Math.min(1000 - w, L.x - w / 2)), y0 = Math.max(0, Math.min(640 - hh, L.y - hh / 2));
+  var g = '<svg class="mapa" viewBox="' + x0 + " " + y0 + " " + w + " " + hh + '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="' + esc("Localização: " + L.nome + ", " + L.bairro) + '">';
+  g += '<rect x="0" y="0" width="1000" height="640" class="m-terra"/><ellipse cx="870" cy="380" rx="70" ry="110" class="m-agua"/><path d="M30,175 C150,215 200,420 330,470 S560,622 700,600 S850,520 812,470" class="m-rio"/>';
+  Object.keys(BAIRROS).forEach(function (b) { g += '<polygon points="' + BAIRROS[b].map(function (q) { return q.join(","); }).join(" ") + '" class="m-bairro"/>'; });
+  g += '<path d="M150,320 L830,320" class="m-via"/><path d="M560,90 L560,600" class="m-via"/><path d="M225,300 C170,330 90,380 30,420" class="m-via m-via2"/>';
+  Object.keys(ROTULO_BAIRRO).forEach(function (b) { var q = ROTULO_BAIRRO[b]; g += '<text x="' + q[0] + '" y="' + q[1] + '" text-anchor="middle" class="m-rot-bairro">' + esc(b) + "</text>"; });
+  EQ.forEach(function (e) { if (Math.abs(e.x - L.x) < w && Math.abs(e.y - L.y) < hh && !(e.x === L.x && e.y === L.y)) g += '<circle cx="' + e.x + '" cy="' + e.y + '" r="5" class="m-viz"/>'; });
+  g += '<circle cx="' + L.x + '" cy="' + L.y + '" r="18" class="m-pin-h"/><path d="M' + L.x + "," + L.y + " c-9,-12 -12,-17 -12,-23 a12,12 0 1,1 24,0 c0,6 -3,11 -12,23z" + '" class="m-pin"/><circle cx="' + L.x + '" cy="' + (L.y - 23) + '" r="4.5" fill="#fff"/>';
+  return g + "</svg>";
+}
+function localHtml(d) {
+  var L = localDe(d), h = hashS(L.nome), end = L.end || RUAS[h % RUAS.length] + ", " + (20 + h % 880);
+  return '<section class="local" id="local" aria-label="Localização"><div class="local-tx"><span class="eye">Localização · ' + esc(L.tipo) + "</span><strong>" + esc(L.nome) + "</strong><dl><dt>Endereço</dt><dd>" + esc(end) + " (fictício)</dd><dt>Bairro</dt><dd>" + esc(L.bairro) + "</dd><dt>Região</dt><dd>" + (L.bairro === "Zona Rural" ? "Zona rural" : "Zona urbana") + '</dd></dl><button type="button" class="mini" id="locVer">Ver no mapa</button></div><div class="local-map">' + miniMapa(L) + "</div></section>";
+}
+function localLigar(d) { var b = document.getElementById("locVer"); if (!b) return; var L = localDe(d);
+  b.onclick = function () { MAPA.foco = L.foco; if (atual === "MP") { fecharTudo(); renderSol("MP"); } else go("MP"); }; }
+
+/* ---------- Trilha de tramitação (recuperado da v2.6) ---------- */
+var TRM = { db: null, itens: [], local: false, fila: Promise.resolve(), unsub: null };
+function trmCarregar() { try { TRM.itens = JSON.parse(localStorage.getItem("np-tramitacao") || "[]") || []; } catch (x) { TRM.itens = []; }
+  if (TRM.db && !TRM.unsub) TRM.unsub = TRM.db.doc("tramitacao/todos").onSnapshot(function (sn) { if (sn.exists && Array.isArray((sn.data() || {}).itens)) TRM.itens = JSON.parse(JSON.stringify(sn.data().itens)); }, function () {}); }
+function trmSalvar() { try { localStorage.setItem("np-tramitacao", JSON.stringify(TRM.itens)); } catch (x) {}
+  if (TRM.db && !TRM.local) { var dados = { itens: TRM.itens.slice(-400), atualizado: Date.now() }; TRM.fila = TRM.fila.then(function () { return TRM.db.doc("tramitacao/todos").set(dados); }).catch(function () { TRM.local = true; }); } }
+function deBr(t) { var m = /(\d\d)\/(\d\d)\/(\d{4})/.exec(t || ""); return m ? new Date(+m[3], +m[2] - 1, +m[1], 9) : new Date(2026, 9, 31, 9); }
+var ETAPAS = [["emitido", "Emitido"], ["ciencia", "Ciência"], ["execucao", "Em execução"], ["resposta", "Respondido"], ["concluido", "Concluído"]];
+function etapaIdx(dp) { var e = dp.etapa || "emitido"; for (var i = 0; i < ETAPAS.length; i++) if (ETAPAS[i][0] === e) return i; return 0; }
+function moverDesp(dp, para, nota) { dp.etapa = ETAPAS[para][0]; dp.hist = (dp.hist || []).concat([{ etapa: dp.etapa, quando: new Date().toISOString(), quem: nomeQuem(PERFIL), nota: nota || "" }]); dspSalvar(); renderSide(); }
+function tramEventos(d) {
+  var A = autosDe(d), ev = [
+    { q: deBr(A.itens[0].d), o: "Processo autuado · Autos nº " + A.num, x: "Protocolo geral · fl. 01", c: "" },
+    { q: deBr(A.itens[1].d), o: "Encaminhado à " + A.sec + " para instrução", x: "Juntada: " + A.itens[1].t + " (fl. 02)", c: "" },
+    { q: deBr(A.itens[3].d), o: "Juntada de documentos", x: A.itens[3].t + " (fl. 04) · " + A.itens[4].t + " (fl. 05)", c: "" },
+    { q: deBr("14/10/2026"), o: "Parecer técnico de conferência", x: "Opina pelo prosseguimento (fl. 06)", c: "" },
+    { q: deBr(POS_TXT), o: "Registro atualizado no NotPaper", x: "Ficha do registro (fl. 03) na posição de " + POS_TXT, c: "" }];
+  DSP.itens.filter(function (x) { return x.origem === d.titulo; }).forEach(function (dp) {
+    ev.push({ q: new Date(dp.criado), o: "Despacho " + dp.id + " · " + TIPOS_D[dp.tipo][0], x: dp.emissorNome + " → " + dp.destNome + " · prazo " + brD(dp.prazo) + "\n" + dp.texto, c: "t-desp" });
+    (dp.hist || []).forEach(function (hs) { ev.push({ q: new Date(hs.quando), o: "Despacho " + dp.id + ": " + ETAPAS[etapaIdx({ etapa: hs.etapa })][1].toLowerCase(), x: hs.quem + (hs.nota ? " · " + hs.nota : ""), c: "t-desp" }); }); });
+  TRM.itens.filter(function (x) { return x.origem === d.titulo; }).forEach(function (r) {
+    ev.push({ q: new Date(r.quando), o: (r.tipo === "resposta" ? "Resposta ao despacho " + r.despacho : r.tipo === "anexo" ? "Juntada de anexo" : "Interação registrada") + " · " + r.quemNome, x: r.texto, c: "t-int" }); });
+  ev.sort(function (a, b) { return a.q - b.q; }); if (ev.length) ev[ev.length - 1].c += " t-atual"; return ev;
+}
+function tramInner(d) {
+  var ev = tramEventos(d), ult = ev[ev.length - 1], dps = DSP.itens.filter(function (x) { return x.origem === d.titulo && etapaIdx(x) < 3; });
+  var hora = function (q) { return fdata(q) + (q.getHours() !== 9 || q.getMinutes() ? " às " + q.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : ""); };
+  return '<span class="eye">Trilha de tramitação</span><h3>Tramitação, interações e anexos</h3><p class="sit">Situação atual: <b>' + esc(ult.o) + "</b> · " + esc(hora(ult.q)) + "</p>" +
+    "<ol>" + ev.map(function (e) { return '<li class="' + e.c + '"><div class="q">' + esc(hora(e.q)) + '</div><div class="o">' + esc(e.o) + '</div><div class="x">' + esc(e.x) + "</div></li>"; }).join("") + "</ol>" +
+    '<form id="trmF"><label for="trmT">Registrar interação ou responder ao gestor</label><select id="trmT"><option value="interacao">Interação ou andamento</option>' + (dps.length ? dps.map(function (x) { return '<option value="r:' + esc(x.id) + '">Responder ao despacho ' + esc(x.id) + "</option>"; }).join("") : "") + '<option value="anexo">Juntar anexo (nome do documento)</option></select>' +
+    '<textarea id="trmX" placeholder="Ex.: Vistoria feita em 05/11; aguardando orçamento da empresa."></textarea><div><button type="submit" class="btn pri">Registrar</button></div></form>';
+}
+function tramHtml(d) { return '<section class="tram" id="tram" aria-label="Tramitação">' + tramInner(d) + "</section>"; }
+function tramLigar(d) {
+  var box = document.getElementById("tram"); if (!box) return;
+  box.onsubmit = function (ev) { ev.preventDefault(); var tp = document.getElementById("trmT").value, tx = document.getElementById("trmX").value.trim();
+    if (!tx) { toast("Escreva o que aconteceu antes de registrar."); document.getElementById("trmX").focus(); return; }
+    var r = { id: "TR-" + Date.now().toString(36), origem: d.titulo, quando: new Date().toISOString(), quem: PERFIL, quemNome: nomeQuem(PERFIL), tipo: tp === "anexo" ? "anexo" : /^r:/.test(tp) ? "resposta" : "interacao", texto: tx, despacho: /^r:/.test(tp) ? tp.slice(2) : "" };
+    TRM.itens.push(r); trmSalvar();
+    if (r.despacho) { var dp = DSP.itens.filter(function (x) { return x.id === r.despacho; })[0]; if (dp) moverDesp(dp, 3, "respondido na tramitação"); }
+    box.innerHTML = tramInner(d); toast(r.tipo === "resposta" ? "Resposta registrada: o despacho foi para “Respondido”." : "Registrado na tramitação."); };
+}
+
+/* ---------- Quadro (kanban) e fluxo do despacho (recuperado da v2.6) ---------- */
+var DSPV = { modo: "lista" };
+function quadroHtml(ls) {
+  var hoje = isoD(hojeD());
+  return '<div class="kb" role="list">' + ETAPAS.map(function (et, ei) { var cs = ls.filter(function (d) { return etapaIdx(d) === ei; });
+    return '<div class="kb-col" role="listitem"><h4>' + et[1] + "<span>" + cs.length + "</span></h4>" + cs.map(function (d) { var i = ls.indexOf(d), venc = d.prazo < hoje && ei < 4;
+      return '<div class="kb-card" data-kb="' + i + '" tabindex="0"><div class="n">' + esc(d.id) + (venc ? " " + chip("bad", "Vencido") : "") + '</div><div class="a">' + esc(d.assunto) + '</div><div class="p">Para ' + esc(d.destNome) + " · prazo " + esc(brD(d.prazo)) + "</div>" +
+        '<div class="mv">' + (ei > 0 ? '<button type="button" data-kbm="' + i + ':-1" aria-label="Voltar etapa">‹ ' + ETAPAS[ei - 1][1] + "</button>" : "") + (ei < 4 ? '<button type="button" data-kbm="' + i + ':1" aria-label="Avançar etapa">' + ETAPAS[ei + 1][1] + " ›</button>" : "") + "</div></div>"; }).join("") + "</div>"; }).join("") + "</div>";
+}
+function fluxoHtml(dp) {
+  var at = etapaIdx(dp);
+  return '<div class="fluxo-box" id="fluxo"><span class="eye" style="font:700 11px var(--f-body);letter-spacing:.8px;text-transform:uppercase;color:var(--accent)">Fluxo do despacho</span><h3>' + esc(TIPOS_D[dp.tipo][0]) + '</h3><p class="note" style="margin-top:2px">' + esc(TIPOS_D[dp.tipo][1]) + "</p>" +
+    '<div class="fluxo">' + ETAPAS.map(function (e, i) { return '<span class="' + (i < at ? "feito" : i === at ? "agora" : "") + '">' + e[1] + "</span>"; }).join("") + "</div>" +
+    ((dp.hist || []).length ? '<ul style="margin:0 0 10px;padding-left:18px;font-size:13px">' + dp.hist.map(function (h) { var q = new Date(h.quando); return "<li>" + esc(fdata(q) + " às " + q.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + " · " + ETAPAS[etapaIdx({ etapa: h.etapa })][1] + " · " + h.quem + (h.nota ? " (" + h.nota + ")" : "")) + "</li>"; }).join("") + "</ul>" : "") +
+    '<div class="dacts">' + (at > 0 ? '<button type="button" class="btn" data-flx="-1">‹ Voltar para ' + ETAPAS[at - 1][1] + "</button>" : "") + (at < 4 ? ' <button type="button" class="btn pri" data-flx="1">Avançar para ' + ETAPAS[at + 1][1] + " ›</button>" : "") + "</div></div>";
+}
+function fluxoLigar(dp) { var b = document.getElementById("fluxo"); if (!b) return;
+  b.querySelectorAll("[data-flx]").forEach(function (x) { x.onclick = function () { moverDesp(dp, etapaIdx(dp) + +x.dataset.flx); b.outerHTML = fluxoHtml(dp); fluxoLigar(dp); toast("Despacho " + dp.id + ": " + ETAPAS[etapaIdx(dp)][1].toLowerCase() + "."); }; }); }
 
 /* ---------- Autos do processo: documentos de cada registro (recuperado da v2.6) ---------- */
 function hashS(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1531,7 +1680,9 @@ function autosDe(d) {
   var docs = AUT_GEN, pega = function (txt) { return AUT_TIPOS.some(function (k) { if (k[0].test(txt)) { docs = k[1]; return true; } return false; }); };
   pega(d.titulo + " " + nome(atual)) || pega(ctx);
   var h = hashS(d.titulo), num = "2026/" + String(1000 + h % 9000) + "-" + String(h % 97).padStart(2, "0"), dia = 3 + h % 20;
-  var sec = (d.pares.filter(function (p) { return /secretaria|órgão|unidade/i.test(p[0]); })[0] || [])[1] || (ehPref() ? "Gabinete do Prefeito" : nomeSec(PERFIL));
+  var sec = (d.pares.filter(function (p) { return /secretaria|órgão|unidade/i.test(p[0]); })[0] || [])[1];
+  if (!sec) { var lg = d.titulo, eq = EQ.filter(function (x) { return x.nome === lg; })[0], ob = OB.filter(function (x) { return x.nome === lg; })[0], lc = LIC.filter(function (x) { return x.objeto === lg; })[0];
+    sec = eq ? nomeSec(eq.sec) : ob ? nomeSec(ob.sec) : lc ? nomeSec(lc.sec) : (ehPref() ? "Gabinete do Prefeito" : nomeSec(PERFIL)); }
   var nDesp = DSP.itens.filter(function (x) { return x.origem === d.titulo; }).length;
   var dd = function (n) { return String(Math.min(28, n)).padStart(2, "0") + "/09/2026"; };
   return { num: num, sec: sec, nDesp: nDesp, itens: [
@@ -1718,11 +1869,12 @@ function embHtml(d) { if (!d.embasamento || !d.embasamento.length) return "";
 function abrirDespachos() {
   pilha = []; document.body.style.overflow = "hidden";
   var ls = dspVisiveis().slice().reverse(), hoje = isoD(hojeD());
-  var corpo = ls.length ? '<div class="tbl-w"><table><thead><tr><th>Nº</th><th>Assunto</th><th>' + (ehPref() ? "Para" : "De → Para") + '</th><th class="n">Prazo</th></tr></thead><tbody>' + ls.map(function (d, i) {
+  var abas = ls.length ? '<div class="dv-tabs" role="group" aria-label="Ver como"><button type="button" class="mini' + (DSPV.modo === "lista" ? " on" : "") + '" data-dv="lista">Lista</button><button type="button" class="mini' + (DSPV.modo === "quadro" ? " on" : "") + '" data-dv="quadro">Quadro</button></div>' : "";
+  var corpo = ls.length && DSPV.modo === "quadro" ? abas + quadroHtml(ls) : ls.length ? abas + '<div class="tbl-w"><table><thead><tr><th>Nº</th><th>Assunto</th><th>' + (ehPref() ? "Para" : "De → Para") + '</th><th class="n">Prazo</th></tr></thead><tbody>' + ls.map(function (d, i) {
       var dd = Math.round((deIso(d.prazo) - hojeD()) / 864e5), ch = d.prazo < hoje ? chip("bad", "Vencido") : dd <= 2 ? chip("warn", "Vence em " + dd + (dd === 1 ? " dia" : " dias")) : "";
       return '<tr class="click" data-dsp="' + i + '" tabindex="0"><td>' + esc(d.id) + "</td><td>" + esc(d.assunto) + "</td><td>" + (ehPref() ? "" : esc(d.emissorNome) + " → ") + esc(d.destNome) + '</td><td class="n">' + fdata(deIso(d.prazo)) + " " + ch + "</td></tr>"; }).join("") + "</tbody></table></div>"
     : '<p class="lead">Nenhum despacho emitido ' + (ehPref() ? "ainda." : "por esta secretaria ou para ela.") + " Use “Despachar” em “O que fazer agora” ou numa ficha.</p>";
-  layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="Despachos"><header><div><div class="path">' + esc(nomeQuem(PERFIL)) + '</div><h2>Despachos</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo +
+  layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer' + (DSPV.modo === "quadro" && ls.length ? " largo" : "") + '" role="dialog" aria-modal="true" aria-label="Despachos"><header><div><div class="path">' + esc(nomeQuem(PERFIL)) + '</div><h2>Despachos</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo +
     '<p class="note">' + (ehPref() ? "O prefeito vê todos os despachos." : "A secretaria vê somente os despachos que emitiu ou que recebeu.") + (DSP.db && !DSP.local ? " Os despachos ficam salvos no Gestor." : " Nesta versão os despachos ficam salvos somente neste aparelho.") + "</p>" +
     '<p class="nota"><b>Próximo passo:</b> Por enquanto o despacho é apenas emitido e registrado aqui. Depois, ele deverá gerar um memorando no NotPaper NG, ou na ferramenta que o município tiver, onde corre o andamento: ciência, execução, resposta e conferência.</p>' +
     (ehPref() && DSP.itens.length ? '<div class="dacts" style="margin-top:16px"><button class="btn" id="dLimpar">Limpar despachos da demonstração</button></div>' : "") + "</div></aside>";
@@ -1731,8 +1883,12 @@ function abrirDespachos() {
   if (lp) lp.onclick = function () {
     if (!lp.dataset.ok) { lp.dataset.ok = "1"; lp.textContent = "Tocar de novo para apagar os " + DSP.itens.length + " despachos"; lp.style.background = "var(--bad)"; lp.style.color = "#fff"; lp.style.borderColor = "var(--bad)"; return; }
     DSP.itens = []; dspSalvar(); renderSide(); toast("Despachos da demonstração apagados."); abrirDespachos(); };
-  layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { var d = ls[+tr.dataset.dsp];
-    abrir({ ficha: true, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }); }; });
+  layer.querySelectorAll("[data-dv]").forEach(function (b) { b.onclick = function () { DSPV.modo = b.dataset.dv; abrirDespachos(); }; });
+  layer.querySelectorAll("[data-kbm]").forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var p = b.dataset.kbm.split(":"), d = ls[+p[0]]; moverDesp(d, etapaIdx(d) + +p[1]); var sc = layer.querySelector(".kb"), x = sc ? sc.scrollLeft : 0; abrirDespachos(); var n = layer.querySelector(".kb"); if (n) n.scrollLeft = x; toast("Despacho " + d.id + ": " + ETAPAS[etapaIdx(d)][1].toLowerCase() + "."); }; });
+  layer.querySelectorAll("[data-kb]").forEach(function (c) { c.onclick = function () { abrirFichaDesp(+c.dataset.kb); }; c.onkeydown = function (ev) { if (ev.key === "Enter") c.onclick(); }; });
+  function abrirFichaDesp(i) { var d = ls[i];
+    abrir({ ficha: true, desp: d, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["Etapa", ETAPAS[etapaIdx(d)][1]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }); }
+  layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { abrirFichaDesp(+tr.dataset.dsp); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
 }
 
 /* ---------- Assessor IA ---------- */
@@ -1757,7 +1913,7 @@ if (window.claude && window.claude.use) {
       .then(function (st) { IA.motivo = st === "denied" ? "recusada" : "indisponivel"; iaStatus(); }, function () { IA.motivo = "indisponivel"; iaStatus(); }); });
   window.claude.use("dictation").then(function (d) { IA.dict = d; });
   window.claude.use("tts").then(function (t) { IA.tts = t; });
-  window.claude.use("db").then(function (d) { if (d) { MP.db = d; DSP.db = d; mpCarregar(); mpRedesenha(); dspCarregar(); } });
+  window.claude.use("db").then(function (d) { if (d) { MP.db = d; DSP.db = d; TRM.db = d; mpCarregar(); mpRedesenha(); dspCarregar(); trmCarregar(); } });
 }
 function abrirDeIA(det) {
   if (!det) return;
@@ -1970,7 +2126,7 @@ document.getElementById("prontasB").onclick = function () { abrirIA("prontas"); 
 document.getElementById("menuB").onclick = function () { side.classList.toggle("open"); };
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (pilha.length > 1) voltarDet(); else fecharTudo(); } });
 window.addEventListener("hashchange", function () { var h = location.hash.slice(1) || "inicio"; if (h === atual) return; if (!voltando) HIST.push(atual); fecharTudo(); if (h !== "inicio" && cat(h)) renderSol(h); else renderInicio(); atualizaVoltar(); });
-mpCarregar(); dspCarregar();
+mpCarregar(); dspCarregar(); trmCarregar();
 var h0 = location.hash.slice(1); if (h0 && cat(h0)) renderSol(h0); else renderInicio(); atualizaVoltar();
 })();
 </script>
