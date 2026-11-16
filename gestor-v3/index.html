@@ -282,6 +282,43 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
   .top { gap: 8px; }
   .top .crumb { display: none; }
 }
+/* Autos do processo (documentos de cada registro, recuperado da v2.6) */
+.autos { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--bg); }
+.autos-h { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.autos-h .eye { font: 700 11px/1.2 var(--f-body); letter-spacing: .8px; text-transform: uppercase; color: #B3261E; }
+.autos-h strong { display: block; font: 600 17px/1.3 var(--f-display); margin-top: 4px; }
+.autos-h small { color: var(--muted); font-size: 12.5px; }
+.autos-l { list-style: none; margin: 0; padding: 0; max-height: 236px; overflow: auto; background: var(--surface); }
+.autos-l button { width: 100%; display: flex; gap: 12px; align-items: flex-start; text-align: left; padding: 10px 16px; border: 0; border-bottom: 1px solid var(--line); background: none; color: var(--ink); min-height: 44px; }
+.autos-l button[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: inset 3px 0 0 #B3261E; }
+.autos-l .fl { font: 600 12px var(--f-body); color: var(--muted); min-width: 40px; padding-top: 2px; }
+.autos-l b { display: block; font-weight: 600; font-size: 14px; }
+.autos-l small { font-size: 12px; color: var(--muted); }
+.autos-l em { font-style: normal; font: 700 10.5px var(--f-body); letter-spacing: .5px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; margin-right: 8px; background: #13213C; color: #fff; }
+.autos-l em.k-ficha { background: #9A6A10; } .autos-l em.k-parecer { background: #1D6B55; } .autos-l em.k-desp { background: #1D5FD1; } .autos-l em.k-anexo { background: #5B6475; }
+.autos-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #13213C; color: #fff; font-size: 13px; }
+.autos-bar .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.autos-bar button { min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; font-weight: 600; }
+.autos-st { padding: 16px; max-height: 520px; overflow: auto; background: #6B7487; }
+.papel { position: relative; overflow: hidden; margin: 0 auto; max-width: 560px; background: #FBFAF6; color: #1B2333; padding: 26px 28px 22px; box-shadow: 0 6px 22px rgba(0,0,0,.28); font: 400 calc(14px * var(--zoom, 1))/1.5 Georgia, "Times New Roman", serif; transform-origin: top center; }
+.papel .ph { display: flex; align-items: center; gap: 12px; padding-bottom: 10px; border-bottom: 2px solid #1B2333; }
+.papel .brasao { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 30px; } .papel .brasao i { height: 13px; background: #13213C; } .papel .brasao i:nth-child(2) { background: #007E80; } .papel .brasao i:nth-child(3) { background: #007E80; }
+.papel .ph b { font: 700 14.5px var(--f-body); display: block; } .papel .ph small { font: 400 12px var(--f-body); color: #5B6475; }
+.papel .pfl { margin-left: auto; margin-right: 46px; font: 600 12px var(--f-body); border: 1px solid #1B2333; padding: 2px 8px; white-space: nowrap; }
+.papel .proc { font: 600 11.5px var(--f-body); letter-spacing: .3px; text-transform: uppercase; color: #3A4458; margin: 12px 0 4px; }
+.papel h4 { font: 700 calc(19px * var(--zoom, 1))/1.25 Georgia, serif; margin: 6px 0 12px; }
+.papel dl { display: grid; grid-template-columns: 40% 60%; margin: 10px 0; font: 400 calc(13.5px * var(--zoom, 1)) var(--f-body); }
+.papel dt, .papel dd { margin: 0; padding: 7px 0; border-bottom: 1px solid #DCD8CC; } .papel dd { font-weight: 600; }
+.papel .linhas i { display: block; height: 7px; background: #E4E0D4; margin: 9px 0; border-radius: 3px; }
+.papel .anexo { display: flex; gap: 14px; align-items: center; padding: 18px; border: 1px dashed #A9A498; border-radius: 8px; } .papel .anexo span { font-size: 34px; color: #5B6475; line-height: 1.1; }
+.papel .ass { margin-top: 16px; padding-top: 10px; border-top: 1px solid #DCD8CC; font: 400 11.5px var(--f-body); color: #3A4458; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.papel .marca { position: absolute; top: 20px; right: -42px; transform: rotate(35deg); background: #B3261E; color: #fff; font: 700 11px var(--f-body); letter-spacing: 1.5px; padding: 4px 48px; }
+.papel .btn { font-family: var(--f-body); }
+.amplia { position: fixed; inset: 0; z-index: 60; background: rgba(10,16,30,.86); display: flex; flex-direction: column; }
+.amplia .autos-bar { padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); padding-top: max(10px, env(safe-area-inset-top, 0px)); }
+.amplia .autos-st { flex: 1; max-height: none; background: transparent; }
+.amplia .papel { max-width: 820px; }
+@media (max-width: 560px) { .papel { padding: 20px 16px 16px; } .papel dl { grid-template-columns: 1fr; } .papel dt { border-bottom: 0; padding-bottom: 0; color: #5B6475; } .autos-st { padding: 10px; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -1454,7 +1491,7 @@ function renderSol(sig) {
 var pilha = [];
 function voltarDet() { pilha.pop(); var topo = pilha[pilha.length - 1]; if (topo && topo.volta) { var f = topo.volta; pilha = []; f(); } else if (pilha.length) desenhaDet(); else fecharTudo(); }
 function abrir(det) { if (!det) return; pilha.push(det); desenhaDet(); }
-function fecharTudo() { pilha = []; layer.innerHTML = ""; document.body.style.overflow = ""; }
+function fecharTudo() { fecharAmplia(); pilha = []; layer.innerHTML = ""; document.body.style.overflow = ""; }
 function desenhaDet() {
   var d = pilha[pilha.length - 1]; document.body.style.overflow = "hidden";
   var path = pilha.length > 1 ? '<div class="path"><button id="volta">‹ ' + esc(pilha[pilha.length - 2].titulo) + "</button></div>" : '<div class="path">' + esc(nome(atual) || "Detalhamento") + "</div>";
@@ -1462,6 +1499,7 @@ function desenhaDet() {
   if (d.ficha && d.semDespachar) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd style=\"white-space:pre-wrap\">" + esc(p[1]) + "</dd>"; }).join("") + "</dl>";
   else if (d.ficha) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>" + (d.conta ? '<p class="note">Como fecha: ' + esc(d.conta) + "</p>" : "") + '<div class="resp" style="margin-top:18px"><div class="ra">' + (d.links || []).map(function (k, i) { return '<button class="mini" data-lk="' + i + '">' + esc(k.t) + " ›</button>"; }).join("") + '<button class="mini" id="dDesp">Despachar</button><button class="mini" id="dIA">Perguntar à IA sobre isto</button></div></div>';
   else { corpo = (d.lead ? '<p class="lead">' + esc(d.lead) + "</p>" : "") + tabela(d.cols, d.linhas, d.total, d.onRow) + (d.extra ? '<h3 style="margin:22px 0 8px;font:600 16px var(--f-display)">' + esc(d.extra.titulo) + "</h3>" + tabela(d.extra.cols, d.extra.linhas, d.extra.total) : ""); }
+  if (d.ficha && !d.semDespachar) corpo += autosHtml(d);
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(d.titulo) + '"><header><div>' + path + "<h2>" + esc(d.titulo) + '</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
   var v = document.getElementById("volta"); if (v) v.onclick = voltarDet;
@@ -1470,7 +1508,99 @@ function desenhaDet() {
   var dd = document.getElementById("dDesp"); if (dd) dd.onclick = function () { var sx = (d.pares.filter(function (p) { return /secretaria/i.test(p[0]); })[0] || [])[1] || "";
     abrirDespacho({ providencia: "Analisar e dar andamento: " + d.titulo, resp: sx, prazo: "10 dias", contexto: d.pares.slice(0, 6).map(function (p) { return p[0] + ": " + p[1]; }).join("; ") + ".", lei: "", origem: d.titulo, fonte: "Ficha do item no Gestor", dados: d.pares.map(function (p) { return [p[0], p[1], ""]; }).concat(d.conta ? [["Como o valor fecha", d.conta, ""]] : []) }); };
   var di = document.getElementById("dIA"); if (di) di.onclick = function () { abrirIA("livre", "Analise: " + d.titulo + ". " + d.pares.map(function (p) { return p[0] + ": " + p[1]; }).join("; ")); };
+  if (d.ficha && !d.semDespachar) autosLigar(d);
   document.getElementById("dX").focus();
+}
+
+/* ---------- Autos do processo: documentos de cada registro (recuperado da v2.6) ---------- */
+function hashS(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+var AUT_TIPOS = [
+  [/frota|veícul/i, ["Requisição de serviço de frota", "Ordem de serviço de manutenção", "Laudo de vistoria do veículo", "Nota fiscal da oficina", "Fotografias da vistoria", "Relatório de telemetria (.csv)"]],
+  [/licita|pregão|concorr|dispensa|inexig|edital|LC-|PE-/i, ["Documento de formalização da demanda (DFD)", "Estudo técnico preliminar e termo de referência", "Pesquisa de preços", "Parecer jurídico", "Edital e publicação no PNCP", "Ata e adjudicação"]],
+  [/contrat|aditiv|CT-/i, ["Termo de referência", "Contrato administrativo", "Nota de empenho", "Atestado de execução do fiscal", "Nota fiscal / fatura", "Relatório fotográfico da entrega"]],
+  [/obra|medição|reforma|pavimen|OB-/i, ["Projeto básico e orçamento", "Ordem de início", "Boletim de medição", "Atestado do fiscal da obra", "Diário de obra (fotos)", "Planilha de medição (.xlsx)"]],
+  [/saúde|fila|consulta|exame|UBS|regula/i, ["Solicitação do profissional de saúde", "Classificação de risco", "Autorização da regulação", "Agendamento", "Comprovante de atendimento", "Laudo / resultado"]],
+  [/educa|escola|matr|merenda/i, ["Solicitação da unidade escolar", "Parecer da coordenação", "Nota de empenho", "Termo de recebimento", "Nota fiscal", "Fotografias da unidade"]],
+  [/tribut|IPTU|ISS|ITBI|taxa|dívida|arrecad/i, ["Lançamento tributário", "Notificação ao contribuinte", "Guia de recolhimento", "Comprovante bancário", "Parecer da fiscalização", "Extrato da conta arrecadadora"]],
+  [/zeladoria|ilumina|buraco|poda|lâmpada|pedido/i, ["Pedido do cidadão (protocolo)", "Vistoria e classificação", "Ordem de serviço à equipe", "Registro da execução", "Fotografias antes e depois", "Pesquisa de satisfação"]],
+  [/empenh|liquid|pagamento|dotação|orçament|despesa|fornecedor/i, ["Nota de empenho", "Documento fiscal do fornecedor", "Atesto de recebimento", "Nota de liquidação", "Ordem de pagamento", "Comprovante bancário"]]
+];
+var AUT_GEN = ["Requerimento inicial", "Parecer técnico da unidade", "Nota de empenho", "Documento comprobatório", "Relatório de execução", "Anexos fotográficos"];
+function autosDe(d) {
+  var ctx = d.titulo + " " + d.pares.map(function (p) { return p[0] + " " + p[1]; }).join(" ");
+  var docs = AUT_GEN, pega = function (txt) { return AUT_TIPOS.some(function (k) { if (k[0].test(txt)) { docs = k[1]; return true; } return false; }); };
+  pega(d.titulo + " " + nome(atual)) || pega(ctx);
+  var h = hashS(d.titulo), num = "2026/" + String(1000 + h % 9000) + "-" + String(h % 97).padStart(2, "0"), dia = 3 + h % 20;
+  var sec = (d.pares.filter(function (p) { return /secretaria|órgão|unidade/i.test(p[0]); })[0] || [])[1] || (ehPref() ? "Gabinete do Prefeito" : nomeSec(PERFIL));
+  var nDesp = DSP.itens.filter(function (x) { return x.origem === d.titulo; }).length;
+  var dd = function (n) { return String(Math.min(28, n)).padStart(2, "0") + "/09/2026"; };
+  return { num: num, sec: sec, nDesp: nDesp, itens: [
+    { t: "Autuação e capa do processo", k: "Capa", d: dd(dia), tipo: "capa" },
+    { t: docs[0], k: "Documento", d: dd(dia + 1), tipo: "doc" },
+    { t: "Ficha do registro no NotPaper", k: "Registro", d: POS_TXT, tipo: "ficha" },
+    { t: docs[1], k: "Documento", d: dd(dia + 4), tipo: "doc" },
+    { t: docs[2], k: "Documento", d: dd(dia + 9), tipo: "doc" },
+    { t: "Parecer técnico de conferência", k: "Parecer", d: "14/10/2026", tipo: "parecer" },
+    { t: "Despachos do gestor", k: "Despacho", d: nDesp ? nDesp + " emitido(s)" : "nenhum emitido ainda", tipo: "desp" },
+    { t: docs[3], k: "Anexo", d: "PDF · 2 fl.", tipo: "anexo" },
+    { t: docs[4], k: "Anexo", d: "PDF · 1 fl.", tipo: "anexo" },
+    { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }] };
+}
+function papelHtml(d, A, i) {
+  var it = A.itens[i], fl = String(i + 1).padStart(2, "0"), cod = hashS(A.num + i).toString(16).toUpperCase().padStart(8, "0");
+  var kv = function (ps) { return "<dl>" + ps.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>"; };
+  var c;
+  if (it.tipo === "capa") c = kv([["Assunto", d.titulo], ["Interessado", A.sec], ["Autuação", it.d], ["Classificação", "Processo administrativo eletrônico"], ["Situação", "Em instrução"]]);
+  else if (it.tipo === "ficha") c = "<p>Extrato dos dados do painel na posição de " + esc(POS_TXT) + ":</p>" + kv(d.pares.slice(0, 14));
+  else if (it.tipo === "parecer") c = "<p>Conferidos os documentos das fls. 02 a 05, verificou-se a correspondência entre o registro do painel e os documentos de origem.</p><p>Opina-se pelo prosseguimento, com acompanhamento dos pontos de atenção pelo responsável da unidade.</p>";
+  else if (it.tipo === "desp") c = A.nDesp ? "<p>Há " + A.nDesp + " despacho(s) do gestor vinculados a este item.</p><p><button type=\"button\" class=\"btn\" data-au=\"lista\">Abrir os despachos</button></p>" : "<p>Nenhum despacho foi emitido para este item.</p><p><button type=\"button\" class=\"btn pri\" data-au=\"novo\">Emitir despacho</button></p>";
+  else if (it.tipo === "anexo") c = '<div class="anexo"><span aria-hidden="true">' + (/foto|imagem/i.test(it.t + it.d) ? "▦▦<br>▦▦" : /planilha|csv|xlsx/i.test(it.t + it.d) ? "▤" : "▭") + "</span><p>" + esc(it.t) + "<br><small>" + esc(it.d) + " · arquivo ilustrativo</small></p></div>";
+  else c = "<p>Documento integrante dos autos referente a <b>" + esc(d.titulo) + "</b>.</p>" + kv(d.pares.slice(0, 5)) + '<p class="linhas" aria-hidden="true"><i></i><i></i><i></i><i style="width:62%"></i></p>';
+  var ass = it.tipo === "desp" || it.tipo === "anexo" ? "" : '<div class="ass"><span>Assinado eletronicamente em ' + esc(/\d\d\/\d\d\/\d{4}/.test(it.d) ? it.d : POS_TXT) + "</span><code>Código verificador " + cod + "</code></div>";
+  return '<div class="ph"><span class="brasao" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><b>Prefeitura de ' + esc(MUN.nome) + " (fictícia)</b><small>" + esc(A.sec) + '</small></div><span class="pfl">fl. ' + fl + "</span></div>" +
+    '<p class="proc">Processo nº ' + A.num + " · " + esc(d.titulo) + "</p><h4>" + esc(it.t) + "</h4>" + c + ass + '<div class="marca" aria-hidden="true">SIMULAÇÃO</div>';
+}
+function autosHtml(d) {
+  var A = autosDe(d);
+  return '<section class="autos" id="autos" aria-label="Documentos do processo"><div class="autos-h"><span class="eye">Processo administrativo · simulação</span><strong>Autos nº ' + A.num + "</strong><small>" + esc(A.sec) + " · " + A.itens.length + " peças · documentos fictícios</small></div>" +
+    '<ol class="autos-l">' + A.itens.map(function (it, i) { return '<li><button type="button" data-fl="' + i + '" aria-pressed="' + (i === 2) + '"><span class="fl">fl. ' + String(i + 1).padStart(2, "0") + "</span><span><b>" + esc(it.t) + '</b><small><em class="k-' + it.tipo + '">' + it.k + "</em>" + esc(it.d) + "</small></span></button></li>"; }).join("") + "</ol>" +
+    '<div class="autos-bar"><span class="nm" id="auNm"></span><button type="button" data-au="-" aria-label="Diminuir">−</button><button type="button" data-au="+" aria-label="Aumentar">+</button><button type="button" data-au="ant" aria-label="Folha anterior">‹</button><button type="button" data-au="prox" aria-label="Próxima folha">›</button><button type="button" data-au="ampliar">⤢ Ampliar</button></div>' +
+    '<div class="autos-st"><article class="papel" id="auPapel"></article></div></section>';
+}
+function autosLigar(d) {
+  var box = document.getElementById("autos"); if (!box) return;
+  var A = autosDe(d), cur = 2, zoom = 1;
+  function mostra() { var pp = document.getElementById("auPapel"); pp.innerHTML = papelHtml(d, A, cur); pp.style.setProperty("--zoom", zoom);
+    document.getElementById("auNm").textContent = "fl. " + String(cur + 1).padStart(2, "0") + " de " + A.itens.length + " · " + A.itens[cur].t;
+    box.querySelectorAll("[data-fl]").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.fl === cur)); }); }
+  function acao(a, raiz) {
+    if (a === "ant") cur = (cur + A.itens.length - 1) % A.itens.length; else if (a === "prox") cur = (cur + 1) % A.itens.length;
+    else if (a === "+") zoom = Math.min(1.4, zoom + .1); else if (a === "-") zoom = Math.max(.8, zoom - .1);
+    else if (a === "ampliar") { ampliarAutos(d, A, cur, function (c) { cur = c; mostra(); }); return; }
+    else if (a === "novo") { var b = document.getElementById("dDesp"); fecharAmplia(); if (b) b.click(); return; }
+    else if (a === "lista") { fecharAmplia(); abrirDespachos(); return; }
+    mostra(); if (raiz) raiz();
+  }
+  box.addEventListener("click", function (e) { var b = e.target.closest("button");
+    if (!b) { if (e.target.closest(".papel")) acao("ampliar"); return; }
+    if (b.dataset.fl != null) { if (+b.dataset.fl === cur) acao("ampliar"); else { cur = +b.dataset.fl; mostra(); } return; }
+    if (b.dataset.au) acao(b.dataset.au); });
+  mostra();
+}
+function fecharAmplia() { var o = document.getElementById("amplia"); if (o) o.remove(); document.removeEventListener("keydown", teclaAmplia, true); }
+var teclaAmplia = function () {};
+function ampliarAutos(d, A, cur, volta) {
+  fecharAmplia(); var o = document.createElement("div"); o.className = "amplia"; o.id = "amplia"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true");
+  o.innerHTML = '<div class="autos-bar"><span class="nm" id="amNm"></span><button type="button" data-am="ant" aria-label="Folha anterior">‹</button><button type="button" data-am="prox" aria-label="Próxima folha">›</button><button type="button" data-am="x" aria-label="Fechar">× Fechar</button></div><div class="autos-st"><article class="papel" id="amPapel" style="--zoom:1.15"></article></div>';
+  document.body.appendChild(o);
+  function mostra() { document.getElementById("amPapel").innerHTML = papelHtml(d, A, cur); document.getElementById("amNm").textContent = "Autos nº " + A.num + " · fl. " + String(cur + 1).padStart(2, "0") + " de " + A.itens.length + " · " + A.itens[cur].t; volta(cur); }
+  function passo(n) { cur = (cur + n + A.itens.length) % A.itens.length; mostra(); }
+  o.addEventListener("click", function (e) { var b = e.target.closest("button"); if (!b) { if (e.target === o) fecharAmplia(); return; }
+    if (b.dataset.am === "x") fecharAmplia(); else if (b.dataset.am === "ant") passo(-1); else if (b.dataset.am === "prox") passo(1);
+    else if (b.dataset.au === "novo") { fecharAmplia(); var dd = document.getElementById("dDesp"); if (dd) dd.click(); } else if (b.dataset.au === "lista") { fecharAmplia(); abrirDespachos(); } });
+  teclaAmplia = function (e) { if (e.key === "Escape") { e.stopPropagation(); fecharAmplia(); } else if (e.key === "ArrowRight") passo(1); else if (e.key === "ArrowLeft") passo(-1); };
+  document.addEventListener("keydown", teclaAmplia, true);
+  mostra(); o.querySelector('[data-am="x"]').focus();
 }
 
 /* ---------- Despachos: a sugestão preenche, o gestor revisa e emite ---------- */
