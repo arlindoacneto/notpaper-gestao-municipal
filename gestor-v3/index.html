@@ -295,9 +295,15 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .m-pin { fill: var(--bad); stroke: #fff; stroke-width: 2.5; }
 .m-pin-h { fill: var(--bad); fill-opacity: .18; }
 .m-viz { fill: #8A94A8; stroke: #fff; stroke-width: 1.5; }
+.local-procs { grid-column: 1 / -1; border-top: 1px solid var(--line); padding: 12px 16px 14px; }
+.local-procs h4 { margin: 0 0 8px; font: 600 15px var(--f-display); display: flex; gap: 8px; align-items: center; }
+.local-procs h4 span { font: 700 12px var(--f-body); background: var(--accent); color: #fff; border-radius: 10px; padding: 1px 8px; }
+.local-procs table { font-size: 13.5px; }
+.local-procs td:nth-child(2) { white-space: nowrap; }
 @media (max-width: 560px) { .local { grid-template-columns: 1fr; } .local-map { border-left: 0; border-top: 1px solid var(--line); } }
 .tram { margin-top: 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); padding: 14px 16px; }
 .tram h3 { margin: 4px 0 4px; font: 600 17px/1.3 var(--f-display); }
+.tram h3 .cont { font: 700 12px var(--f-body); background: var(--accent); color: #fff; border-radius: 10px; padding: 1px 8px; vertical-align: 2px; }
 .tram .sit { font-size: 13.5px; color: var(--muted); margin: 0 0 10px; }
 .tram ol { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 2px solid var(--line); }
 .tram li { position: relative; padding: 0 0 14px 10px; }
@@ -345,7 +351,7 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .autos-l b { display: block; font-weight: 600; font-size: 14px; }
 .autos-l small { font-size: 12px; color: var(--muted); }
 .autos-l em { font-style: normal; font: 700 10.5px var(--f-body); letter-spacing: .5px; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; margin-right: 8px; background: #13213C; color: #fff; }
-.autos-l em.k-ficha { background: #9A6A10; } .autos-l em.k-parecer { background: #1D6B55; } .autos-l em.k-desp { background: #1D5FD1; } .autos-l em.k-anexo { background: #5B6475; }
+.autos-l em.k-ficha { background: #9A6A10; } .autos-l em.k-parecer { background: #1D6B55; } .autos-l em.k-desp { background: #1D5FD1; } .autos-l em.k-anexo { background: #5B6475; } .autos-l em.k-juntado { background: #1D6B55; } .autos-l em.k-resposta { background: #1D5FD1; }
 .autos-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #13213C; color: #fff; font-size: 13px; }
 .autos-bar .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .autos-bar button { min-height: 34px; min-width: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.35); background: transparent; color: #fff; font-weight: 600; }
@@ -1087,7 +1093,7 @@ SOL.ZU = function () {
 };
 function detZ(ls, t) { var por = ZTIP.map(function (x) { return { tipo: x[0], prazo: x[1] + " dias", n: ls.filter(function (z) { return z.tipo === x[0]; }).length }; }).filter(function (x) { return x.n; });
   return { titulo: t, lead: nf(ls.length) + " pedidos. Toque num tipo para ver os pedidos.", cols: [{ t: "Tipo", k: "tipo" }, { t: "Prazo padrão", k: "prazo" }, { t: "Pedidos", k: "n", n: 1, f: nf }], linhas: por, total: { n: ls.length },
-    onRow: function (x) { var sub = ls.filter(function (z) { return z.tipo === x.tipo; }).slice(0, 60); return { titulo: x.tipo + " (" + nf(x.n) + ")", lead: x.n > 60 ? "Mostrando os 60 mais antigos." : "", cols: [{ t: "Pedido", k: "id" }, { t: "Bairro", k: "bairro" }, { t: "Rua", k: "rua" }, { t: "Aberto em", k: function (z) { return fdata(z.ab); } }, { t: "Dias", k: "idade", n: 1 }], linhas: sub.sort(function (a, b) { return a.ab - b.ab; }) }; } }; }
+    onRow: function (x) { var sub = ls.filter(function (z) { return z.tipo === x.tipo; }).slice(0, 60); return { titulo: x.tipo + " (" + nf(x.n) + ")", lead: x.n > 60 ? "Mostrando os 60 mais antigos." : "", cols: [{ t: "Pedido", k: "id" }, { t: "Bairro", k: "bairro" }, { t: "Rua", k: "rua" }, { t: "Aberto em", k: function (z) { return fdata(z.ab); } }, { t: "Dias", k: "idade", n: 1 }], linhas: sub.sort(function (a, b) { return a.ab - b.ab; }), onRow: function (z) { return fichaPedidoZ(z); } }; } }; }
 
 function llSec() {
   var s = minhaSec(), ruins = LIM.filter(function (l) { return l.nivel !== "ok"; });
@@ -1549,7 +1555,8 @@ function desenhaDet() {
   if (d.ficha && d.semDespachar) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd style=\"white-space:pre-wrap\">" + esc(p[1]) + "</dd>"; }).join("") + "</dl>";
   else if (d.ficha) corpo = '<dl class="kv">' + d.pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>" + (d.conta ? '<p class="note">Como fecha: ' + esc(d.conta) + "</p>" : "") + '<div class="resp" style="margin-top:18px"><div class="ra">' + (d.links || []).map(function (k, i) { return '<button class="mini" data-lk="' + i + '">' + esc(k.t) + " ›</button>"; }).join("") + '<button class="mini" id="dDesp">Despachar</button><button class="mini" id="dIA">Perguntar à IA sobre isto</button></div></div>';
   else { corpo = (d.lead ? '<p class="lead">' + esc(d.lead) + "</p>" : "") + tabela(d.cols, d.linhas, d.total, d.onRow) + (d.extra ? '<h3 style="margin:22px 0 8px;font:600 16px var(--f-display)">' + esc(d.extra.titulo) + "</h3>" + tabela(d.extra.cols, d.extra.linhas, d.extra.total) : ""); }
-  if (d.ficha && !d.semDespachar) corpo += localHtml(d) + autosHtml(d) + tramHtml(d);
+  var ehEquip = d.ficha && d.pares && d.pares[0] && d.pares[0][0] === "Equipamento";
+  if (d.ficha && !d.semDespachar) corpo += localHtml(d) + (ehEquip ? "" : autosHtml(d) + dspProcHtml(d) + tramHtml(d));
   if (d.desp) corpo += fluxoHtml(d.desp);
   layer.innerHTML = '<div class="scrim" id="scrim"></div><aside class="drawer" role="dialog" aria-modal="true" aria-label="' + esc(d.titulo) + '"><header><div>' + path + "<h2>" + esc(d.titulo) + '</h2></div><button class="x" id="dX" aria-label="Fechar">×</button></header><div class="body">' + corpo + "</div></aside>";
   document.getElementById("scrim").onclick = fecharTudo; document.getElementById("dX").onclick = fecharTudo;
@@ -1559,27 +1566,26 @@ function desenhaDet() {
   var dd = document.getElementById("dDesp"); if (dd) dd.onclick = function () { var sx = (d.pares.filter(function (p) { return /secretaria/i.test(p[0]); })[0] || [])[1] || "";
     abrirDespacho({ providencia: "Analisar e dar andamento: " + d.titulo, resp: sx, prazo: "10 dias", contexto: d.pares.slice(0, 6).map(function (p) { return p[0] + ": " + p[1]; }).join("; ") + ".", lei: "", origem: d.titulo, fonte: "Ficha do item no Gestor", dados: d.pares.map(function (p) { return [p[0], p[1], ""]; }).concat(d.conta ? [["Como o valor fecha", d.conta, ""]] : []) }); };
   var di = document.getElementById("dIA"); if (di) di.onclick = function () { abrirIA("livre", "Analise: " + d.titulo + ". " + d.pares.map(function (p) { return p[0] + ": " + p[1]; }).join("; ")); };
-  if (d.ficha && !d.semDespachar) { localLigar(d); autosLigar(d); tramLigar(d); }
+  if (d.ficha && !d.semDespachar) { localLigar(d); autosLigar(d); dspProcLigar(d); tramLigar(d); }
   if (d.desp) fluxoLigar(d.desp);
   document.getElementById("dX").focus();
 }
 
 /* ---------- Localização na ficha (recuperado da v2.6) ---------- */
-var RUAS = ["Rua das Acácias", "Rua XV de Novembro", "Av. Central", "Rua Sete de Setembro", "Rua dos Ipês", "Av. Brasil", "Rua Tiradentes", "Rua Santos Dumont", "Rua da Matriz", "Rua das Palmeiras"];
 function localDe(d) {
   var t = d.titulo, ps = {}; d.pares.forEach(function (p) { ps[p[0]] = p[1]; });
   var h = hashS(t), dentroDe = function (txt, alvo) { return txt === alvo || (alvo.length > 6 && txt.indexOf(alvo) >= 0); };
   var e = EQ.filter(function (x) { return x.nome === t || x.id === ps["Equipamento"]; })[0];
-  if (e) return { x: e.x, y: e.y, nome: e.nome, end: e.end, bairro: e.bairro, foco: "eq:" + e.id, tipo: "Equipamento" };
+  if (e) return { x: e.x, y: e.y, nome: e.nome, end: e.end, bairro: e.bairro, foco: "eq:" + e.id, tipo: e.nome === t ? "Equipamento" : "Local do processo", eq: e };
   var o = OB.filter(function (x) { return x.mapa && dentroDe(t, x.nome); })[0];
-  if (o) return { x: o.mapa[0], y: o.mapa[1], nome: o.nome, bairro: o.bairro || bairroDe(o.mapa[0], o.mapa[1]), foco: "ob:" + o.id, tipo: "Local da obra" };
+  if (o) return { x: o.mapa[0], y: o.mapa[1], nome: o.nome, bairro: o.bairro || bairroDe(o.mapa[0], o.mapa[1]), foco: "ob:" + o.id, tipo: "Local da obra", ob: o };
   var l = LIC.filter(function (x) { return x.mapa && (dentroDe(t, x.objeto) || ps["Processo"] === x.id); })[0];
-  if (l) return { x: l.mapa.x, y: l.mapa.y, nome: l.objeto, bairro: l.mapa.bairro, foco: "lc:" + l.id, tipo: "Local da contratação" };
+  if (l) return { x: l.mapa.x, y: l.mapa.y, nome: l.objeto, bairro: l.mapa.bairro, foco: "lc:" + l.id, tipo: "Local da contratação", lc: l };
   var b = ps["Bairro"];
   if (b && (BAIRROS[b] || b === "Zona Rural")) { var c = centroDe(b); return { x: c[0] + (h % 40) - 20, y: c[1] + ((h >> 6) % 30) - 15, nome: t, bairro: b, foco: null, tipo: "Local do registro" }; }
   var sv = ps["Secretaria"] || ps["Secretaria responsável"] || ps["Órgão"] || "";
   var sede = EQ.filter(function (x) { return x.grupo === "adm" && sv && nomeSec(x.sec) === sv; })[0] || EQN["EQ-22"];
-  return { x: sede.x, y: sede.y, nome: sede.nome, end: sede.end, bairro: sede.bairro, foco: "eq:" + sede.id, tipo: "Local da unidade" };
+  return { x: sede.x, y: sede.y, nome: sede.nome, end: sede.end, bairro: sede.bairro, foco: "eq:" + sede.id, tipo: "Local da unidade", eq: sede };
 }
 function miniMapa(L) {
   var w = 520, hh = 330, x0 = Math.max(0, Math.min(1000 - w, L.x - w / 2)), y0 = Math.max(0, Math.min(640 - hh, L.y - hh / 2));
@@ -1592,11 +1598,52 @@ function miniMapa(L) {
   g += '<circle cx="' + L.x + '" cy="' + L.y + '" r="18" class="m-pin-h"/><path d="M' + L.x + "," + L.y + " c-9,-12 -12,-17 -12,-23 a12,12 0 1,1 24,0 c0,6 -3,11 -12,23z" + '" class="m-pin"/><circle cx="' + L.x + '" cy="' + (L.y - 23) + '" r="4.5" fill="#fff"/>';
   return g + "</svg>";
 }
+/* ---------- Processos neste local: todos os processos de uma mesma posição ---------- */
+var PROC_EQ = {
+  todos: [["Manutenção predial preventiva", "Obras e reparos"], ["Vistoria do Corpo de Bombeiros (AVCB)", "Licenciamento"]],
+  edu: [["Matrículas e lista de espera", "Atendimento"], ["Merenda: entregas e prestação de contas (PNAE)", "Prestação de contas"]],
+  sau: [["Abastecimento de medicamentos e insumos", "Compras"], ["Escala de profissionais e atendimentos", "Gestão de pessoas"]],
+  ass: [["Concessão de benefícios eventuais", "Atendimento"]], seg: [["Ocorrências e rondas da unidade", "Segurança"]],
+  cul: [["Programação e uso do espaço", "Agenda"]], adm: [["Contrato de limpeza e vigilância", "Contratos"]], urb: [["Operação e manutenção de máquinas", "Serviços"]]
+};
+var SIT_P = ["Em instrução", "Aguardando parecer", "Em execução", "Aguardando assinatura", "Concluído"];
+function procsEq(e) {
+  if (!ehPref() && e.sec !== PERFIL) return [];
+  return PROC_EQ.todos.concat(PROC_EQ[e.grupo] || []).map(function (x, i) {
+    var h = hashS(e.id + x[0]), num = "2026/" + String(1000 + h % 9000) + "-" + String(h % 97).padStart(2, "0"), sit = SIT_P[h % SIT_P.length], ab = fdata(new Date(2026, 1 + h % 8, 1 + (h >> 5) % 27));
+    return { tipo: "Processo", num: num, assunto: x[0], sit: sit, sec: e.sec, det: function () { return { ficha: true, titulo: x[0] + " · " + e.nome, pares: [["Processo", num], ["Assunto", x[0]], ["Classe", x[1]], ["Equipamento", e.id], ["Local", e.nome], ["Secretaria", nomeSec(e.sec)], ["Bairro", e.bairro], ["Aberto em", ab], ["Situação", sit]] }; } }; });
+}
+function fichaPedidoZ(z) { return { ficha: true, titulo: "Pedido " + z.id + " · " + z.tipo, pares: [["Pedido", z.id], ["Tipo", z.tipo], ["Rua", z.rua], ["Bairro", z.bairro], ["Aberto em", fdata(z.ab)], ["Prazo padrão", z.prazo + " dias"], ["Situação", z.concl ? "Concluído em " + fdata(z.concl) : "Aberto há " + dias(z.ab, POS) + " dias"]] }; }
+function procsLocal(d, L) {
+  var ls = [], vistos = {}, add = function (x) { var k = x.num + "|" + x.assunto; if (!vistos[k] && x.assunto + "" !== "" && x.titulo !== d.titulo) { vistos[k] = 1; ls.push(x); } };
+  var perto = function (x, y) { return Math.abs(x - L.x) <= 35 && Math.abs(y - L.y) <= 35; };
+  var deOB = function (o) { return { tipo: "Obra", num: o.id, assunto: o.nome, sit: o.sit, titulo: o.nome, det: function () { return fichaOB(o); } }; };
+  var deLC = function (l) { return { tipo: "Contratação", num: l.id, assunto: l.objeto, sit: l.fase, titulo: l.objeto, det: function () { return fichaLic(l); } }; };
+  var deCT = function (c) { return { tipo: "Contrato", num: c.id, assunto: c.objeto, sit: c.diasFim < 0 ? "Vencido" : "Vigente até " + fdata(c.fim), titulo: c.objeto + "#ct", det: function () { return fichaCT(c); } }; };
+  var ctDe = function (nome, lic) { return CT.filter(function (c) { return (lic && c.id === lic.ct) || c.objeto === nome; }); };
+  if (L.eq) { var e = L.eq;
+    if (/^ob:/.test(e.liga)) OB.filter(function (o) { return o.nome === e.liga.slice(3); }).forEach(function (o) { add(deOB(o)); ctDe(o.nome).forEach(function (c) { add(deCT(c)); }); });
+    if (/^lc:/.test(e.liga)) LIC.filter(function (l) { return l.objeto === e.liga.slice(3); }).forEach(function (l) { add(deLC(l)); ctDe(l.objeto, l).forEach(function (c) { add(deCT(c)); }); });
+    procsEq(e).forEach(function (x) { x.titulo = x.det().titulo; add(x); }); }
+  if (L.ob) ctDe(L.ob.nome).forEach(function (c) { add(deCT(c)); });
+  if (L.lc) ctDe(L.lc.objeto, L.lc).forEach(function (c) { add(deCT(c)); });
+  OB.filter(function (o) { return o.mapa && perto(o.mapa[0], o.mapa[1]); }).forEach(function (o) { add(deOB(o)); });
+  LIC.filter(function (l) { return l.mapa && perto(l.mapa.x, l.mapa.y); }).forEach(function (l) { add(deLC(l)); });
+  var rua = (L.end || "").split(",")[0], zs = ZAB.filter(function (z) { return z.rua === rua && z.bairro === L.bairro; }).sort(function (a, b) { return a.ab - b.ab; });
+  zs.slice(0, 5).forEach(function (z) { add({ tipo: "Zeladoria", num: z.id, assunto: z.tipo + " · " + z.rua, sit: "Aberto há " + dias(z.ab, POS) + " dias", titulo: "Pedido " + z.id + " · " + z.tipo, det: function () { return fichaPedidoZ(z); } }); });
+  if (zs.length > 5) add({ tipo: "Zeladoria", num: "+" + (zs.length - 5), assunto: "Outros pedidos abertos em " + rua, sit: qt(zs.length, "pedido", "pedidos") + " no total", titulo: "", det: function () { return detZ(zs, "Pedidos abertos em " + rua + " (" + L.bairro + ")"); } });
+  return ls;
+}
 function localHtml(d) {
-  var L = localDe(d), h = hashS(L.nome), end = L.end || RUAS[h % RUAS.length] + ", " + (20 + h % 880);
-  return '<section class="local" id="local" aria-label="Localização"><div class="local-tx"><span class="eye">Localização · ' + esc(L.tipo) + "</span><strong>" + esc(L.nome) + "</strong><dl><dt>Endereço</dt><dd>" + esc(end) + " (fictício)</dd><dt>Bairro</dt><dd>" + esc(L.bairro) + "</dd><dt>Região</dt><dd>" + (L.bairro === "Zona Rural" ? "Zona rural" : "Zona urbana") + '</dd></dl><button type="button" class="mini" id="locVer">Ver no mapa</button></div><div class="local-map">' + miniMapa(L) + "</div></section>";
+  var L = localDe(d), h = hashS(L.nome), end = L.end || RUAS[h % RUAS.length] + ", " + (20 + h % 880); L.end = end;
+  var ps = procsLocal(d, L), eqF = d.pares[0] && d.pares[0][0] === "Equipamento";
+  return '<section class="local" id="local" aria-label="Localização"><div class="local-tx"><span class="eye">Localização · ' + esc(L.tipo) + "</span><strong>" + esc(L.nome) + "</strong><dl><dt>Endereço</dt><dd>" + esc(end) + " (fictício)</dd><dt>Bairro</dt><dd>" + esc(L.bairro) + "</dd><dt>Região</dt><dd>" + (L.bairro === "Zona Rural" ? "Zona rural" : "Zona urbana") + '</dd></dl><button type="button" class="mini" id="locVer">Ver no mapa</button></div><div class="local-map">' + miniMapa(L) + "</div>" +
+    '<div class="local-procs"><h4>' + (eqF ? "Processos deste equipamento" : "Processos neste local") + " <span>" + ps.length + "</span></h4>" +
+    (ps.length ? '<div class="tbl-w"><table><thead><tr><th>Tipo</th><th>Nº</th><th>Assunto</th><th>Situação</th></tr></thead><tbody>' + ps.map(function (x, i) { return '<tr class="click" data-pl="' + i + '" tabindex="0"><td>' + esc(x.tipo) + "</td><td>" + esc(x.num) + "</td><td>" + esc(x.assunto) + "</td><td>" + esc(x.sit) + "</td></tr>"; }).join("") + "</tbody></table></div><p class=\"note\">Toque num processo para abrir a ficha com os documentos e a tramitação.</p>" : '<p class="note">' + (eqF ? "Nenhum processo deste equipamento visível neste perfil." : "Nenhum outro processo nesta posição.") + "</p>") + "</div></section>";
 }
 function localLigar(d) { var b = document.getElementById("locVer"); if (!b) return; var L = localDe(d);
+  var ps = procsLocal(d, (function () { var Q = localDe(d); Q.end = Q.end || RUAS[hashS(Q.nome) % RUAS.length] + ", " + (20 + hashS(Q.nome) % 880); return Q; })());
+  document.querySelectorAll("#local [data-pl]").forEach(function (tr) { tr.onclick = function () { abrir(ps[+tr.dataset.pl].det()); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
   b.onclick = function () { MAPA.foco = L.foco; if (atual === "MP") { fecharTudo(); renderSol("MP"); } else go("MP"); }; }
 
 /* ---------- Trilha de tramitação (recuperado da v2.6) ---------- */
@@ -1631,6 +1678,15 @@ function tramInner(d) {
     '<form id="trmF"><label for="trmT">Registrar interação ou responder ao gestor</label><select id="trmT"><option value="interacao">Interação ou andamento</option>' + (dps.length ? dps.map(function (x) { return '<option value="r:' + esc(x.id) + '">Responder ao despacho ' + esc(x.id) + "</option>"; }).join("") : "") + '<option value="anexo">Juntar anexo (nome do documento)</option></select>' +
     '<textarea id="trmX" placeholder="Ex.: Vistoria feita em 05/11; aguardando orçamento da empresa."></textarea><div><button type="submit" class="btn pri">Registrar</button></div></form>';
 }
+function dspProcHtml(d) {
+  var ls = DSP.itens.filter(function (x) { return x.origem === d.titulo; }), hoje = isoD(hojeD());
+  return '<section class="tram" id="dspProc" aria-label="Despachos deste processo"><span class="eye">Despachos</span><h3>Despachos deste processo <span class="cont">' + ls.length + "</span></h3>" +
+    (ls.length ? '<div class="tbl-w"><table><thead><tr><th>Nº</th><th>Assunto</th><th>Para</th><th>Prazo</th><th>Etapa</th></tr></thead><tbody>' + ls.map(function (x, k) {
+      return '<tr class="click" data-dp="' + k + '" tabindex="0"><td>' + esc(x.id) + "</td><td>" + esc(x.assunto) + "</td><td>" + esc(x.destNome) + "</td><td>" + esc(brD(x.prazo)) + (x.prazo < hoje && etapaIdx(x) < 4 ? " " + chip("bad", "Vencido") : "") + "</td><td>" + esc(ETAPAS[etapaIdx(x)][1]) + "</td></tr>"; }).join("") + "</tbody></table></div><p class=\"note\">Toque num despacho para ver o fluxo, o histórico e avançar a etapa.</p>"
+      : '<p class="note">Nenhum despacho emitido para este processo. Use “Despachar” acima.</p>') + "</section>";
+}
+function dspProcLigar(d) { var ls = DSP.itens.filter(function (x) { return x.origem === d.titulo; });
+  document.querySelectorAll("#dspProc [data-dp]").forEach(function (tr) { tr.onclick = function () { abrir(fichaDesp(ls[+tr.dataset.dp])); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; }); }
 function tramHtml(d) { return '<section class="tram" id="tram" aria-label="Tramitação">' + tramInner(d) + "</section>"; }
 function tramLigar(d) {
   var box = document.getElementById("tram"); if (!box) return;
@@ -1639,9 +1695,12 @@ function tramLigar(d) {
     var r = { id: "TR-" + Date.now().toString(36), origem: d.titulo, quando: new Date().toISOString(), quem: PERFIL, quemNome: nomeQuem(PERFIL), tipo: tp === "anexo" ? "anexo" : /^r:/.test(tp) ? "resposta" : "interacao", texto: tx, despacho: /^r:/.test(tp) ? tp.slice(2) : "" };
     TRM.itens.push(r); trmSalvar();
     if (r.despacho) { var dp = DSP.itens.filter(function (x) { return x.id === r.despacho; })[0]; if (dp) moverDesp(dp, 3, "respondido na tramitação"); }
+    var au = document.getElementById("autos"); if (au && r.tipo !== "interacao") { au.outerHTML = autosHtml(d); autosLigar(d); }
+    var dpx = document.getElementById("dspProc"); if (dpx && r.despacho) { dpx.outerHTML = dspProcHtml(d); dspProcLigar(d); }
     box.innerHTML = tramInner(d); toast(r.tipo === "resposta" ? "Resposta registrada: o despacho foi para “Respondido”." : "Registrado na tramitação."); };
 }
 
+function fichaDesp(d) { return { ficha: true, desp: d, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["Etapa", ETAPAS[etapaIdx(d)][1]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }; }
 /* ---------- Quadro (kanban) e fluxo do despacho (recuperado da v2.6) ---------- */
 var DSPV = { modo: "lista" };
 function quadroHtml(ls) {
@@ -1695,7 +1754,8 @@ function autosDe(d) {
     { t: "Despachos do gestor", k: "Despacho", d: nDesp ? nDesp + " emitido(s)" : "nenhum emitido ainda", tipo: "desp" },
     { t: docs[3], k: "Anexo", d: "PDF · 2 fl.", tipo: "anexo" },
     { t: docs[4], k: "Anexo", d: "PDF · 1 fl.", tipo: "anexo" },
-    { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }] };
+    { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }].concat(TRM.itens.filter(function (r) { return r.origem === d.titulo && r.tipo !== "interacao"; }).map(function (r) {
+      return { t: r.tipo === "anexo" ? r.texto : "Resposta ao despacho " + r.despacho, k: r.tipo === "anexo" ? "Anexo juntado" : "Resposta", d: fdata(new Date(r.quando)), tipo: r.tipo === "anexo" ? "juntado" : "resposta", r: r }; })) };
 }
 function papelHtml(d, A, i) {
   var it = A.itens[i], fl = String(i + 1).padStart(2, "0"), cod = hashS(A.num + i).toString(16).toUpperCase().padStart(8, "0");
@@ -1705,6 +1765,8 @@ function papelHtml(d, A, i) {
   else if (it.tipo === "ficha") c = "<p>Extrato dos dados do painel na posição de " + esc(POS_TXT) + ":</p>" + kv(d.pares.slice(0, 14));
   else if (it.tipo === "parecer") c = "<p>Conferidos os documentos das fls. 02 a 05, verificou-se a correspondência entre o registro do painel e os documentos de origem.</p><p>Opina-se pelo prosseguimento, com acompanhamento dos pontos de atenção pelo responsável da unidade.</p>";
   else if (it.tipo === "desp") c = A.nDesp ? "<p>Há " + A.nDesp + " despacho(s) do gestor vinculados a este item.</p><p><button type=\"button\" class=\"btn\" data-au=\"lista\">Abrir os despachos</button></p>" : "<p>Nenhum despacho foi emitido para este item.</p><p><button type=\"button\" class=\"btn pri\" data-au=\"novo\">Emitir despacho</button></p>";
+  else if (it.tipo === "juntado") c = '<div class="anexo"><span aria-hidden="true">▭</span><p>' + esc(it.t) + "<br><small>Juntado por " + esc(it.r.quemNome) + " em " + esc(it.d) + " · registro da tramitação</small></p></div>";
+  else if (it.tipo === "resposta") c = "<p>" + esc(it.r.quemNome) + " responde ao despacho <b>" + esc(it.r.despacho) + "</b>:</p><p style=\"white-space:pre-wrap\">" + esc(it.r.texto) + "</p>";
   else if (it.tipo === "anexo") c = '<div class="anexo"><span aria-hidden="true">' + (/foto|imagem/i.test(it.t + it.d) ? "▦▦<br>▦▦" : /planilha|csv|xlsx/i.test(it.t + it.d) ? "▤" : "▭") + "</span><p>" + esc(it.t) + "<br><small>" + esc(it.d) + " · arquivo ilustrativo</small></p></div>";
   else c = "<p>Documento integrante dos autos referente a <b>" + esc(d.titulo) + "</b>.</p>" + kv(d.pares.slice(0, 5)) + '<p class="linhas" aria-hidden="true"><i></i><i></i><i></i><i style="width:62%"></i></p>';
   var ass = it.tipo === "desp" || it.tipo === "anexo" ? "" : '<div class="ass"><span>Assinado eletronicamente em ' + esc(/\d\d\/\d\d\/\d{4}/.test(it.d) ? it.d : POS_TXT) + "</span><code>Código verificador " + cod + "</code></div>";
@@ -1886,8 +1948,7 @@ function abrirDespachos() {
   layer.querySelectorAll("[data-dv]").forEach(function (b) { b.onclick = function () { DSPV.modo = b.dataset.dv; abrirDespachos(); }; });
   layer.querySelectorAll("[data-kbm]").forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var p = b.dataset.kbm.split(":"), d = ls[+p[0]]; moverDesp(d, etapaIdx(d) + +p[1]); var sc = layer.querySelector(".kb"), x = sc ? sc.scrollLeft : 0; abrirDespachos(); var n = layer.querySelector(".kb"); if (n) n.scrollLeft = x; toast("Despacho " + d.id + ": " + ETAPAS[etapaIdx(d)][1].toLowerCase() + "."); }; });
   layer.querySelectorAll("[data-kb]").forEach(function (c) { c.onclick = function () { abrirFichaDesp(+c.dataset.kb); }; c.onkeydown = function (ev) { if (ev.key === "Enter") c.onclick(); }; });
-  function abrirFichaDesp(i) { var d = ls[i];
-    abrir({ ficha: true, desp: d, titulo: d.id + " · " + d.assunto, pares: [["Tipo", TIPOS_D[d.tipo][0]], ["Etapa", ETAPAS[etapaIdx(d)][1]], ["De", d.emissorNome], ["Para", d.destNome], ["Prazo final", fdata(deIso(d.prazo))], ["Origem", d.origem], ["Emitido em", fdata(new Date(d.criado)) + " às " + new Date(d.criado).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })], ["Despacho", d.texto], ["Comentário pessoal", d.comentario || "—"], ["Toque do gestor", d.alteracoes && d.alteracoes.length ? "alterou " + d.alteracoes.join(", ") : "confirmou a sugestão sem alterações"]].concat((d.embasamento || []).map(function (e) { return ["Embasamento · " + e.dado, e.valor + (e.comparacao ? " (" + e.comparacao + ")" : "")]; })).concat(d.fonte ? [["Fonte e posição", d.fonte + " · posição " + (d.posicao || POS_TXT)]] : []), semDespachar: true }); }
+  function abrirFichaDesp(i) { abrir(fichaDesp(ls[i])); }
   layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { abrirFichaDesp(+tr.dataset.dsp); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
 }
 
