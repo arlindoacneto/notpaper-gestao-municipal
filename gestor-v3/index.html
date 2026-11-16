@@ -325,6 +325,14 @@ svg.mapa .hit:hover .m-eq, svg.mapa .hit:hover .m-ob, svg.mapa .hit:hover .m-lc 
 .kb { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(190px, 1fr); gap: 10px; overflow-x: auto; padding-bottom: 8px; }
 .kb-col { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px; min-height: 120px; }
 .kb-col h4 { margin: 0 0 8px; font: 700 12px var(--f-body); letter-spacing: .5px; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.transm { position: fixed; inset: 0; z-index: 70; background: rgba(10,16,30,.55); display: flex; align-items: flex-start; justify-content: center; overflow: auto; padding: max(24px, env(safe-area-inset-top, 0px)) 16px 24px; }
+.transm-card { width: min(640px, 100%); background: var(--surface); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.35); padding: 18px 20px 20px; }
+.transm-h { display: flex; gap: 12px; align-items: flex-start; } .transm-h h3 { margin: 4px 0 0; font: 600 18px/1.3 var(--f-display); }
+.transm-h .eye { font: 700 11px var(--f-body); letter-spacing: .8px; text-transform: uppercase; color: var(--accent); }
+.transm-x { margin-left: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 20px; flex: 0 0 auto; }
+.transm-path { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 4px; padding: 10px 12px; border-radius: 12px; background: var(--bg); font-size: 14px; }
+.transm-path i { font-style: normal; color: var(--muted); } .transm-path em { flex-basis: 100%; font-style: normal; color: var(--muted); font-size: 13px; }
+.kb-card.arrastando { opacity: .5; } .kb-col.alvo { outline: 2px dashed var(--accent); outline-offset: -4px; }
 .kb-card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; margin-bottom: 8px; cursor: pointer; }
 .kb-card .n { font-size: 11.5px; color: var(--muted); font-weight: 600; }
 .kb-card .a { font-size: 13.5px; font-weight: 600; margin: 3px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -1655,7 +1663,51 @@ function trmSalvar() { try { localStorage.setItem("np-tramitacao", JSON.stringif
 function deBr(t) { var m = /(\d\d)\/(\d\d)\/(\d{4})/.exec(t || ""); return m ? new Date(+m[3], +m[2] - 1, +m[1], 9) : new Date(2026, 9, 31, 9); }
 var ETAPAS = [["emitido", "Emitido"], ["ciencia", "Ciência"], ["execucao", "Em execução"], ["resposta", "Respondido"], ["concluido", "Concluído"]];
 function etapaIdx(dp) { var e = dp.etapa || "emitido"; for (var i = 0; i < ETAPAS.length; i++) if (ETAPAS[i][0] === e) return i; return 0; }
-function moverDesp(dp, para, nota) { dp.etapa = ETAPAS[para][0]; dp.hist = (dp.hist || []).concat([{ etapa: dp.etapa, quando: new Date().toISOString(), quem: nomeQuem(PERFIL), nota: nota || "" }]); dspSalvar(); renderSide(); }
+function dspPorId(id) { return DSP.itens.filter(function (x) { return x.id === id; })[0] || null; }
+function moverDesp(ref, para, info) {
+  var dp = dspPorId(typeof ref === "string" ? ref : ref.id); if (!dp) return null;
+  info = typeof info === "string" ? { nota: info } : (info || {});
+  var de = dp.etapa || "emitido"; dp.etapa = ETAPAS[para][0];
+  if (info.prazoEtapa) dp.prazoEtapa = info.prazoEtapa; if (info.novoPrazo) dp.prazo = info.novoPrazo; if (info.decisao) dp.decisao = info.decisao;
+  dp.hist = (dp.hist || []).concat([{ etapa: dp.etapa, de: de, quando: new Date().toISOString(), data: info.data || isoD(hojeD()), quem: nomeQuem(PERFIL), nota: info.nota || "", anexos: info.anexos || [], decisao: info.decisao || "", prazoEtapa: info.prazoEtapa || "", novoPrazo: info.novoPrazo || "" }]);
+  dspSalvar(); renderSide(); return dp;
+}
+/* Registro da transição (como na 2.6): todo movimento no quadro ou no fluxo abre este registro */
+function fecharTransicao() { var o = document.getElementById("transm"); if (o) o.remove(); }
+function abrirTransicao(id, para, depois) {
+  var dp = dspPorId(id); if (!dp) return; var de = etapaIdx(dp);
+  if (para < 0 || para > 4 || para === de) return;
+  if (de === 4 && para > de) { toast("Este despacho já está concluído."); return; }
+  var volta = para < de, fim = para === 4, hoje = isoD(hojeD()), alvo = ETAPAS[para][1];
+  var pedeAnexo = !volta && para === 3, isDec = !volta && fim && dp.tipo === "autorizacao", isJust = !volta && para === 3 && dp.tipo === "cobranca";
+  var prazoSug = isoD(new Date(hojeD().getTime() + 3 * 864e5)); if (prazoSug > dp.prazo && dp.prazo >= hoje) prazoSug = dp.prazo;
+  fecharTransicao();
+  var o = document.createElement("div"); o.className = "transm"; o.id = "transm"; o.setAttribute("role", "dialog"); o.setAttribute("aria-modal", "true"); o.setAttribute("aria-label", "Registro da transição");
+  o.innerHTML = '<div class="transm-card"><div class="transm-h"><div><span class="eye">Registro da transição</span><h3>' + esc(dp.id) + " · " + esc(dp.assunto) + '</h3></div><button type="button" class="transm-x" data-tx="x" aria-label="Fechar">×</button></div>' +
+    '<div class="transm-path"><span>' + esc(ETAPAS[de][1]) + "</span><i aria-hidden=\"true\">" + (volta ? "←" : "→") + "</i><span><b>" + esc(alvo) + "</b></span><em>" + esc(volta ? "Devolver para " + alvo + ", para complemento" : fim ? "Concluir o despacho" : "Passar para " + alvo) + "</em></div>" +
+    '<form class="dform" id="trF" novalidate><div class="drow"><label class="df">Data da ação<input type="date" name="data" max="' + hoje + '" value="' + hoje + '" required></label>' +
+    (fim ? "" : '<label class="df">Prazo da etapa “' + esc(alvo) + '”<input type="date" name="prazo" min="' + hoje + '" value="' + prazoSug + '" required></label>') + "</div>" +
+    (isJust ? '<label class="df">Novo prazo final proposto<input type="date" name="novoPrazo" min="' + hoje + '" value="' + isoD(new Date(Math.max(deIso(dp.prazo), hojeD()) + 5 * 864e5)) + '" required></label>' : "") +
+    (isDec ? '<fieldset class="dtipos"><legend>Decisão</legend><label><input type="radio" name="decisao" value="Autorizado"><b>Autorizar</b></label><label><input type="radio" name="decisao" value="Negado"><b>Negar</b></label></fieldset>' : "") +
+    '<label class="df">' + (volta ? "Motivo da devolução e o que falta" : "Histórico da ação: o que foi feito, decidido ou verificado") + '<textarea name="hist" rows="4" maxlength="2000" required></textarea></label>' +
+    '<label class="df">Anexos' + (pedeAnexo ? ' <b style="color:var(--bad)">obrigatório nesta etapa</b>' : " (opcional)") + '<input type="file" name="anexos" multiple></label>' +
+    '<label class="dconf"><input type="checkbox" name="conf" required> Confirmo que as informações e os anexos comprovam esta transição.</label>' +
+    '<p class="derr" id="trErr" role="alert"></p><div class="dacts"><button type="submit" class="btn pri">' + (volta ? "Registrar devolução" : "Registrar e mover") + '</button><button type="button" class="btn" data-tx="x">Cancelar</button></div>' +
+    '<p class="note">O registro entra no histórico do despacho e na tramitação do processo. Nesta demonstração guardamos o nome e o tamanho de cada anexo.</p></form></div>';
+  document.body.appendChild(o);
+  o.addEventListener("click", function (e) { if (e.target === o || (e.target.closest("[data-tx]"))) fecharTransicao(); });
+  o.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); fecharTransicao(); } });
+  var f = document.getElementById("trF"); f.hist.focus();
+  f.querySelectorAll("input[type=date]").forEach(function (inp) { var c = document.createElement("small"); c.className = "note"; c.style.marginTop = "2px"; inp.parentNode.appendChild(c); var up = function () { c.textContent = /^\d{4}-\d{2}-\d{2}$/.test(inp.value) ? brD(inp.value) + " (" + diaSem(inp.value) + ")" : ""; }; inp.addEventListener("input", up); up(); });
+  f.onsubmit = function (ev) { ev.preventDefault(); var er = document.getElementById("trErr"), dec = (f.querySelector("input[name=decisao]:checked") || {}).value;
+    var anx = Array.prototype.map.call(f.anexos.files || [], function (x) { return { nome: x.name, tamanho: x.size, tipo: x.type || "" }; });
+    var falta = !f.data.value || f.data.value > hoje ? "Informe a data da ação (até hoje)." : f.prazo && (!f.prazo.value || f.prazo.value < f.data.value) ? "Informe o prazo da próxima etapa (a partir da data da ação)." :
+      isJust && !f.novoPrazo.value ? "Informe o novo prazo proposto." : isDec && !dec ? "Escolha autorizar ou negar." : !f.hist.value.trim() ? (volta ? "Escreva o motivo da devolução." : "Escreva o histórico da ação.") :
+      pedeAnexo && !anx.length ? "Nesta etapa é obrigatório anexar o documento que comprova a resposta." : !f.conf.checked ? "Marque a confirmação para registrar." : "";
+    if (falta) { er.textContent = falta; return; }
+    moverDesp(id, para, { nota: f.hist.value.trim(), data: f.data.value, prazoEtapa: f.prazo ? f.prazo.value : "", novoPrazo: isJust ? f.novoPrazo.value : "", decisao: dec || "", anexos: anx });
+    fecharTransicao(); toast("Despacho " + id + ": " + alvo.toLowerCase() + ". Registro salvo."); if (depois) depois(); };
+}
 function tramEventos(d) {
   var A = autosDe(d), ev = [
     { q: deBr(A.itens[0].d), o: "Processo autuado · Autos nº " + A.num, x: "Protocolo geral · fl. 01", c: "" },
@@ -1665,7 +1717,7 @@ function tramEventos(d) {
     { q: deBr(POS_TXT), o: "Registro atualizado no NotPaper", x: "Ficha do registro (fl. 03) na posição de " + POS_TXT, c: "" }];
   DSP.itens.filter(function (x) { return x.origem === d.titulo; }).forEach(function (dp) {
     ev.push({ q: new Date(dp.criado), o: "Despacho " + dp.id + " · " + TIPOS_D[dp.tipo][0], x: dp.emissorNome + " → " + dp.destNome + " · prazo " + brD(dp.prazo) + "\n" + dp.texto, c: "t-desp" });
-    (dp.hist || []).forEach(function (hs) { ev.push({ q: new Date(hs.quando), o: "Despacho " + dp.id + ": " + ETAPAS[etapaIdx({ etapa: hs.etapa })][1].toLowerCase(), x: hs.quem + (hs.nota ? " · " + hs.nota : ""), c: "t-desp" }); }); });
+    (dp.hist || []).forEach(function (hs) { ev.push({ q: hs.data ? deIso(hs.data) : new Date(hs.quando), o: "Despacho " + dp.id + ": " + ETAPAS[etapaIdx({ etapa: hs.etapa })][1].toLowerCase(), x: hs.quem + (hs.nota ? " · " + hs.nota : "") + (hs.decisao ? " · decisão: " + hs.decisao : "") + ((hs.anexos || []).length ? "\nAnexos: " + hs.anexos.map(function (a) { return a.nome; }).join(", ") : ""), c: "t-desp" }); }); });
   TRM.itens.filter(function (x) { return x.origem === d.titulo; }).forEach(function (r) {
     ev.push({ q: new Date(r.quando), o: (r.tipo === "resposta" ? "Resposta ao despacho " + r.despacho : r.tipo === "anexo" ? "Juntada de anexo" : "Interação registrada") + " · " + r.quemNome, x: r.texto, c: "t-int" }); });
   ev.sort(function (a, b) { return a.q - b.q; }); if (ev.length) ev[ev.length - 1].c += " t-atual"; return ev;
@@ -1711,14 +1763,14 @@ function quadroHtml(ls) {
         '<div class="mv">' + (ei > 0 ? '<button type="button" data-kbm="' + i + ':-1" aria-label="Voltar etapa">‹ ' + ETAPAS[ei - 1][1] + "</button>" : "") + (ei < 4 ? '<button type="button" data-kbm="' + i + ':1" aria-label="Avançar etapa">' + ETAPAS[ei + 1][1] + " ›</button>" : "") + "</div></div>"; }).join("") + "</div>"; }).join("") + "</div>";
 }
 function fluxoHtml(dp) {
-  var at = etapaIdx(dp);
+  dp = dspPorId(dp.id) || dp; var at = etapaIdx(dp);
   return '<div class="fluxo-box" id="fluxo"><span class="eye" style="font:700 11px var(--f-body);letter-spacing:.8px;text-transform:uppercase;color:var(--accent)">Fluxo do despacho</span><h3>' + esc(TIPOS_D[dp.tipo][0]) + '</h3><p class="note" style="margin-top:2px">' + esc(TIPOS_D[dp.tipo][1]) + "</p>" +
     '<div class="fluxo">' + ETAPAS.map(function (e, i) { return '<span class="' + (i < at ? "feito" : i === at ? "agora" : "") + '">' + e[1] + "</span>"; }).join("") + "</div>" +
-    ((dp.hist || []).length ? '<ul style="margin:0 0 10px;padding-left:18px;font-size:13px">' + dp.hist.map(function (h) { var q = new Date(h.quando); return "<li>" + esc(fdata(q) + " às " + q.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + " · " + ETAPAS[etapaIdx({ etapa: h.etapa })][1] + " · " + h.quem + (h.nota ? " (" + h.nota + ")" : "")) + "</li>"; }).join("") + "</ul>" : "") +
+    ((dp.hist || []).length ? '<ul style="margin:0 0 10px;padding-left:18px;font-size:13px">' + dp.hist.map(function (h) { var q = new Date(h.quando); return "<li><b>" + esc((h.de ? ETAPAS[etapaIdx({ etapa: h.de })][1] + " → " : "") + ETAPAS[etapaIdx({ etapa: h.etapa })][1]) + "</b> · " + esc((h.data ? brD(h.data) : fdata(q)) + " · " + h.quem) + (h.nota ? "<br>" + esc(h.nota) : "") + (h.decisao ? "<br>Decisão: <b>" + esc(h.decisao) + "</b>" : "") + (h.prazoEtapa ? "<br><small>Prazo da etapa: " + esc(brD(h.prazoEtapa)) + "</small>" : "") + (h.novoPrazo ? "<br><small>Novo prazo final: " + esc(brD(h.novoPrazo)) + "</small>" : "") + ((h.anexos || []).length ? "<br><small>Anexos: " + esc(h.anexos.map(function (a) { return a.nome; }).join(", ")) + "</small>" : "") + "</li>"; }).join("") + "</ul>" : "") +
     '<div class="dacts">' + (at > 0 ? '<button type="button" class="btn" data-flx="-1">‹ Voltar para ' + ETAPAS[at - 1][1] + "</button>" : "") + (at < 4 ? ' <button type="button" class="btn pri" data-flx="1">Avançar para ' + ETAPAS[at + 1][1] + " ›</button>" : "") + "</div></div>";
 }
 function fluxoLigar(dp) { var b = document.getElementById("fluxo"); if (!b) return;
-  b.querySelectorAll("[data-flx]").forEach(function (x) { x.onclick = function () { moverDesp(dp, etapaIdx(dp) + +x.dataset.flx); b.outerHTML = fluxoHtml(dp); fluxoLigar(dp); toast("Despacho " + dp.id + ": " + ETAPAS[etapaIdx(dp)][1].toLowerCase() + "."); }; }); }
+  b.querySelectorAll("[data-flx]").forEach(function (x) { x.onclick = function () { var at = dspPorId(dp.id) || dp; abrirTransicao(dp.id, etapaIdx(at) + +x.dataset.flx, function () { var nv = dspPorId(dp.id), bx = document.getElementById("fluxo"); if (nv && bx) { bx.outerHTML = fluxoHtml(nv); fluxoLigar(nv); } }); }; }); }
 
 /* ---------- Autos do processo: documentos de cada registro (recuperado da v2.6) ---------- */
 function hashS(t) { var h = 2166136261; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1754,7 +1806,8 @@ function autosDe(d) {
     { t: "Despachos do gestor", k: "Despacho", d: nDesp ? nDesp + " emitido(s)" : "nenhum emitido ainda", tipo: "desp" },
     { t: docs[3], k: "Anexo", d: "PDF · 2 fl.", tipo: "anexo" },
     { t: docs[4], k: "Anexo", d: "PDF · 1 fl.", tipo: "anexo" },
-    { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }].concat(TRM.itens.filter(function (r) { return r.origem === d.titulo && r.tipo !== "interacao"; }).map(function (r) {
+    { t: docs[5], k: "Anexo", d: /csv|xlsx/.test(docs[5]) ? "Planilha" : "Imagens · 4", tipo: "anexo" }].concat(DSP.itens.filter(function (x) { return x.origem === d.titulo; }).reduce(function (acc, x) { (x.hist || []).forEach(function (h) { (h.anexos || []).forEach(function (a) {
+      acc.push({ t: a.nome, k: "Anexo do despacho", d: h.data ? brD(h.data) : fdata(new Date(h.quando)), tipo: "juntado", r: { quemNome: h.quem + " (despacho " + x.id + ")" } }); }); }); return acc; }, [])).concat(TRM.itens.filter(function (r) { return r.origem === d.titulo && r.tipo !== "interacao"; }).map(function (r) {
       return { t: r.tipo === "anexo" ? r.texto : "Resposta ao despacho " + r.despacho, k: r.tipo === "anexo" ? "Anexo juntado" : "Resposta", d: fdata(new Date(r.quando)), tipo: r.tipo === "anexo" ? "juntado" : "resposta", r: r }; })) };
 }
 function papelHtml(d, A, i) {
@@ -1946,9 +1999,13 @@ function abrirDespachos() {
     if (!lp.dataset.ok) { lp.dataset.ok = "1"; lp.textContent = "Tocar de novo para apagar os " + DSP.itens.length + " despachos"; lp.style.background = "var(--bad)"; lp.style.color = "#fff"; lp.style.borderColor = "var(--bad)"; return; }
     DSP.itens = []; dspSalvar(); renderSide(); toast("Despachos da demonstração apagados."); abrirDespachos(); };
   layer.querySelectorAll("[data-dv]").forEach(function (b) { b.onclick = function () { DSPV.modo = b.dataset.dv; abrirDespachos(); }; });
-  layer.querySelectorAll("[data-kbm]").forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var p = b.dataset.kbm.split(":"), d = ls[+p[0]]; moverDesp(d, etapaIdx(d) + +p[1]); var sc = layer.querySelector(".kb"), x = sc ? sc.scrollLeft : 0; abrirDespachos(); var n = layer.querySelector(".kb"); if (n) n.scrollLeft = x; toast("Despacho " + d.id + ": " + ETAPAS[etapaIdx(d)][1].toLowerCase() + "."); }; });
+  var reabre = function () { var sc = layer.querySelector(".kb"), x = sc ? sc.scrollLeft : 0; abrirDespachos(); var n = layer.querySelector(".kb"); if (n) n.scrollLeft = x; };
+  layer.querySelectorAll("[data-kbm]").forEach(function (b) { b.onclick = function (ev) { ev.stopPropagation(); var p = b.dataset.kbm.split(":"), id = ls[+p[0]].id, d = dspPorId(id); if (d) abrirTransicao(id, etapaIdx(d) + +p[1], reabre); }; });
+  layer.querySelectorAll(".kb-card").forEach(function (c) { c.setAttribute("draggable", "true"); c.addEventListener("dragstart", function (ev) { ev.dataTransfer.setData("text/plain", ls[+c.dataset.kb].id); c.classList.add("arrastando"); }); c.addEventListener("dragend", function () { c.classList.remove("arrastando"); }); });
+  layer.querySelectorAll(".kb-col").forEach(function (col, ci) { col.addEventListener("dragover", function (ev) { ev.preventDefault(); col.classList.add("alvo"); }); col.addEventListener("dragleave", function () { col.classList.remove("alvo"); });
+    col.addEventListener("drop", function (ev) { ev.preventDefault(); col.classList.remove("alvo"); var id = ev.dataTransfer.getData("text/plain"), d = dspPorId(id); if (d && etapaIdx(d) !== ci) abrirTransicao(id, ci, reabre); }); });
   layer.querySelectorAll("[data-kb]").forEach(function (c) { c.onclick = function () { abrirFichaDesp(+c.dataset.kb); }; c.onkeydown = function (ev) { if (ev.key === "Enter") c.onclick(); }; });
-  function abrirFichaDesp(i) { abrir(fichaDesp(ls[i])); }
+  function abrirFichaDesp(i) { abrir(fichaDesp(dspPorId(ls[i].id) || ls[i])); }
   layer.querySelectorAll("[data-dsp]").forEach(function (tr) { tr.onclick = function () { abrirFichaDesp(+tr.dataset.dsp); }; tr.onkeydown = function (ev) { if (ev.key === "Enter") tr.onclick(); }; });
 }
 
